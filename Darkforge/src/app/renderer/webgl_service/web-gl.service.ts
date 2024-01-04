@@ -39,9 +39,9 @@ export class WebGLService {
    
 
     var triVerts = [
-       0.0, 0.5, 1.0,0.0,1.0,
-      -0.5,-0.5, 0.0,1.0,1.0,
-       0.5,-0.5, 1.0,1.0,0.0
+       0.0, 0.5,0.0, 1.0,0.0,1.0,
+      -0.5,-0.5,0.0, 0.0,1.0,1.0,
+       0.5,-0.5,0.0, 1.0,1.0,0.0
     ]      
     var triBuffer = this.gl.createBuffer();
     this.gl.bindBuffer(this.gl.ARRAY_BUFFER, triBuffer);
@@ -52,8 +52,8 @@ export class WebGLService {
       var pos = this.gl.getAttribLocation(GLProgram!,'vPosition');
       var clr = this.gl.getAttribLocation(GLProgram!,'vColor');
 
-      this.gl.vertexAttribPointer(pos,2,this.gl.FLOAT,false,5*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
-      this.gl.vertexAttribPointer(clr,3,this.gl.FLOAT,false,5*Float32Array.BYTES_PER_ELEMENT,2*Float32Array.BYTES_PER_ELEMENT);
+      this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
+      this.gl.vertexAttribPointer(clr,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,3*Float32Array.BYTES_PER_ELEMENT);
 
 
       this.gl.enableVertexAttribArray(pos);
