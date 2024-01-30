@@ -7,7 +7,7 @@ namespace backend.Database
     {
                
 
-        public DarkforgeDBContext(DbContextOptions options):base(options) 
+        public DarkforgeDBContext(DbContextOptions<DarkforgeDBContext> options):base(options) 
         {
            
         }

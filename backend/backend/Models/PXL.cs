@@ -22,7 +22,7 @@ namespace backend.Models
     {
         
 
-        DarkforgeDBContext DB = Connection.DB;
+       
 
         public List<PX15_Batch>? Data { get; set; }
 
@@ -31,7 +31,7 @@ namespace backend.Models
         {
             this.Data = new List<PX15_Batch>();
 
-            this.Data = DB.PXL_Batches.OrderBy(x => x.BatchID).ToList();
+          
         }
         
     }
