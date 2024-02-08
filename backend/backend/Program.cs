@@ -13,9 +13,11 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<DarkforgeDBContext>(options =>
 {
 
-options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("Default Connection"));
 
 });
+
+
 
 
 

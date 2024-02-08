@@ -1,6 +1,7 @@
 ﻿using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Options;
 
 namespace backend.Database
 {
@@ -14,12 +15,29 @@ namespace backend.Database
             Configuration = configuration;
         }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        public DarkforgeDBContext() : base()
         {
-            optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Default Connection"));
+            Configuration = new ConfigurationBuilder().SetBasePath(Directory.GetCurrentDirectory())
+            .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true).Build();
         }
 
-        public DbSet<PX15_Batch> PXL_Batches { get; set; }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            if (!optionsBuilder.IsConfigured)
+            {
+                optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Default Connection"));
+            }
+        }
+
+        public DbSet<PGA> PGAs {  get; set; }
+
+        public DbSet<PLT> PLTs { get; set; }
+
+        public DbSet<RAF> RAFs { get; set; }
+
+        public DbSet<RPF> RPFs { get; set; }
+
+       
 
     }
 }

@@ -3,9 +3,10 @@
 namespace backend.Models
 {
     [StructLayout(LayoutKind.Sequential,Pack =4)]
-    public class Pixel15
+    public struct Pixel15
     {        
-        public Int16 Data { get; set; }
+        //A "15-bit" RGBA format. Little endian.  
+        public UInt16 Data { get; set; }
 
         public void Setup(Pixel24 input)
         {
@@ -15,11 +16,11 @@ namespace backend.Models
 
             if (input.Alpha)
             {
-                this.Data = (Int16)((0<<15)|(B << 11) | (G << 6) | (R << 1));
+                this.Data = (UInt16)((0<<15)|(B << 11) | (G << 6) | (R << 1));
             }
             else
             {
-                this.Data = (Int16)((1<< 15) | (B << 11) | (G << 6) | (R << 1));
+                this.Data = (UInt16)((1<< 15) | (B << 11) | (G << 6) | (R << 1));
             }
             
         }
