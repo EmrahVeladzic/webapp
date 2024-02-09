@@ -1,10 +1,13 @@
-﻿using System.Runtime.InteropServices;
+﻿using Microsoft.EntityFrameworkCore;
+using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
     [StructLayout(LayoutKind.Sequential,Pack =4)]
-    public struct Pixel15
-    {        
+    [Keyless]
+    public class Pixel15
+    {
+        
         //A "15-bit" RGBA format. Little endian.  
         public UInt16 Data { get; set; }
 

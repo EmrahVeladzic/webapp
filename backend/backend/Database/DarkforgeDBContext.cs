@@ -37,7 +37,7 @@ namespace backend.Database
 
         public DbSet<RPF> RPFs { get; set; }
 
-       
+        public DbSet<BMP> BMPs { get; set; }
 
     }
 }

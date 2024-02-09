@@ -10,9 +10,9 @@ namespace backend.Controllers
 
         private readonly IRPF_Repository repository;
 
-        public RPF_Controller(IRPF_Repository rpf_repository)
+        public RPF_Controller(IRPF_Repository rp)
         {
-            this.repository = rpf_repository;
+            this.repository = rp;
         }
 
 

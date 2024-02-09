@@ -1,6 +1,9 @@
-﻿namespace backend.Models
+﻿using Microsoft.EntityFrameworkCore;
+
+namespace backend.Models
 {
-    public struct Pixel24
+    [Keyless]
+    public class Pixel24
     {
         //A standard 24-bit pixel structure. 
 
@@ -8,8 +11,12 @@
         public byte Green { get; set; }
         public byte Blue { get; set; }
 
-        //User defined - Image needs to be 24-bit.
-        public bool Alpha { get; set; }        
+        //User defined. Images do not contain Alpha channels on their own.
+        public bool Alpha { get; set; }
+        public Pixel24()
+        {
+            
+        }
 
     }
 }

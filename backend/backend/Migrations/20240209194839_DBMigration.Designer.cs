@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Database;
 
@@ -10,9 +11,11 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DarkforgeDBContext))]
-    partial class DarkforgeDBContextModelSnapshot : ModelSnapshot
+    [Migration("20240209194839_DBMigration")]
+    partial class DBMigration
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

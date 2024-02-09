@@ -14,9 +14,6 @@ namespace backend.Repositories
                 
         }
 
-        public ICollection<RPF> GetRPFs()
-        {
-            return this.DB.RPFs.OrderBy(r=>r.Order).ToList();
-        }
+      
     }
 }

@@ -9,13 +9,19 @@
 </head>
 <body>
     
+    <input type="file" id="file_upload" #file_input (change)="upload_file($event)">
+    <label for="file_upload">file_input</label>
+
     <div class="top_menu">
         <button><b>Export</b></button>
-        <a>Manage files</a>
+        <a (click)="upload_click()">Manage files</a>        
         <a>Serialization order</a>
         <a>Project settings</a>
         <a>Create report</a>
     </div>
+
+    
+
     <div class="main_segment">
 
         <div class="canvas_holder">
