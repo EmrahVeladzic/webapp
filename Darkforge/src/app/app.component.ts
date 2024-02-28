@@ -25,12 +25,23 @@ export class AppComponent {
     
   }
   
-  upload_file($event:any):void{
+  file_logic($event:any):void{
     const selected:File = $event.target.files[0];
-    
-    
+    if(selected.name.endsWith('.bmp')){
+      
+    }
+    else{
+      
+    }
+
+
   }
 
+  handle_bmp($image:File){
+    
+    
+
+  }
 
 
 }
