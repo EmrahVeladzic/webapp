@@ -1,7 +1,9 @@
 ﻿using Microsoft.AspNetCore.Components.Forms;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Security.Cryptography;
 
 namespace backend.Models
 {
@@ -11,6 +13,9 @@ namespace backend.Models
         [Key]
         [Column("Id")]
         public UInt32 Id { get; set; }
+
+        [Column("Hash")]
+        public string? Hash { get; set; }
 
         [Column("Magic")]
         public UInt16 Magic { get; set; }
@@ -58,14 +63,20 @@ namespace backend.Models
         public UInt32 ImportantColours { get; set; }
 
         [Column("Data")]
-        public List<byte>? Data {  get; set; }
+        public List<byte>? Serialized {  get; set; }
+
+        [NotMapped]
+        public List<Pixel24>? Data {  get; set; }
 
         public BMP()
         {
            
         }
-        public void Setup(byte[] Input)
+        public void Setup(byte[] Input, string sha1)
         {
+
+           this.Hash = sha1;
+
            this.Magic = BitConverter.ToUInt16(Input,0);
           
            this.FileSize = BitConverter.ToUInt32(Input,2);
@@ -88,27 +99,48 @@ namespace backend.Models
            this.ColoursUsed = BitConverter.ToUInt32(Input,46);
            this.ImportantColours = BitConverter.ToUInt32(Input,50);
 
-            this.Data = new List<byte>();
+            this.Data = new List<Pixel24>();
 
-            
+            this.Serialized = new List<byte>();
+
+            Pixel24 Temp = new Pixel24();
+
+           
 
             for (int i = 0; i < (this.Width*this.Height); i++)
-            {
-                Pixel24 Temp = new Pixel24();
-
-               
+            {               
 
                 Temp.Blue = Input[54 + (i * 3) + 0];
                 Temp.Green = Input[54 + (i * 3) + 1];
-                Temp.Red = Input[54 + (i * 3) + 2];
+                Temp.Red = Input[54 + (i * 3) + 2];                
 
-                this.Data.Add(Temp.Blue);
-                this.Data.Add(Temp.Green);
-                this.Data.Add(Temp.Red);
+                this.Data.Add(Temp);
+
+                this.Serialized.Add(Temp.Blue);
+                this.Serialized.Add(Temp.Green);
+                this.Serialized.Add(Temp.Red);
             }
 
            
         }
+
+        public void Deserialize_Data()
+        {
+            this.Data= new List<Pixel24>();
+
+            Pixel24 Temp = new Pixel24();
+
+            for (int i = 0;i <this.Serialized!.Count(); i += 3)
+            {
+                Temp.Blue= this.Serialized![i];
+                Temp.Green = this.Serialized![i+1];
+                Temp.Red = this.Serialized![i+2];
+                
+            }
+
+
+        }
+
 
     }
 }

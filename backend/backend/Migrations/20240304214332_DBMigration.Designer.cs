@@ -11,7 +11,7 @@ using backend.Database;
 namespace backend.Migrations
 {
     [DbContext(typeof(DarkforgeDBContext))]
-    [Migration("20240209194839_DBMigration")]
+    [Migration("20240304214332_DBMigration")]
     partial class DBMigration
     {
         /// <inheritdoc />
@@ -45,13 +45,13 @@ namespace backend.Migrations
                         .HasColumnType("bigint")
                         .HasColumnName("Compression");
 
-                    b.Property<string>("Data")
-                        .HasColumnType("nvarchar(max)")
-                        .HasColumnName("Data");
-
                     b.Property<long>("FileSize")
                         .HasColumnType("bigint")
                         .HasColumnName("FileSize");
+
+                    b.Property<string>("Hash")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Hash");
 
                     b.Property<long>("HeaderSize")
                         .HasColumnType("bigint")
@@ -84,6 +84,10 @@ namespace backend.Migrations
                     b.Property<long>("Reserved")
                         .HasColumnType("bigint")
                         .HasColumnName("Reserved");
+
+                    b.Property<string>("Serialized")
+                        .HasColumnType("nvarchar(max)")
+                        .HasColumnName("Data");
 
                     b.Property<int>("Width")
                         .HasColumnType("int")

@@ -2,7 +2,7 @@
 {
     public interface IBMP_Repository
     {
-        public Task UploadBMP(byte[] BMPData);
+        public Task UploadBMP(byte[] BMPData,string sha1);
 
     }
 }

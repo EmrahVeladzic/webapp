@@ -16,6 +16,7 @@ namespace backend.Migrations
                 {
                     Id = table.Column<long>(type: "bigint", nullable: false)
                         .Annotation("SqlServer:Identity", "1, 1"),
+                    Hash = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     Magic = table.Column<int>(type: "int", nullable: false),
                     FileSize = table.Column<long>(type: "bigint", nullable: false),
                     Reserved = table.Column<long>(type: "bigint", nullable: false),

@@ -16,13 +16,13 @@ namespace backend.Repositories
         }
 
        
-        public async Task UploadBMP(byte[] BMPData)
+        public async Task UploadBMP(byte[] BMPData, string sha1)
         {
 
             BMP temp=new BMP();
 
             await Task.Run(() =>{
-                temp.Setup(BMPData);
+                temp.Setup(BMPData, sha1);
             });
 
             this.DB = new DarkforgeDBContext();

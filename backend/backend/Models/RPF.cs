@@ -56,5 +56,6 @@ namespace backend.Models
         [Column("Height")]
         public byte Height { get; set; }
 
+      
     }
 }
