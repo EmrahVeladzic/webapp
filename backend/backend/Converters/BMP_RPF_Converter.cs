@@ -37,6 +37,9 @@ namespace backend.Converters
             
         }
 
+
+      
+
     }
 
 
@@ -211,7 +214,7 @@ namespace backend.Converters
         }
 
 
-        public void BeginCompression(List<byte> chunk_max, List<byte> pecking_order)
+        private void BeginCompression(List<byte> chunk_max, List<byte> pecking_order)
         {
             int max_contrib_carry = 0;
 
@@ -302,14 +305,47 @@ namespace backend.Converters
 
 
 
-            //TODO:revive the final few colours, and go onto serializing and indexing
+            for (int i = 0; i < max_contrib_carry; i++)
+            {
+                foreach (Occurence_ ocr in this.Occurence_Table!)
+                {
+                    if (ocr.Live==false)
+                    {
+                        Revive(ocr);
+
+                        break;
+                    }
+                }
+            }
 
 
+            EditRawData();
+            Write_To_RPF();
+        }
+
+        private void EditRawData()
+        {
 
         }
 
+        private void Write_To_RPF()
+        {
 
-        public void PopulateChunkTable(int Y_part, int X_part , List<byte> chunk_max, List<byte> pecking_order)
+        }
+
+        private void Revive(Occurence_ input)
+        {
+            input.Live = true;
+
+            Swap_? swp = Swap_Table!.Where(s=>s.Recipient==input.Colour).FirstOrDefault();
+
+            swp!.Donor=swp.Recipient;
+
+            input.Dominant=true;
+
+        }
+
+        private void PopulateChunkTable(int Y_part, int X_part , List<byte> chunk_max, List<byte> pecking_order)
         {
             for (int y = 0; y < Y_part; y++)
             {
@@ -324,7 +360,7 @@ namespace backend.Converters
             }
         }
 
-        public void PopulateOccurrenceTable()
+        private void PopulateOccurrenceTable()
         {
             foreach (Pixel15 pxl in this.RawData.BMP_CONVERT)
             {
@@ -356,7 +392,7 @@ namespace backend.Converters
         }
 
 
-        public void LoadUserDefinedAsDominant(List<UInt16> reserved_clut)
+        private void LoadUserDefinedAsDominant(List<UInt16> reserved_clut)
         {
             foreach (UInt16 clr in reserved_clut)
             {
@@ -369,7 +405,7 @@ namespace backend.Converters
 
         }
 
-        public void Find_Closest_Via_Vector(Occurence_ input)
+        private void Find_Closest_Via_Vector(Occurence_ input)
         {
             Pixel15 closest = input.Colour;
 
@@ -392,7 +428,7 @@ namespace backend.Converters
         }
 
 
-        public void CreateSwap(Occurence_ Donor, Occurence_ Recipient)
+        private void CreateSwap(Occurence_ Donor, Occurence_ Recipient)
         {
 
             Occurence_? globl = this.Occurence_Table!.Where(o => o.Colour == Recipient.Colour).FirstOrDefault();
@@ -404,7 +440,7 @@ namespace backend.Converters
             
         }
 
-        public void CascadeSwap(Pixel15 Donor, Pixel15 Recipient)
+        private void CascadeSwap(Pixel15 Donor, Pixel15 Recipient)
         {
             foreach(Swap_ sw in this.Swap_Table!)
             {

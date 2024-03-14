@@ -63,7 +63,10 @@ namespace backend.Models
             return (int)(this.Data & 0x8000);
         }
 
-
+        public void Swap(Pixel15 input)
+        {
+            this.Data = input.Data;
+        }
 
         //Checks to see if colour is already user-defined. Overwrites alpha if necessary;
         public void Assert_User_Defined(UInt16 usr_def)
