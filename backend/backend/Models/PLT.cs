@@ -19,7 +19,16 @@ namespace backend.Models
         public UInt16 Order { get; set; }
 
         [Column("Data")]
-        public List<UInt16>? Data { get; set; }
+        public List<UInt16>? Serialized { get; set; }
+
+        [NotMapped]
+        public List<Pixel15>? Data { get; set; }
+
+        public PLT()
+        {
+            Serialized = new List<ushort>();
+            Data = new List<Pixel15>();
+        }
 
     }
 

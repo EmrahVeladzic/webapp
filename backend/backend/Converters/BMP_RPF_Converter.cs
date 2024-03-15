@@ -303,6 +303,7 @@ namespace backend.Converters
 
             }
 
+            this.Occurence_Table=this.Occurence_Table!.OrderByDescending(o=>o.Occurence).ToList();
 
 
             for (int i = 0; i < max_contrib_carry; i++)
@@ -325,11 +326,42 @@ namespace backend.Converters
 
         private void EditRawData()
         {
-
+            foreach (Pixel15 px in this.RawData.BMP_CONVERT)
+            {
+               foreach(Swap_ swp in this.Swap_Table!)
+                {
+                    if (px == swp.Recipient)
+                    {
+                        px.Swap(swp.Donor);
+                    }
+                }
+            }
         }
 
         private void Write_To_RPF()
         {
+            PLT CLUT = new PLT();
+
+            CLUT.Data = this.Occurence_Table!.Where(o => o.Dominant == true).Select(o => o.Colour).ToList();
+
+            PGA PXGrid = new PGA();
+
+            byte tmp = 0;
+
+            for (int i = 0; i < this.RawData.BMP_CONVERT.Count; i++)
+            {
+                for (int j = 0; j < CLUT.Data.Count; j++)
+                {
+                    if (RawData.BMP_CONVERT[i] == CLUT.Data[j])
+                    {
+                        tmp = (byte)j;
+                        PXGrid.Data!.Add(tmp);
+                    }
+                }
+            }
+            
+            
+
 
         }
 

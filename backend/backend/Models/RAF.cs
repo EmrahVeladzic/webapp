@@ -41,6 +41,15 @@ namespace backend.Models
         [NotMapped]
         public virtual List<PGA>? PGAs { get; set; }
 
-        
+        public RAF()
+        {
+            PLT_Ids = new List<UInt16>();
+            PLTs= new List<PLT>();
+            PGA_Ids = new List<UInt16>();
+            PGAs = new List<PGA>();
+
+        }
+
+
     }
 }
