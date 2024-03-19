@@ -4,11 +4,12 @@ import { RouterOutlet } from '@angular/router';
 import { RendererComponent } from './renderer/renderer.component';
 import { ViewChild } from '@angular/core';
 import { HostListener } from '@angular/core';
+import { FileTransferComponent } from './file_transfer/file-transfer.component';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet, RendererComponent],
+  imports: [CommonModule, RouterOutlet, RendererComponent,FileTransferComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css'
 })
