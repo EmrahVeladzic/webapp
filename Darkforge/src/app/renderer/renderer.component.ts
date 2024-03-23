@@ -10,7 +10,7 @@ import { HttpClientModule } from '@angular/common/http';
   imports: [HttpClientModule],
   templateUrl: './renderer.component.html',
   styleUrl: './renderer.component.css',
-  providers: [WebGLService]
+  providers: []
 })
 export class RendererComponent implements OnInit, AfterViewInit {
 private out!: HTMLCanvasElement;

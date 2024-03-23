@@ -1,9 +1,30 @@
 <!DOCTYPE html>
-
+<meta charset="uft-8">
 <head>
 
 </head>
 
 <body>
-    
+    <div class="rpf" id="rpf">
+        <canvas id="bmp_preview" width="1024" height="1024" ></canvas>
+        <label for="Horizontal">Horizontal Chunks:</label>
+        <select name = "Horizontal" id = "Horizontal" (change)="select_changed()">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">4</option>
+            <option value="4">8</option>
+            <option value="5">16</option>
+        </select>
+
+        <label for="Vertical">Vertical Chunks:  </label>
+        <select name = "Vertical" id = "Vertical" (change)="select_changed()">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">4</option>
+            <option value="4">8</option>
+            <option value="5">16</option>
+        </select>
+       
+
+    </div>
 </body>
