@@ -23,11 +23,5 @@
         public List<byte>? Pixels { get; set; }
 
 
-        //CLUT frames.
-        public List<byte>? CFrames { get; set; }
-
-        //Grid frames.
-        public List<byte>? PFrames { get; set; }
-
     }
 }

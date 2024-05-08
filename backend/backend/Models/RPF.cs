@@ -36,17 +36,6 @@ namespace backend.Models
         [NotMapped]
         public virtual PGA? PGA { get; set; }
 
-        //Number of RAF elements to load. If > 0, does not use base PLT and PGA
-        [Column("Animated")]
-        public byte Animated {  get; set; }
-
-        //Overrides for the PLT and PGA with the respective switch frames 
-        [Column("RAF")]       
-        public UInt16 RAF_Id { get; set; }
-
-
-        [NotMapped]
-        public virtual RAF? RAF { get; set;}
 
         //Width (+1, as values will range 2-256)
         [Column("Width")]

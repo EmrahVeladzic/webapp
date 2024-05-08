@@ -1,488 +1,379 @@
 ﻿using backend.Models;
+using backend.Requests;
 using System.Numerics;
 using System.Runtime.ConstrainedExecution;
 
 namespace backend.Converters
 {
 
+    public class Occurence_Entry
+    {
+        public Pixel15? Value { get; set; }
+        public UInt32 Occurence { get; set; }
+    }
+
+    public class Swap_Entry
+    {
+        public Pixel15? Recipient { get; set; }
+        public Pixel15? Donor { get; set; }
+    }
+
+
     public class IMG_DATA
     {
+        private Pixel24? Alpha { get; set; }
+        private Pixel15? Alpha15 { get; set; }
 
-        public List<Pixel15> BMP_CONVERT { get; set; }
+        private UInt32 ScaleX { get; set; }
+        private UInt32 ScaleY { get; set; }
 
-        public IMG_DATA(BMP input, List<UInt16> user_defined)
+        private ImageJson? Input { get; set; }
+
+        private UInt32 ProtectedBufferIndex {get;set;}
+
+        private List<Pixel15>? ProtectedBuffer { get; set; }
+
+        private List<Occurence_Entry>? Occurence_Table { get; set; }
+
+        private List<Swap_Entry>? Swap_Table { get; set;}
+
+        private RPF? Output { get; set; }
+
+        private UInt32 UniqueCount { get; set; }
+        private UInt32 MaxUniqueCount { get; set; }
+
+
+        Vector3 GetHue(Pixel15 input)
         {
-            
-            BMP_CONVERT= new List<Pixel15>();
+            Vector3 output = new Vector3();
 
-            Pixel15 TMP = new Pixel15();
 
-            foreach (Pixel24 pixel in input.Data!)
-            {                               
+            if (input.Red() >= 16)
+            {
+                output.X = 31.0f;
+            }
+            else
+            {
+                output.X = 0.0f;
+            }
 
-                TMP.Setup(pixel);
 
-                foreach (UInt16 pixel2 in user_defined)
+            if (input.Green() >= 16)
+            {
+                output.Y = 31.0f;
+            }
+            else
+            {
+                output.Y = 0.0f;
+            }
+
+
+            if (input.Blue() >= 16)
+            {
+                output.Z = 31.0f;
+            }
+            else
+            {
+                output.Z = 0.0f;
+            }
+
+
+
+            return output;
+        }
+
+
+
+        bool EnsureSingle(Pixel15 a, Pixel15 b)
+        {
+            if (Alpha15 != null)
+            {
+                return (!(a.Data==Alpha15.Data) && !(b.Data==Alpha15.Data) && !(a.Data==b.Data));
+            }
+
+            else
+            {
+                return !(a.Data==b.Data);
+            }
+        }
+
+        bool EnsureDual(Pixel15 a, Pixel15 b)
+        {
+            bool output = EnsureSingle(a, b);
+
+            if (output)
+            {
+
+                for (int i = 0; i < Input!.ProtectedBufferSize; i++)
                 {
-
-                    TMP.Assert_User_Defined(pixel2);
-
+                    if (a.Data == ProtectedBuffer![i].Data || b.Data == ProtectedBuffer![i].Data)
+                    {
+                        output = false;
+                        break;
+                    }
                 }
 
+                Vector3 vA = GetHue(a);
+                Vector3 vB = GetHue(b);
 
-                BMP_CONVERT.Add(TMP);
+                if(vA != vB)
+                {
+
+                    output = false;
+                }
 
             }
 
-            
-        }
-
-
-      
-
-    }
-
-
-    public class Occurence_
-    {
-        public Pixel15 Colour { get; set; }
-
-        public int Occurence { get; set; }
-
-        //Predefined colour by user. Overrides colours close to it. Does not get overridden.
-       
-
-        //Final Colours which will be written to CLUT.
-        public bool Dominant { get; set; }
-
-
-        //Alpha - if false, represents transparency.
-        //No interpolation - The value after conversion to 15-bit must be exactly as user-defined to become transparent.
-        public bool Alpha { get; set; }
-
-
-
-        //Once a colour becomes a recipient, it is no longer live, meaning it will no longer appear in the final RPF unless rearmed.
-        public bool Live { get; set; }
-
-
-        //Used for calculating vector distance between 2 colours. 
-        public Vector3 Vector_Clr { get; set; }
-
-        public void Increment()
-        {
-            this.Occurence++;
-        }
-
-        public void Reset()
-        {
-            this.Occurence = 0;
-        }
-
-
-        public void Disarm()
-        {
-            this.Live = false;
-        }
-
-        public Occurence_(Pixel15 clr, bool dominance)
-        {
-            this.Colour = clr;
-            this.Dominant = dominance;
-            this.Alpha = (clr.Alpha()==1)? true:false;
-            this.Occurence = 1;
-            this.Vector_Clr = new Vector3(clr.Blue(),clr.Green(),clr.Red());
-            this.Live = true;
+            return output;
 
         }
 
 
-
-    }
-
-    public class Swap_
-    {
-        //This list stores the decision on which colour becomes which. 
-
-        public Pixel15 Donor { get; set; }
-
-        public Pixel15 Recipient { get; set; }
-
-
-        public Swap_(Pixel15 dnr, Pixel15 rcp)
+        void Protect(Pixel15 recentDonor)
         {
-            this.Donor = dnr;
-            this.Recipient = rcp;
-        }
-
-        public void SetDonor(Pixel15 dnr)
-        {
-            this.Donor = dnr;
-        }
-    }
-
-
-    public class Chunk_
-    {
-        public int Begin_X { get; set; }
-
-        public int Begin_Y { get; set; }       
-
-        public int Order { get; set; }
-
-        public int MaxClr { get; set; }
-
-        public int ReservedClr { get; set; }
-
-
-        public Chunk_(int begX, int begY, int ord, int max)
-        {
-            this.Begin_X = begX;
-            this.Begin_Y = begY;
-            this.Order = ord;
-            this.MaxClr = max;
-            this.ReservedClr = 0;
-        }
-
-        public void Carry(int add)
-        {
-            this.MaxClr += add;
-        }
-
-        public void NewReserved()
-        {
-            this.ReservedClr++;
-        }
-
-    }
-
-
-
-    public class BMP_RPF_Converter
-    {
-
-        public IMG_DATA RawData {  get; set; }
-
-        public List<Occurence_>? Occurence_Table {  get; set; } 
-
-        public List<Swap_>? Swap_Table { get; set; }
-
-        public List<Chunk_>? ImageChunks { get; set; }
-
-
-        public int ChunkWidth { get; set; }
-
-        public int ChunkHeight { get; set; }
-
-
-
-        public int ImageWidth { get; set; }
-        public int ImageHeight { get; set; }
-
-
-
-        public BMP_RPF_Converter(BMP input , byte unique_texel, List<UInt16> reserved_clut, byte X_part, byte Y_part, List<byte> chunk_max, List<byte> pecking_order)
-        {
-
-            this.ImageHeight = input.Height;
-            this.ImageWidth = input.Width;
-
-            this.ChunkWidth = input.Width/(int)X_part;
-            this.ChunkHeight = input.Height/(int)Y_part;
-
-            this.Occurence_Table = new List<Occurence_>();
-            this.Swap_Table = new List<Swap_>();
-            this.ImageChunks = new List<Chunk_>();
-
-
-            PopulateChunkTable((int)Y_part,(int)X_part,chunk_max,pecking_order);
-
-            LoadUserDefinedAsDominant(reserved_clut);           
-
-            this.RawData= new IMG_DATA(input, reserved_clut);
-
-
-            PopulateOccurrenceTable();
-          
-
-            Occurence_Table = Occurence_Table.OrderByDescending(o=>o.Occurence).ToList();
-
-            
-           BeginCompression(chunk_max, pecking_order);
-            
-            
-        }
-
-
-        private void BeginCompression(List<byte> chunk_max, List<byte> pecking_order)
-        {
-            int max_contrib_carry = 0;
-
-            foreach (byte ord in pecking_order)
+            if (Input!.ProtectedBufferSize > 0)
             {
-                
-                List<Occurence_>local_occurence_table = new List<Occurence_>();
+                ProtectedBuffer![(int)ProtectedBufferIndex] = recentDonor;
 
-                this.ImageChunks![(int)ord].Carry(max_contrib_carry);
-                max_contrib_carry = 0;
+                ProtectedBufferIndex++;
 
-                for (int y = this.ImageChunks[(int)ord].Begin_Y; y < this.ImageChunks[(int)ord].Begin_Y + this.ChunkHeight; y++)
+                if((uint)ProtectedBufferIndex >= (uint)Input!.ProtectedBufferSize)
+                {
+                    ProtectedBufferIndex = 0;
+                }
+            }
+
+        }
+
+        void NewColour(Pixel15 colour)
+        {
+            Occurence_Entry oc = new Occurence_Entry();
+
+            oc.Value = colour;
+            oc.Occurence = 1;
+
+            Occurence_Table!.Add(oc);
+
+        }
+
+        void NewSwap(Pixel15 donor, Pixel15 recipient)
+        {
+            Swap_Entry sw = new Swap_Entry();
+
+            sw.Donor = donor;
+            sw.Recipient = recipient;
+
+
+            List<Swap_Entry> toUpdate = Swap_Table!.Where(s => s.Donor!.Data == recipient.Data).ToList();
+
+            for (int i = 0; i < toUpdate.Count(); i++)
+            {
+                toUpdate[i].Donor = donor;
+            }
+
+            Swap_Table!.Add(sw);
+
+            Occurence_Entry ocR = Occurence_Table!.Where(o=>o.Value!.Data==recipient.Data).First();
+
+            Occurence_Entry ocD = Occurence_Table!.Where(o => o.Value!.Data == donor.Data).First();
+
+            ocD.Occurence += ocR.Occurence;
+
+            ocR.Occurence = 0;                              
+
+
+            Occurence_Table = Occurence_Table!.OrderBy(o=>o.Occurence).ToList();
+
+            UniqueCount--;
+
+        }
+
+        void PopularityCompression( int index)
+        {
+
+            Vector3 PotentialRecipient = new Vector3();
+            Vector3 PotentialDonor = new Vector3();
+
+            Pixel15 initial = Occurence_Table![index].Value!;
+            Pixel15 compare = Occurence_Table![index].Value!;
+
+            double Distance = double.PositiveInfinity;
+
+            PotentialRecipient.X = (float)initial.Red();
+            PotentialRecipient.Y = (float)initial.Green();
+            PotentialRecipient.Z = (float)initial.Blue();
+
+            int chosen = 0;
+
+            for (int i = (int)(MaxUniqueCount-UniqueCount); i< (int)MaxUniqueCount ; i++)
+            {
+                compare = Occurence_Table![i].Value!;
+
+                PotentialDonor.X = (float)compare.Red();
+                PotentialDonor.Y = (float)compare.Green();
+                PotentialDonor.Z = (float)compare.Blue();
+
+                double newDistance = Vector3.Distance(PotentialDonor, PotentialRecipient);
+
+                if(newDistance < Distance && EnsureSingle(initial, compare))
+                {
+                    Distance = newDistance;
+                    chosen = i;
+                }
+
+
+            }
+            compare = Occurence_Table![chosen].Value!;
+
+            NewSwap(compare,initial);
+            
+
+        }
+
+        void ProximityCompression()
+        {
+            int chosen_a = 0;
+            int chosen_b = 0;
+
+            Pixel15 initial = Occurence_Table! [0].Value!;
+            Pixel15 compare = Occurence_Table![0].Value!;
+
+            Vector3 PotentialRecipient = new Vector3();
+            Vector3 PotentialDonor = new Vector3();
+
+            double Distance = double.PositiveInfinity;
+            double newDistance = Distance;
+
+            for (int i = 0; i < (Input!.ProtectedBufferSize+1); i++)
+            {
+
+                if (i > 0)
+                {
+                    Protect(Alpha15!);
+                }
+
+                for (int j = (int)(MaxUniqueCount - UniqueCount); j < (int)MaxUniqueCount; j++)
                 {
 
-                    for (int x = this.ImageChunks[(int)ord].Begin_X; x < this.ImageChunks[(int)ord].Begin_X + this.ChunkWidth; x++)
+                    initial = Occurence_Table[j].Value!;
+
+                    PotentialRecipient.X = (float)initial.Red();
+                    PotentialRecipient.Y = (float)initial.Green();
+                    PotentialRecipient.Z = (float)initial.Blue();
+
+
+                    for (int k = (int)(MaxUniqueCount - UniqueCount); k < (int)MaxUniqueCount; k++)
                     {
+                        compare = Occurence_Table[k].Value!;
 
-                        bool new_clr = true;
 
-                        foreach (Occurence_ chk_clr in local_occurence_table)
+                        PotentialDonor.X = (float)compare.Red();
+                        PotentialDonor.Y = (float)compare.Green();
+                        PotentialDonor.Z = (float)compare.Blue();
+
+                        newDistance = Vector3.Distance(PotentialRecipient, PotentialDonor);
+
+                        if (i < Input.ProtectedBufferSize)
                         {
-                            if (this.RawData.BMP_CONVERT[(y * this.ImageWidth) + x] == chk_clr.Colour)
+                            if(newDistance<Distance && EnsureDual(initial, compare))
                             {
-                                new_clr = false;
-                                chk_clr.Increment();
+                                Distance = newDistance;
+                                chosen_a = j;
+                                chosen_b = k;
+
                             }
+
                         }
 
-                        if (new_clr)
+                        else
                         {
-                            
-                            Occurence_? local_occurrence = this.Occurence_Table!.Where(ot => ot.Colour == this.RawData.BMP_CONVERT[(y * this.ImageWidth) + x]).FirstOrDefault();
-                            local_occurrence!.Reset();
-                            local_occurence_table.Add(local_occurrence!);
+                            if (newDistance < Distance && EnsureSingle(initial, compare))
+                            {
+                                Distance = newDistance;
+                                chosen_a = j;
+                                chosen_b = k;
+
+                            }
+
+
                         }
-
-
                     }
 
-
-
                 }
 
 
-                List<Pixel15> toRemove = new List<Pixel15>();
+                initial = Occurence_Table![chosen_a].Value!;
+                compare = Occurence_Table![chosen_b].Value!;
 
-                foreach (Occurence_ oc in local_occurence_table)
+
+                if (EnsureDual(initial, compare))
                 {
-                   if(oc.Dominant==true || oc.Alpha==true || oc.Live == false)
-                    {
-                        toRemove.Add(oc.Colour);
-                    }
 
-                   
+                    break;
                 }
-
-                foreach (Pixel15 px in toRemove)
-                {
-                    Occurence_? rmv = local_occurence_table!.Where(o => o.Colour == px).FirstOrDefault();
-
-                    local_occurence_table.Remove(rmv!);
-                }
-
-                toRemove.Clear();
-
-                local_occurence_table = local_occurence_table.OrderBy(o => o.Occurence).ToList();
-
-                while (local_occurence_table.Count() > chunk_max[(int)ord])
-                {
-                    Find_Closest_Via_Vector(local_occurence_table[0]);
-                    local_occurence_table.RemoveAt(0);
-                 
-                }
-
-                foreach (Occurence_ ocr in local_occurence_table)
-                {
-                    Occurence_? globl = this.Occurence_Table!.Where(o=>o.Colour == ocr.Colour).FirstOrDefault();
-
-                    globl!.Dominant = true;
-
-                }
-
-
-                max_contrib_carry = this.ImageChunks[(int)ord].MaxClr - this.ImageChunks[(int)ord].ReservedClr;
-                local_occurence_table.Clear();
 
             }
 
-            this.Occurence_Table=this.Occurence_Table!.OrderByDescending(o=>o.Occurence).ToList();
+            initial = Occurence_Table![chosen_a].Value!;
+            compare = Occurence_Table![chosen_b].Value!;
+
+            if(EnsureDual(initial, compare)) {
+
+                Vector3 Saturation = GetHue(initial);
+
+                PotentialRecipient.X = (float)initial.Red();
+                PotentialRecipient.Y = (float)initial.Green();
+                PotentialRecipient.Z = (float)initial.Blue();
+
+                PotentialDonor.X = (float)compare.Red();
+                PotentialDonor.Y = (float)compare.Green();
+                PotentialDonor.Z = (float)compare.Blue();
+
+                Distance = Vector3.Distance(Saturation,PotentialRecipient);
+                newDistance = Vector3.Distance(Saturation, PotentialRecipient);
 
 
-            for (int i = 0; i < max_contrib_carry; i++)
-            {
-                foreach (Occurence_ ocr in this.Occurence_Table!)
+                if (Distance<newDistance)
                 {
-                    if (ocr.Live==false)
-                    {
-                        Revive(ocr);
-
-                        break;
-                    }
+                    Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
+                    Occurence_Table[chosen_b].Occurence = 0;
+                    NewSwap(initial, compare);
+                    Protect(initial);
                 }
+                else
+                {
+                    Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
+                    Occurence_Table[chosen_a].Occurence = 0;
+                    NewSwap(compare, initial);
+                    Protect(compare);
+
+                }
+
             }
 
-
-            EditRawData();
-            Write_To_RPF();
-        }
-
-        private void EditRawData()
-        {
-            foreach (Pixel15 px in this.RawData.BMP_CONVERT)
-            {
-               foreach(Swap_ swp in this.Swap_Table!)
-                {
-                    if (px == swp.Recipient)
-                    {
-                        px.Swap(swp.Donor);
-                    }
-                }
-            }
-        }
-
-        private void Write_To_RPF()
-        {
-            PLT CLUT = new PLT();
-
-            CLUT.Data = this.Occurence_Table!.Where(o => o.Dominant == true).Select(o => o.Colour).ToList();
-
-            PGA PXGrid = new PGA();
-
-            byte tmp = 0;
-
-            for (int i = 0; i < this.RawData.BMP_CONVERT.Count; i++)
-            {
-                for (int j = 0; j < CLUT.Data.Count; j++)
-                {
-                    if (RawData.BMP_CONVERT[i] == CLUT.Data[j])
-                    {
-                        tmp = (byte)j;
-                        PXGrid.Data!.Add(tmp);
-                    }
-                }
-            }
-            
-            
-
-
-        }
-
-        private void Revive(Occurence_ input)
-        {
-            input.Live = true;
-
-            Swap_? swp = Swap_Table!.Where(s=>s.Recipient==input.Colour).FirstOrDefault();
-
-            swp!.Donor=swp.Recipient;
-
-            input.Dominant=true;
-
-        }
-
-        private void PopulateChunkTable(int Y_part, int X_part , List<byte> chunk_max, List<byte> pecking_order)
-        {
-            for (int y = 0; y < Y_part; y++)
+            else if (EnsureSingle(initial, compare))
             {
 
-                for (int x = 0; x < X_part; x++)
+                if (Occurence_Table[chosen_a].Occurence > Occurence_Table[chosen_b].Occurence)
                 {
-                    Chunk_ chnk = new Chunk_((x * (ImageWidth / ChunkWidth)), (y * (ImageHeight / ChunkHeight)), pecking_order[(y * (ImageWidth / ChunkWidth)) + x], chunk_max[(y * (ImageWidth / ChunkWidth)) + x]);
-
-                    this.ImageChunks!.Add(chnk);
+                    Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
+                    Occurence_Table[chosen_b].Occurence = 0;
+                    NewSwap(initial, compare);
+                    Protect(initial);
+                }
+                else
+                {
+                    Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
+                    Occurence_Table[chosen_a].Occurence = 0;                 
+                    NewSwap(compare,initial);
+                    Protect(compare);
+                    
                 }
 
             }
-        }
-
-        private void PopulateOccurrenceTable()
-        {
-            foreach (Pixel15 pxl in this.RawData.BMP_CONVERT)
-            {
-                bool new_clr = true;
-
-                foreach (Occurence_ txl in this.Occurence_Table!)
-                {
-                    if (pxl == txl.Colour)
-                    {
-                        txl.Increment();
-                        new_clr = false;
-                        break;
-                    }
-                }
-
-                if (new_clr)
-                {
-                    Occurence_ tmp = new Occurence_(pxl, true);
-
-                    this.Occurence_Table.Add(tmp);
-
-                    this.Occurence_Table.Add(tmp);
-                }
-
-
-
-            }
 
         }
 
-
-        private void LoadUserDefinedAsDominant(List<UInt16> reserved_clut)
-        {
-            foreach (UInt16 clr in reserved_clut)
-            {
-                Pixel15 px = new Pixel15(clr);
-
-                Occurence_ tmp = new Occurence_(px, true);
-
-                Occurence_Table!.Add(tmp);
-            }
-
-        }
-
-        private void Find_Closest_Via_Vector(Occurence_ input)
-        {
-            Pixel15 closest = input.Colour;
-
-            float distance = float.MaxValue;
-
-            foreach (Occurence_ ocr in this.Occurence_Table!)
-            {
-                float new_dist = Vector3.Distance(input.Vector_Clr, ocr.Vector_Clr);
-
-                if (new_dist<=distance && input.Colour != ocr.Colour && ocr.Alpha==true)
-                {
-                    closest = ocr.Colour;
-                    distance= new_dist;
-                }
-            }
-
-            Occurence_? donor = this.Occurence_Table!.Where(o => o.Colour == closest).FirstOrDefault();
-
-            CreateSwap(donor!, input);
-        }
-
-
-        private void CreateSwap(Occurence_ Donor, Occurence_ Recipient)
-        {
-
-            Occurence_? globl = this.Occurence_Table!.Where(o => o.Colour == Recipient.Colour).FirstOrDefault();
-            globl!.Live = false;
-
-            Swap_ swp = new Swap_(Donor.Colour,Recipient.Colour);
-            this.Swap_Table!.Add(swp);
-            CascadeSwap(Donor.Colour, Recipient.Colour);
-            
-        }
-
-        private void CascadeSwap(Pixel15 Donor, Pixel15 Recipient)
-        {
-            foreach(Swap_ sw in this.Swap_Table!)
-            {
-                if (sw.Donor == Recipient)
-                {
-                    sw.SetDonor(Donor);
-                }
-            }
-        }
-
-        
     }
+
 }
