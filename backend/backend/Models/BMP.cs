@@ -11,10 +11,7 @@ namespace backend.Models
     public class BMP
     {
         [Key]
-        [Column("Id")]
-        public UInt32 Id { get; set; }
-
-        [Column("Hash")]
+        [Column("EntityID")]
         public string? Hash { get; set; }
 
         [Column("Magic")]
