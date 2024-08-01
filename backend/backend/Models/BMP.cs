@@ -7,56 +7,59 @@ using System.Security.Cryptography;
 
 namespace backend.Models
 {
-    [Table("BMP")]
+    [Table("BMP",Schema ="Files")]
     public class BMP
     {
         [Key]
         [Column("EntityID")]
+        public int Id { get; set; }
+
+        [Column("EntityHash")]
         public string? Hash { get; set; }
 
-        [Column("Magic")]
+        [NotMapped]
         public UInt16 Magic { get; set; }
 
-        [Column("FileSize")]
+        [NotMapped]
         public UInt32 FileSize { get; set; }
 
-        [Column("Reserved")]
+        [NotMapped]
         public UInt32 Reserved { get; set; }
 
-        [Column("Offset")]
+        [NotMapped]
         public UInt32 Offset { get; set; }
 
-        [Column("HeaderSize")]
+        [NotMapped]
         public UInt32 HeaderSize { get; set; }
 
-        [Column("Width")]
+        [NotMapped]
         public Int32 Width { get; set; }
 
-        [Column("Height")]
+        [NotMapped]
         public Int32 Height { get; set; }
 
-        [Column("Planes")]
+        [NotMapped]
         public UInt16 Planes { get; set; }
 
-        [Column("BPP")]
+        [NotMapped]
         public UInt16 BPerPixel {  get; set; }
 
-        [Column("Compression")]
+        [NotMapped]
         public UInt32 Compression {  get; set; }
 
-        [Column("ImgSize")]
+        [NotMapped]
         public UInt32 ImgSize { get; set; }
 
-        [Column("XPixelPerm")]
+        [NotMapped]
         public Int32 XPixelPerm { get; set; }
 
-        [Column("YPixelPerm")]
+        [NotMapped]
         public Int32 YPixelPerm { get; set; }
 
-        [Column("ColoursUsed")]
+        [NotMapped]
         public UInt32 ColoursUsed { get; set; }
 
-        [Column("ImportantColours")]
+        [NotMapped]
         public UInt32 ImportantColours { get; set; }
 
         [Column("Data")]

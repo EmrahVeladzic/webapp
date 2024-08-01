@@ -7,19 +7,19 @@ using System.Runtime.InteropServices;
 namespace backend.Models
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    [Table("PGA")]
+    [Table("PGA", Schema ="Models")]
     public class PGA
     {
         //Indexed image data. Points to slots in the CLUT. Element size is 1 byte by default but can represent multiple pixels. 
 
         [Key]
-        [Column("Id")]
-        public UInt16 Id { get; set; }
+        [Column("EntityId")]
+        public int Id { get; set; }
 
-        [Column("Order")]
-        public UInt16 Order { get; set; }
+        [Column("EntityOrder")]
+        public int Order { get; set; }
 
-        [Column("Data")]
+        [Column("EntityData")]
         public List<byte>? Data { get; set; }
 
 
