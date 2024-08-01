@@ -21,6 +21,13 @@ namespace backend.Models
         [Column("Data")]
         public List<UInt16>? Data { get; set; }
 
+      
+        public PLT()
+        {
+            Data = new List<UInt16>();
+           
+        }
+
     }
 
   

@@ -1,49 +1,17 @@
-﻿using backend.Interfaces;
-using backend.Models;
+﻿using backend.Requests;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using System.Text;
-
 
 namespace backend.Controllers
 {
-
     [Route("api/[controller]")]
     [ApiController]
-    public class BMP_Controller : Controller
+    public class BMP_Controller : ControllerBase
     {
-        private readonly IBMP_Repository repository;
-
-        public BMP_Controller(IBMP_Repository rp)
-        {
-            this.repository = rp;
-        }
-
         [HttpPost]
-        [ProducesResponseType(204)]
-        [ProducesResponseType(400)]
-        public IActionResult UploadImage([FromBody] string data)
+        public void Post(ImageJson input)
         {
-            if (data == null)
-            {
-                
-
-                return BadRequest(ModelState);
-            }
-
-            else
-            {
-               
-                byte[] bytes = Convert.FromBase64String(data);
-
-
-                repository.UploadBMP(bytes);
-
-                
-
-                return NoContent();
-            }
+            
         }
-
-
     }
 }

@@ -29,15 +29,18 @@ namespace backend.Database
             }
         }
 
+
+        /*
         public DbSet<PGA> PGAs {  get; set; }
 
         public DbSet<PLT> PLTs { get; set; }
-
-        public DbSet<RAF> RAFs { get; set; }
 
         public DbSet<RPF> RPFs { get; set; }
 
         public DbSet<BMP> BMPs { get; set; }
 
+        */
+
+        public DbSet<FKR> FKRs { get; set; }
     }
 }

@@ -22,6 +22,12 @@ namespace backend.Models
         [Column("Data")]
         public List<byte>? Data { get; set; }
 
+
+        public PGA()
+        {
+            Data = new List<byte>();
+        }
+
     }
 
 

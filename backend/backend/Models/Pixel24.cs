@@ -11,8 +11,6 @@ namespace backend.Models
         public byte Green { get; set; }
         public byte Blue { get; set; }
 
-        //User defined. Images do not contain Alpha channels on their own.
-        public bool Alpha { get; set; }
         public Pixel24()
         {
             
