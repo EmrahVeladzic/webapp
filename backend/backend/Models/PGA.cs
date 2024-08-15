@@ -20,6 +20,9 @@ namespace backend.Models
         public int Order { get; set; }
 
         [Column("EntityData")]
+        public byte[]? Serialized { get; set; }
+
+        [NotMapped]
         public List<byte>? Data { get; set; }
 
 

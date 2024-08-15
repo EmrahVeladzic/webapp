@@ -31,7 +31,7 @@ namespace backend.Database
 
 
         
-        public DbSet<PGA> PGAs {  get; set; }
+        public DbSet<PGA> PGAs {  get; set; }        
 
         public DbSet<PLT> PLTs { get; set; }
 

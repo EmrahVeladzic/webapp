@@ -5,6 +5,7 @@ namespace backend.Requests
     public class ImageJson
     {
         //Complete BMP data (incl. Header). Obtain texture dimensions from here.
+        
         public  string? ImageData { get; set; }
 
         //SHA-256 Encoded
@@ -14,13 +15,19 @@ namespace backend.Requests
         public byte CLUT_Size { get; set; }
 
         //If not NULL, use this colour as the designated alpha = 0. Format = 24-bit RGB.
-        public UInt16 Alpha { get; set; }
+        public List<byte>? Alpha { get; set; }
         
         //Determines the compression method. 0 = Popularity, 1 = Proximity.
         public bool Mode {  get; set; }
 
         //Determines the size of the protected buffer to be used with the Proximity method. 
         public byte ProtectedBufferSize { get; set; }
+
+
+        public override string ToString()
+        {
+            return $"\nData: {ImageData}\nHash: {ImageHash}\nCLUT size: {CLUT_Size}\nAlpha: {Alpha!=null}\nUse proximity: {Mode}\nProtected buffer size: {ProtectedBufferSize}";
+        }
     }    
 
 }

@@ -11,26 +11,30 @@ namespace backend.Models
         //A "15-bit" RGBA format. Little endian.  
         public UInt16 Data { get; set; }
 
-        public void Setup(Pixel24 input)
+        public void Setup(Pixel24 input , bool alpha)
         {
             byte R = (byte)((int)input.Red / 8);
             byte G = (byte)((int)input.Green / 8);
             byte B = (byte)((int)input.Blue / 8);
 
-            //The user is the only one with the ability to define which texel will be transparent. 
-            //By default the conversion 24=>15 will result in a opaque texel.
-            
 
 
-            // The format is LE and goes as : A BBBBB GGGGG RRRRR
+            if (alpha)
+            {
+                this.Data = (UInt16)(1 | (B<<11) | (G<<6) | (R<<1));
+            }
 
-            this.Data = (UInt16)((1<< 15) | (B << 14) | (G << 9) | (R << 4));
-            
-            
+            else
+            {
+                this.Data = (UInt16)(0 | (B << 11) | (G << 6) | (R << 1));
+            }
         }
-        public Pixel15(Pixel24 input)
+            
+            
+        
+        public Pixel15(Pixel24 input, bool alpha)
         {
-            Setup(input);
+            Setup(input, alpha);
         }
 
         public Pixel15()
@@ -45,22 +49,22 @@ namespace backend.Models
 
         public int Red()
         {
-            return (int)(this.Data & 0x1F);
+            return (int)((this.Data>>1)&0x001F);
         }
 
         public int Green()
         {
-            return (int)(this.Data & 0x3E0);
+            return (int)((this.Data >> 6) & 0x001F);
         }
 
         public int Blue()
         {
-            return (int)(this.Data & 0x7C00);
+            return (int)((this.Data >> 11) & 0x001F);
         }
 
         public int Alpha()
         {
-            return (int)(this.Data & 0x8000);
+            return (int)(this.Data & 0x0001);
         }
 
         public void Swap(Pixel15 input)
@@ -68,12 +72,18 @@ namespace backend.Models
             this.Data = input.Data;
         }
 
-        //Checks to see if colour is already user-defined. Overwrites alpha if necessary;
-        public void Assert_User_Defined(UInt16 usr_def)
+        public override string ToString()
         {
-            if ((int)(this.Data & 0x7FFF) == (int)(usr_def & 0x7FFF))
+            return $"{this.Red()} {this.Green()} {this.Blue()} {this.Alpha()}";
+        }
+
+        public bool Equals(Pixel15 other)
+        {
+            if (other == null) { return false; }
+            else
             {
-                this.Data=usr_def;
+               return this.Data == other.Data;
+
             }
         }
 

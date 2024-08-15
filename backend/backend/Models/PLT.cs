@@ -19,16 +19,19 @@ namespace backend.Models
         public int Order { get; set; }
 
         [Column("EntityData")]
-        public List<byte>? SerializedData { get; set; }
+        public byte[]? Serialized { get; set; }
 
         [NotMapped]
-        public List<UInt16>? Data { get; set; }
+        public List<byte>? ToSerialize { get; set; }
+
+        [NotMapped]
+        public List<Pixel15>? Data { get; set; }
 
 
         public PLT()
         {
-            Data = new List<UInt16>();
-            SerializedData = new List<byte>();
+            Data = new List<Pixel15>();
+            ToSerialize = new List<byte>();
         }
 
     }

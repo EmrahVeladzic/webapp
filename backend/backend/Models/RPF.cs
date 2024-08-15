@@ -14,24 +14,24 @@ namespace backend.Models
          */
 
         [Key]
-        [Column("Id")]
-        public int Id { get; set; }
+        [Column("EntityID")]
+        public int ID { get; set; }
 
-        [Column("Order")]
+        [Column("EntityOrder")]
         public int Order { get; set; }
 
         //Size of lookup table (+1, as 0 is not a valid amount)
         [Column("CLUT")]
         public byte CLUT {  get; set; }
 
-        [Column("PLT")]
-        public int PLT_Id { get; set; }
+        [Column("PLTID")]
+        public int PLT_ID { get; set; }
 
         [NotMapped]
         public virtual PLT? PLT { get; set; }
 
-        [Column("PGA")]
-        public int PGA_Id { get; set; }
+        [Column("PGAID")]
+        public int PGA_ID { get; set; }
 
         [NotMapped]
         public virtual PGA? PGA { get; set; }

@@ -57,8 +57,27 @@ calculateRGB($event : any): void{
 }
 
 
+validateNumerical($event:any, $min : number, $max : number): void{
 
 
+  if($event.target.value<$min){
+    $event.target.value=$min;
+  }
+
+  else if($event.target.value>$max){
+    $event.target.value=$max;
+  }
+
+
+}
+
+postRPF($event : any): void{
+
+this.transfer.post_image();
+  
+  
+
+}
 
 
 

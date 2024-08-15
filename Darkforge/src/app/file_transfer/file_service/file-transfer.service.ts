@@ -1,7 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
 import { style } from '@angular/animations';
-import { ImageJson } from '../../../models/models';
+import { ImageJson,TextureJson } from '../../../models/models';
+import { base_url,image_actions } from '../../app.routes';
+import { tex } from '../../../assets/global_assets';
 
 @Injectable({
   providedIn: 'root'
@@ -53,13 +55,13 @@ export class FileTransferService {
 
      
       let img_data = this.reader?.result;
-
-      
-
+    
       if(img_data!=undefined){
        this.img_text=img_data.toString();
       }
-         
+             
+           
+
       this.preview! = new Image();
 
       this.preview!.src=URL.createObjectURL(file);
@@ -71,10 +73,6 @@ export class FileTransferService {
         this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
 
         
-      }
-
-      if(this.img_text!=null){
-      let k =  new ImageJson(this.img_text,1,1,true,1);
       }
 
     };
@@ -94,6 +92,59 @@ export class FileTransferService {
 
    
   }
+
+
+  async create_image_json() : Promise<ImageJson>{   
+
+    
+
+    let CLUT_ctrl = document.getElementById("CLUT") as HTMLInputElement;
+    
+    let r_out = document.getElementById("r_out") as HTMLOutputElement;
+    let g_out = document.getElementById("g_out") as HTMLOutputElement;
+    let b_out = document.getElementById("b_out") as HTMLOutputElement; 
+   
+    let mode_slc = document.getElementById("Mode") as HTMLSelectElement;
+
+    let BFR_ctrl = document.getElementById("BFR") as HTMLInputElement;
+
+    let CHK = document.getElementById("use_alpha") as HTMLInputElement;
+
+    const $instance = await ImageJson.create(this.img_text!,parseInt(CLUT_ctrl.value),(CHK.checked==true)?[parseInt(r_out.value),parseInt(g_out.value),parseInt(b_out.value)]:null,(mode_slc.selectedIndex==1),parseInt(BFR_ctrl.value));
+
+    return $instance;
+
+  }
+
+
+
+  post_image(){
+
+   (this.create_image_json()).then($result=>{
+
+
+
+    let post_url = `${base_url}/${image_actions}`;
+
+
+    this.http.post(post_url,$result).subscribe($response=>{
+
+      let TextureResponse = $response as TextureJson;
+      
+      tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));
+    
+
+    });
+  
+
+
+
+    });
+
+
+
+  }
+
 
 
 }

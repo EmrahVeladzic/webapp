@@ -9,7 +9,7 @@
         <canvas id="bmp_preview" width="256" height="256" ></canvas>
       
         <label for="CLUT">CLUT size:</label>
-        <input id="CLUT" type="number" min="2" max="256" value="2">
+        <input id="CLUT" type="number" min="2" max="256" value="2" (change)="validateNumerical($event,2,256)">
 
         <label for="Mode">Compression method:</label>
         <select id="Mode">
@@ -47,9 +47,11 @@
         </div>
 
         <label for="BFR">Protected Buffer size:</label>
-        <input id="BFR" type="number" min="0" max="255" value="0">
+        <input id="BFR" type="number" min="0" max="255" value="0"  (change)="validateNumerical($event,0,255)">
 
-        <button>Post</button>
+        
+
+        <button (click)="postRPF($event)">Post</button>
 
     </div>
 </body>
