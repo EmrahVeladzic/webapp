@@ -27,13 +27,16 @@ export class Texture{
 
             var base_byte = this.Indices[i];
 
-            for(var j = 0; j<data_length_mult; j++){
+            for(var j = data_length_mult-1; j>=0; j--){
                 
-               this.Data[(i*data_length_mult)+j]=this.CLUT[((base_byte>>(j*bpi))&mask)];
+                this.Data[((i*data_length_mult)+(data_length_mult-1-j))%(this.Width*this.Height)]=this.CLUT[((base_byte>>(j*bpi))&mask)];
+                              
             }
+
 
         }
         
+       
         
     }
 
@@ -55,11 +58,12 @@ export class Texture{
 
             var base_byte = this.Indices[i];
 
-            for(var j = 0; j<data_length_mult; j++){
-
+            for(var j = data_length_mult-1; j>=0; j--){
                 
-                this.Data[(i*data_length_mult)+j]=this.CLUT[((base_byte>>(j*bpi))&mask)];
+                this.Data[((i*data_length_mult)+(data_length_mult-1-j))%(this.Width*this.Height)]=this.CLUT[((base_byte>>(j*bpi))&mask)];
+                              
             }
+
 
         }
         
