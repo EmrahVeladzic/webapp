@@ -30,8 +30,8 @@ namespace backend.Database
         }
 
 
-        /*
-        public DbSet<PGA> PGAs {  get; set; }
+        
+        public DbSet<PGA> PGAs {  get; set; }        
 
         public DbSet<PLT> PLTs { get; set; }
 
@@ -39,7 +39,7 @@ namespace backend.Database
 
         public DbSet<BMP> BMPs { get; set; }
 
-        */
+        
 
         public DbSet<FKR> FKRs { get; set; }
     }

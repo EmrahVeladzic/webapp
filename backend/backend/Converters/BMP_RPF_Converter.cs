@@ -1,6 +1,9 @@
-﻿using backend.Models;
+﻿using backend.Database;
+using backend.Models;
 using backend.Requests;
+using System.Linq;
 using System.Numerics;
+using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 
 namespace backend.Converters
@@ -24,12 +27,9 @@ namespace backend.Converters
         private Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
 
-        private UInt32 ScaleX { get; set; }
-        private UInt32 ScaleY { get; set; }
-
         private ImageJson? Input { get; set; }
 
-        private UInt32 ProtectedBufferIndex {get;set;}
+        private byte ProtectedBufferIndex {get;set;}
 
         private List<Pixel15>? ProtectedBuffer { get; set; }
 
@@ -37,11 +37,16 @@ namespace backend.Converters
 
         private List<Swap_Entry>? Swap_Table { get; set;}
 
+        private BMP? Image {  get; set; }
+
         private RPF? Output { get; set; }
 
         private UInt32 UniqueCount { get; set; }
         private UInt32 MaxUniqueCount { get; set; }
+            
+        private byte Shift_Value { get; set; }
 
+        public TextureJson? Texture { get; set; }
 
         Vector3 GetHue(Pixel15 input)
         {
@@ -101,15 +106,17 @@ namespace backend.Converters
         {
             bool output = EnsureSingle(a, b);
 
+          
             if (output)
             {
 
                 for (int i = 0; i < Input!.ProtectedBufferSize; i++)
                 {
-                    if (a.Data == ProtectedBuffer![i].Data || b.Data == ProtectedBuffer![i].Data)
-                    {
+                    if (a.Equals(ProtectedBuffer![i]) || b.Equals(ProtectedBuffer[i]))
+                    {                       
                         output = false;
                         break;
+                        
                     }
                 }
 
@@ -164,12 +171,15 @@ namespace backend.Converters
             sw.Recipient = recipient;
 
 
-            List<Swap_Entry> toUpdate = Swap_Table!.Where(s => s.Donor!.Data == recipient.Data).ToList();
 
-            for (int i = 0; i < toUpdate.Count(); i++)
+            List<Swap_Entry> toUpdate = this.Swap_Table!.Where(swa=>swa.Donor!.Equals(recipient)).ToList();
+                       
+           
+            foreach(Swap_Entry s in toUpdate)
             {
-                toUpdate[i].Donor = donor;
+                s.Donor = donor;
             }
+            
 
             Swap_Table!.Add(sw);
 
@@ -244,7 +254,7 @@ namespace backend.Converters
             double Distance = double.PositiveInfinity;
             double newDistance = Distance;
 
-            for (int i = 0; i < (Input!.ProtectedBufferSize+1); i++)
+            for (int i = 0; i <= (Input!.ProtectedBufferSize); i++)
             {
 
                 if (i > 0)
@@ -273,7 +283,7 @@ namespace backend.Converters
 
                         newDistance = Vector3.Distance(PotentialRecipient, PotentialDonor);
 
-                        if (i < Input.ProtectedBufferSize)
+                        if (i < (Input.ProtectedBufferSize-1))
                         {
                             if(newDistance<Distance && EnsureDual(initial, compare))
                             {
@@ -374,6 +384,266 @@ namespace backend.Converters
 
         }
 
+        byte Get_Shift()
+        {
+            if (this.Output!.PLT!.Data!.Count > 16)
+            {
+                return (byte)0;
+            }
+            else if (this.Output!.PLT!.Data!.Count > 4)
+            {
+                return (byte)4;
+            }
+            else if (this.Output!.PLT!.Data!.Count > 2)
+            {
+                return (byte)2;
+            }
+            else
+            {
+                return (byte)1;
+            }
+
+        }
+
+        byte Get_Index(Pixel15 Value)
+        {
+            Pixel15? Search = Alpha15;
+
+            
+
+            foreach (Swap_Entry sw in this.Swap_Table!)
+            {
+                if (Value.Equals(sw.Donor!))
+                {
+                    
+                    Search = Value; break;
+
+                }
+
+                else if (Value.Equals(sw.Recipient!))
+                {
+                    
+                    Search = sw.Donor!; break;
+                }
+               
+
+            }
+
+
+            return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
+        }
+
+        public IMG_DATA(ImageJson Input)
+        {
+            DarkforgeDBContext ctx = new DarkforgeDBContext();
+
+
+            Image = ctx.BMPs.Where(b=>b.Hash==Input.ImageHash).First();
+
+            Image.Setup(Image!.Serialized!, Image!.Hash!);
+
+
+            if (Input.Alpha != null)
+            {
+                Alpha = new Pixel24((byte)Input.Alpha[0], (byte)Input.Alpha[1], (byte)Input.Alpha[2]);
+
+                Alpha15 = new Pixel15(Alpha,false);               
+               
+            }
+
+            this.Input = Input;
+
+            this.Occurence_Table = new List<Occurence_Entry>();
+            this.Swap_Table = new List<Swap_Entry>();
+
+            foreach (Pixel24 p in Image.Data!)
+            {
+                bool new_clr = true;
+
+                Pixel15 val = new Pixel15(p,!p.Equals(Alpha!));
+
+                foreach (Occurence_Entry oe in Occurence_Table)
+                {
+                    if(val.Data==oe.Value!.Data)
+                    {
+                        new_clr = false;
+                    }
+                }
+
+                if (new_clr)
+                {
+                    NewColour(val);
+                }
+
+                else
+                {
+                    Occurence_Entry occ = this.Occurence_Table.Where(o=>o.Value!.Data==val!.Data).First();
+                    occ.Occurence++;
+                }
+            }
+
+            this.Occurence_Table=this.Occurence_Table!.OrderBy(o=>o.Occurence).ToList();
+
+            this.MaxUniqueCount = (uint)this.Occurence_Table.Count();
+            this.UniqueCount = this.MaxUniqueCount;
+
+            if(this.Input.ProtectedBufferSize > 0)
+            {
+                this.ProtectedBuffer = new List<Pixel15>();
+                for (int i = 0; i < Input.ProtectedBufferSize; i++)
+                {
+                    this.ProtectedBuffer.Add(new Pixel15());
+                }
+                this.ProtectedBufferIndex = 0;   
+            }
+
+            
+            if (this.UniqueCount > ((uint)this.Input.CLUT_Size + 1))
+            {
+
+                while (this.UniqueCount > ((uint)this.Input.CLUT_Size + 1))
+                {
+
+                    for (int i = 0; i < this.MaxUniqueCount; i++)
+                    {
+
+                        if (this.Input.Mode)
+                        {
+                            this.ProximityCompression();
+                        }
+
+                        else
+                        {
+                            this.PopularityCompression(i);
+                        }
+
+
+                        if (this.UniqueCount <= ((uint)this.Input.CLUT_Size + 1))
+                        {
+
+                            foreach (Occurence_Entry oe in this.Occurence_Table)
+                            {
+                                Swap_Entry new_swap = new Swap_Entry();
+                                new_swap.Recipient = oe.Value;
+                                new_swap.Donor = oe.Value;
+
+                                this.Swap_Table.Add(new_swap);
+                            }
+
+                            break;
+                        }
+
+                    }
+                                       
+
+
+                }
+
+            }
+
+            else
+            {
+                foreach (Occurence_Entry oe in this.Occurence_Table)
+                {
+                    Swap_Entry new_swap = new Swap_Entry();
+                    new_swap.Recipient = oe.Value;
+                    new_swap.Donor = oe.Value;
+
+                    this.Swap_Table.Add(new_swap);
+                }
+
+            }
+
+            this.Output = new RPF();
+            this.Output.PLT = new PLT();
+            this.Output.PGA = new PGA();
+
+            this.Output.PLT.Data = this.Occurence_Table.Where(ot => ot.Occurence > 0).Select(ot => ot.Value!).ToList();
+
+            this.Shift_Value = Get_Shift();
+
+            byte value = 0;
+         
+
+            Pixel15 compare = new Pixel15();
+
+            for (int i = 0; i < this.Image.Data.Count; i++)
+            {
+                compare.Setup(this.Image.Data[i], !this.Image.Data[i].Equals(Alpha!));
+
+                value <<= this.Shift_Value;                
+
+                value |= Get_Index(compare);
+
+            
+
+                if (this.Shift_Value==0 || (this.Shift_Value!=0 && ((i+1)% (8/this.Shift_Value) == 0)))
+                {
+                    this.Output!.PGA!.Data!.Add(value);
+
+                   
+
+                    value = 0;
+
+      
+                }                
+                               
+            }
+                   
+
+            this.Output.Width=(byte)(this.Image.Width-1);
+            this.Output.Height = (byte)(this.Image.Height - 1);
+
+            this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
+
+            foreach(Pixel15 pxl in this.Output.PLT.Data)
+            {
+                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data) & 0xFF));
+                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data>>8)&0xFF));               
+            }
+
+            this.Output.PLT.Serialized=this.Output.PLT.ToSerialize!.ToArray();
+            this.Output.PGA.Serialized=this.Output.PGA.Data!.ToArray();
+
+
+
+
+
+            
+
+            ctx.PLTs.Add(this.Output.PLT);
+            ctx.PGAs.Add(this.Output.PGA);
+            ctx.SaveChanges();
+
+            this.Output.PLT_ID = this.Output.PLT.Id;  
+            this.Output.PGA_ID = this.Output.PGA.Id;
+
+
+            ctx.RPFs.Add(this.Output);
+            ctx.SaveChanges();
+
+            
+
+            ctx.Dispose();
+
+            this.Texture = new TextureJson();
+
+            this.Texture!.Colours = this.Output.CLUT;
+            this.Texture!.Width = this.Output.Width;
+            this.Texture.Height = this.Output.Height;
+
+            this.Texture.RPF_ID = this.Output.ID;
+            this.Texture.PLT_ID = this.Output.PLT_ID;
+            this.Texture.PGA_ID= this.Output.PGA_ID;
+
+            this.Texture.CLUT = this.Output.PLT.Data.Select(pxl => pxl.Data).ToList();
+            this.Texture.Pixels = this.Output.PGA.Data;
+
+           
+
+        }
+
+        
     }
 
 }

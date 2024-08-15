@@ -1,6 +1,9 @@
 import { Injectable } from '@angular/core';
-import { HttpClient,HttpHeaders } from '@angular/common/http';
+import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
 import { style } from '@angular/animations';
+import { ImageJson,TextureJson } from '../../../models/models';
+import { base_url,image_actions } from '../../app.routes';
+import { tex } from '../../../assets/global_assets';
 
 @Injectable({
   providedIn: 'root'
@@ -12,11 +15,11 @@ export class FileTransferService {
     private ctx? : CanvasRenderingContext2D;
     private preview? : HTMLImageElement;
     private reader? :FileReader;
-
+    private img_text? : string;
 
   constructor(private http:HttpClient) {
     this.reader = new FileReader();
-
+    this.img_text ="";
   
    }
 
@@ -38,20 +41,26 @@ export class FileTransferService {
   }
 
 
-  process_bmp(file:File){
+  async process_bmp(file:File){
 
     this.cnv = document.getElementById("bmp_preview") as HTMLCanvasElement;
     this.ctx = this.cnv.getContext("2d") as CanvasRenderingContext2D;
     this.ctx!.imageSmoothingEnabled=false;
-   
-  
-    this.toggle_visibility("rpf");
-    
-  
+
 
     this.reader!.readAsDataURL(file);
+  
 
     this.reader!.onload = ($event:any)=>{
+
+     
+      let img_data = this.reader?.result;
+    
+      if(img_data!=undefined){
+       this.img_text=img_data.toString();
+      }
+             
+           
 
       this.preview! = new Image();
 
@@ -59,108 +68,22 @@ export class FileTransferService {
 
       this.preview!.onload = () =>{
         
-       
+     
+        this.toggle_visibility("rpf");
+        this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
 
-        var selectH = document.getElementById("Horizontal") as HTMLSelectElement;
-        var H_Value = Number(selectH.options[selectH.selectedIndex].text);
-
-
-        var selectV = document.getElementById("Vertical") as HTMLSelectElement;
-        var V_Value = Number(selectV.options[selectV.selectedIndex].text);
-
-        this.calculate_chunks();
-
+        
       }
 
     };
+     
+   
+    
+  }
+
+
+
  
-  }
-
-  calculate_chunks(){
-    var selectH = document.getElementById("Horizontal") as HTMLSelectElement;
-        var H_Value = Number(selectH.options[selectH.selectedIndex].text);
-
-
-        var selectV = document.getElementById("Vertical") as HTMLSelectElement;
-        var V_Value = Number(selectV.options[selectV.selectedIndex].text);
-
-
-
-        if(this.ctx && this.cnv && this.preview){
-
-          
-
-        this.draw_chunk_overlay(H_Value,V_Value);
-
-      }
-
-
-  }
-
-  draw_chunk_overlay(H:number, V:number){
-
-  this.ctx?.clearRect(0,0,this.cnv!.width,this.cnv!.height);
-  this.ctx?.beginPath();
-
-
-    if(H==16||V==16){
-      this.ctx!.font="25px Arial";
-    }
-    else if(H==8||V==8){
-      this.ctx!.font="30px Arial";
-    }
-    else if(H==4||V==4){
-      this.ctx!.font="35px Arial";
-    }
-    else if(H==2||V==2){
-      this.ctx!.font="40px Arial";
-    }
-    else{
-      this.ctx!.font="45px Arial";
-    }
-
-    this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
-
-
-    for(var i= 1; i < H; i++){
-
-      var H_divisor = i*this.cnv!.width/H;
-
-      this.ctx?.moveTo(H_divisor,0);
-      this.ctx?.lineTo(H_divisor,this.cnv!.height);
-      this.ctx?.stroke();
-
-    }
-
-    for(var i= 1; i < V; i++){
-
-      var V_divisor = i*this.cnv!.height/V;
-
-      this.ctx?.moveTo(0,V_divisor);
-      this.ctx?.lineTo(this.cnv!.width,V_divisor);
-      this.ctx?.stroke();
-
-    }
-
-    for(var i= 1; i <= H; i++){
-
-      for(var j= 1; j <= V; j++){
-
-        var H_divisor = (i-1)*this.cnv!.width/H;
-        var V_divisor = j*this.cnv!.height/V;
-
-        var CHK_Number = (j-1)*H+(i-1);
-
-        
-        this.ctx?.fillText(String(CHK_Number),H_divisor,V_divisor);
-        this.ctx?.stroke();
-
-      }    
-
-    }   
-
-  }
-
   toggle_visibility(visible:string){
 
 
@@ -169,6 +92,59 @@ export class FileTransferService {
 
    
   }
+
+
+  async create_image_json() : Promise<ImageJson>{   
+
+    
+
+    let CLUT_ctrl = document.getElementById("CLUT") as HTMLInputElement;
+    
+    let r_out = document.getElementById("r_out") as HTMLOutputElement;
+    let g_out = document.getElementById("g_out") as HTMLOutputElement;
+    let b_out = document.getElementById("b_out") as HTMLOutputElement; 
+   
+    let mode_slc = document.getElementById("Mode") as HTMLSelectElement;
+
+    let BFR_ctrl = document.getElementById("BFR") as HTMLInputElement;
+
+    let CHK = document.getElementById("use_alpha") as HTMLInputElement;
+
+    const $instance = await ImageJson.create(this.img_text!,parseInt(CLUT_ctrl.value),(CHK.checked==true)?[parseInt(r_out.value),parseInt(g_out.value),parseInt(b_out.value)]:null,(mode_slc.selectedIndex==1),parseInt(BFR_ctrl.value));
+
+    return $instance;
+
+  }
+
+
+
+  post_image(){
+
+   (this.create_image_json()).then($result=>{
+
+
+
+    let post_url = `${base_url}/${image_actions}`;
+
+
+    this.http.post(post_url,$result).subscribe($response=>{
+
+      let TextureResponse = $response as TextureJson;
+      
+      tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));
+    
+
+    });
+  
+
+
+
+    });
+
+
+
+  }
+
 
 
 }

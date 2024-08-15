@@ -6,7 +6,7 @@ using System.Runtime.InteropServices;
 namespace backend.Models
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
-    [Table("RPF")]
+    [Table("RPF", Schema ="Models")]
     public class RPF
     {
         /*
@@ -14,24 +14,24 @@ namespace backend.Models
          */
 
         [Key]
-        [Column("Id")]
-        public UInt16 Id { get; set; }
+        [Column("EntityID")]
+        public int ID { get; set; }
 
-        [Column("Order")]
-        public UInt16 Order { get; set; }
+        [Column("EntityOrder")]
+        public int Order { get; set; }
 
         //Size of lookup table (+1, as 0 is not a valid amount)
         [Column("CLUT")]
         public byte CLUT {  get; set; }
 
-        [Column("PLT")]
-        public UInt16 PLT_Id { get; set; }
+        [Column("PLTID")]
+        public int PLT_ID { get; set; }
 
         [NotMapped]
         public virtual PLT? PLT { get; set; }
 
-        [Column("PGA")]
-        public UInt16 PGA_Id { get; set; }
+        [Column("PGAID")]
+        public int PGA_ID { get; set; }
 
         [NotMapped]
         public virtual PGA? PGA { get; set; }

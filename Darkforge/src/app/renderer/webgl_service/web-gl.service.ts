@@ -4,7 +4,7 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { glMatrix, mat4 } from 'gl-matrix';
 import { withNoHttpTransferCache } from '@angular/platform-browser';
-
+import { flip_tex_state, tex,tex_update } from '../../../assets/global_assets';
 
 @Injectable({
   providedIn: 'root'
@@ -24,10 +24,14 @@ export class WebGLService {
   private pMat  : any;
   private verts : any;
   private inds  : any;
+  private uvs :any;
+  private out_tex :any;
 
   constructor(private http :HttpClient) { 
-
+   
   }
+ 
+
 
   @HostListener('window:resize',['$event'])
   onresize(event:Event):void{
@@ -66,99 +70,92 @@ export class WebGLService {
     }
    
     this.verts = 
-	[ // X, Y, Z           R, G, B
-		// Top
-		-1.0, 1.0, -1.0,   0.5, 0.5, 0.5,
-		-1.0, 1.0, 1.0,    0.5, 0.5, 0.5,
-		1.0, 1.0, 1.0,     0.5, 0.5, 0.5,
-		1.0, 1.0, -1.0,    0.5, 0.5, 0.5,
+	[ 
+		-1.0, 1.0, -1.0,  
+		-1.0, 1.0, 1.0,   
+		1.0, 1.0, 1.0,    
+		1.0, 1.0, -1.0,   
+	
+		-1.0, 1.0, 1.0,   
+		-1.0, -1.0, 1.0,  
+		-1.0, -1.0, -1.0, 
+		-1.0, 1.0, -1.0,  
 
-		// Left
-		-1.0, 1.0, 1.0,    0.75, 0.25, 0.5,
-		-1.0, -1.0, 1.0,   0.75, 0.25, 0.5,
-		-1.0, -1.0, -1.0,  0.75, 0.25, 0.5,
-		-1.0, 1.0, -1.0,   0.75, 0.25, 0.5,
+		1.0, 1.0, 1.0,    
+		1.0, -1.0, 1.0,   
+		1.0, -1.0, -1.0,  
+		1.0, 1.0, -1.0,   
 
-		// Right
-		1.0, 1.0, 1.0,    0.25, 0.25, 0.75,
-		1.0, -1.0, 1.0,   0.25, 0.25, 0.75,
-		1.0, -1.0, -1.0,  0.25, 0.25, 0.75,
-		1.0, 1.0, -1.0,   0.25, 0.25, 0.75,
+		1.0, 1.0, 1.0,    
+		1.0, -1.0, 1.0,   
+		-1.0, -1.0, 1.0,  
+		-1.0, 1.0, 1.0,   
 
-		// Front
-		1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
-		1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
-		-1.0, -1.0, 1.0,    1.0, 0.0, 0.15,
-		-1.0, 1.0, 1.0,    1.0, 0.0, 0.15,
+		1.0, 1.0, -1.0,   
+		1.0, -1.0, -1.0,  
+		-1.0, -1.0, -1.0, 
+		-1.0, 1.0, -1.0,  
 
-		// Back
-		1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
-		1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
-		-1.0, -1.0, -1.0,    0.0, 1.0, 0.15,
-		-1.0, 1.0, -1.0,    0.0, 1.0, 0.15,
-
-		// Bottom
-		-1.0, -1.0, -1.0,   0.5, 0.5, 1.0,
-		-1.0, -1.0, 1.0,    0.5, 0.5, 1.0,
-		1.0, -1.0, 1.0,     0.5, 0.5, 1.0,
-		1.0, -1.0, -1.0,    0.5, 0.5, 1.0,
+		-1.0, -1.0, -1.0, 
+		-1.0, -1.0, 1.0,  
+		1.0, -1.0, 1.0,   
+		1.0, -1.0, -1.0  
 	];
    
   this.inds =
 	[
-		// Top
 		0, 1, 2,
 		0, 2, 3,
-
-		// Left
+		
 		5, 4, 6,
 		6, 4, 7,
 
-		// Right
 		8, 9, 10,
 		8, 10, 11,
-
-		// Front
+	
 		13, 12, 14,
 		15, 14, 12,
-
-		// Back
+	
 		16, 17, 18,
 		16, 18, 19,
-
-		// Bottom
+	
 		21, 20, 22,
 		22, 20, 23
 	];
 
-    var vBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vBuffer);
-    this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(this.verts),this.gl.STATIC_DRAW);
-
-
-    var iBuffer = this.gl.createBuffer();
-    this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,iBuffer);
-    this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.inds),this.gl.STATIC_DRAW);
-
-      
-      
-      var pos = this.gl.getAttribLocation(this.GLProgram!,'vPosition');
-      var clr = this.gl.getAttribLocation(this.GLProgram!,'vColor');
-
-
-
-      this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
-      this.gl.vertexAttribPointer(clr,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,3*Float32Array.BYTES_PER_ELEMENT);
-
-
-      this.gl.enableVertexAttribArray(pos);
-      this.gl.enableVertexAttribArray(clr);
-
-      
-
-      this.gl.useProgram(this.GLProgram);
-
-      
+  this.uvs = 
+  [
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0, 
+    
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0, 
+    
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0, 
+    
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0, 
+    
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0, 
+    
+    0.0,  0.0,
+    0.0,  1.0,
+    1.0,  1.0,
+    1.0,  0.0 
+  ];
+       
 
        this.WMatLoc =this.gl.getUniformLocation(this.GLProgram!,'worldMat');
        this.VMatLoc =this.gl.getUniformLocation(this.GLProgram!,'viewMat');
@@ -167,9 +164,8 @@ export class WebGLService {
        this.wMat = new Float32Array(16);
        this.vMat = new Float32Array(16);
        this.pMat = new Float32Array(16);
-
-      
-    
+   
+   
      
 
       this.render();
@@ -185,30 +181,44 @@ export class WebGLService {
     if(this.gl){    
     
 
-      var vBuffer = this.gl.createBuffer();
+      if(tex_update==true){
+        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);
+        flip_tex_state();
+
+      }
+
+
+      const vBuffer = this.gl.createBuffer();
       this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vBuffer);
       this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(this.verts),this.gl.STATIC_DRAW);
+  
 
 
-      var iBuffer = this.gl.createBuffer();
+      const iBuffer = this.gl.createBuffer();
       this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,iBuffer);
       this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.inds),this.gl.STATIC_DRAW);
 
+
+     
         
         
-      var pos = this.gl.getAttribLocation(this.GLProgram!,'vPosition');
-      var clr = this.gl.getAttribLocation(this.GLProgram!,'vColor');
+      const uBuffer = this.gl.createBuffer();
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, uBuffer);
+      this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(this.uvs),this.gl.STATIC_DRAW);
+    
 
 
-
-      this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
-      this.gl.vertexAttribPointer(clr,3,this.gl.FLOAT,false,6*Float32Array.BYTES_PER_ELEMENT,3*Float32Array.BYTES_PER_ELEMENT);
-
-
+      const pos = this.gl.getAttribLocation(this.GLProgram!,'vPosition');
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,vBuffer);
+      this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,3*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
       this.gl.enableVertexAttribArray(pos);
-      this.gl.enableVertexAttribArray(clr);
 
-        
+
+      const uv = this.gl.getAttribLocation(this.GLProgram!,'vUV');
+      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,uBuffer);  
+      this.gl.vertexAttribPointer(uv,2,this.gl.FLOAT,false,2*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
+      this.gl.enableVertexAttribArray(uv);
+
 
       this.gl.useProgram(this.GLProgram);
 
@@ -309,6 +319,22 @@ export class WebGLService {
       this.gl.viewport(0,0,this.gl.canvas.width,this.gl.canvas.height);
       
       this.gl.enable(this.gl.DEPTH_TEST);         
+      this.gl.pixelStorei(this.gl.UNPACK_ALIGNMENT, 1);
+
+
+      this.out_tex = this.gl.createTexture();
+
+      this.gl.bindTexture(this.gl.TEXTURE_2D,this.out_tex);
+      this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_WRAP_S, this.gl.REPEAT);
+      this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_WRAP_T, this.gl.REPEAT);
+      this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
+      this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
+
+      this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);    
+
+      
+
+
 
       window.addEventListener('resize', (event) => this.onresize(event));
 

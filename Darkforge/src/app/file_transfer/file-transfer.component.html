@@ -6,25 +6,52 @@
 
 <body>
     <div class="rpf" id="rpf">
-        <canvas id="bmp_preview" width="1024" height="1024" ></canvas>
-        <label for="Horizontal">Horizontal Chunks:</label>
-        <select name = "Horizontal" id = "Horizontal" (change)="select_changed()">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">4</option>
-            <option value="4">8</option>
-            <option value="5">16</option>
+        <canvas id="bmp_preview" width="256" height="256" ></canvas>
+      
+        <label for="CLUT">CLUT size:</label>
+        <input id="CLUT" type="number" min="2" max="256" value="2" (change)="validateNumerical($event,2,256)">
+
+        <label for="Mode">Compression method:</label>
+        <select id="Mode">
+            <option value="0">Popularity method</option>
+            <option value="1">Proximity method</option>
         </select>
 
-        <label for="Vertical">Vertical Chunks:  </label>
-        <select name = "Vertical" id = "Vertical" (change)="select_changed()">
-            <option value="1">1</option>
-            <option value="2">2</option>
-            <option value="3">4</option>
-            <option value="4">8</option>
-            <option value="5">16</option>
-        </select>
-       
+        <div class="RGB_Holder">
+
+            <div class="RGB">
+                <label for="use_alpha">Use alpha</label>
+                <input id="use_alpha" type="checkbox">
+               
+                <input id="r" type="range" min="0" step="1" max="255" (input)="calculateRGB($event)"  value="0">
+                <input id="g" type="range" min="0" step="1" max="255" (input)="calculateRGB($event)"  value="0">
+                <input id="b" type="range" min="0" step="1" max="255" (input)="calculateRGB($event)"  value="0">
+                
+            </div>           
+
+            <div class="RGB_Output">
+
+                <div class="numeric">
+                    <output id="r_out" for="r">0</output>
+                    <output id="g_out" for="g">0</output>
+                    <output id="b_out" for="b">0</output>
+                </div>
+
+
+                <div id="colour" class="colour">
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <label for="BFR">Protected Buffer size:</label>
+        <input id="BFR" type="number" min="0" max="255" value="0"  (change)="validateNumerical($event,0,255)">
+
+        
+
+        <button (click)="postRPF($event)">Post</button>
 
     </div>
 </body>

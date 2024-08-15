@@ -1,8 +1,20 @@
 precision mediump float;
 
-varying vec3 fragColor;
+varying vec2 vFrag;
+
+uniform sampler2D v_grid;
+
 
 void main(){
 
-gl_FragColor = vec4(fragColor, 1.0);
+
+vec4 simple_colour = vec4(texture2D(v_grid,vFrag));
+
+if(simple_colour.a==0.0){
+    discard;
+}
+
+
+
+gl_FragColor = simple_colour;
 }
