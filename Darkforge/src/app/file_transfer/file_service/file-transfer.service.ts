@@ -4,6 +4,7 @@ import { style } from '@angular/animations';
 import { ImageJson,TextureJson } from '../../../models/models';
 import { base_url,image_actions } from '../../app.routes';
 import { tex } from '../../../assets/global_assets';
+import { toggle_visibility } from '../../../utils/dynamic_html';
 
 @Injectable({
   providedIn: 'root'
@@ -69,7 +70,7 @@ export class FileTransferService {
       this.preview!.onload = () =>{
         
      
-        this.toggle_visibility("rpf");
+        toggle_visibility("rpf",true);
         this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
 
         
@@ -84,14 +85,7 @@ export class FileTransferService {
 
 
  
-  toggle_visibility(visible:string){
 
-
-    var to_make_visible = document.getElementById(visible) as HTMLDivElement;
-    to_make_visible!.style.visibility="visible";
-
-   
-  }
 
 
   async create_image_json() : Promise<ImageJson>{   
