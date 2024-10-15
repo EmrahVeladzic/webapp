@@ -85,43 +85,46 @@
 
 .backdrop{
 
-    width: 100%;
-    
+    width: 33.3%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     
 }
 
 
-.backdrop input{
+.backdrop input[type="range"]{
 
+    height: 31%;   
     width: 50%;
-
     margin-left: 25%;
     margin-right: 25%;
-
-    height: 25%;
-  
-  
-
+    margin-top: 1%;
+    margin-bottom: 1%;
 }
 
 .numeric{
 
-    width: 100%;
-    
+    width: 33.3%;
     display: flex;
     flex-direction: column;
    
 }
-.numeric input[type="range"]{
+.numeric input[type="number"]{
     
-    height: 33.3%;      
+    height: 31%;   
+    width: 100%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    font-size: 2vh;
+
+    
   
 }
 
 .colour{
-    width: 100%;
+    height: 100%;
+    width: 33.3%;
 }
 
 
@@ -129,7 +132,8 @@
 
     height: 15%;
     visibility: collapse;
-  
+    margin-top: 10%;
+    margin-bottom: 10%;
     display: flex;
     flex-direction: column;
 
@@ -149,6 +153,8 @@
 
 .post{
     height: 15%;
+    display: flex;
+    flex-direction: column;
 }
 .post button{
     width: 50%;
