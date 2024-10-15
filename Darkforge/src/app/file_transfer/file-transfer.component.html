@@ -9,105 +9,107 @@
 
         <canvas id="bmp_preview" width="256" height="256" ></canvas>
 
-        <div class="params">
 
-            <label for="CLUT">CLUT size:</label>
-            <input id="CLUT" type="number" min="2" max="256" value="2" (change)="validateNumerical($event,2,256)">
-            <label for="Mode">Compression method:</label>
-            <select id="Mode" (change)="additionalParams($event)">
-                <option value="0">Popularity method</option>
-                <option value="1">Proximity method</option>
-            </select>
+        <div class="form">
 
-        </div>
-      
-       
-       
+            <div class="params">
 
-        <div class="rgb_holder">
+                <label for="CLUT">CLUT size:</label>
+                <input id="CLUT" type="number" min="2" max="256" value="2" (change)="validateNumerical($event,2,256)">
+                <label for="Mode">Compression method:</label>
+                <select id="Mode" (change)="additionalParams($event)">
+                    <option value="0">Popularity method</option>
+                    <option value="1">Proximity method</option>
+                </select>
 
-            <div class="rgb">             
+            </div>             
+        
+
+            <div class="rgb_holder">
+
+                <div class="rgb">             
+
+                    
+                    <label for="use_alpha">Use alpha:</label>
+                    <input id="use_alpha" type="checkbox" (change)="useAlpha($event)">
 
                 
-                <label for="use_alpha">Use alpha:</label>
-                <input id="use_alpha" type="checkbox" (change)="useAlpha($event)">
-
-               
-                
-            </div>           
+                    
+                </div>           
 
 
 
 
 
-            <div class="rgb_out" id="RGB_OUT">
+                <div class="rgb_out" id="RGB_OUT">
 
 
-                <div class="backdrop">                    
+                    <div class="backdrop">                    
 
-                    <label for="r">Red</label>
-                    <label for="g">Green</label>
-                    <label for="b">Blue</label>
+                        <label for="r">Red</label>
+                        <label for="g">Green</label>
+                        <label for="b">Blue</label>
 
-                    <input id="r" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
-                    <input id="g" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
-                    <input id="b" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
+                        <input id="r" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
+                        <input id="g" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
+                        <input id="b" type="range" min="0" step="1" max="255" (input)="calculateRGB($event ,false)"  value="0">
+
+                        
+
+                    </div>
+
+
+                    <div class="numeric">
+
+                        
+                        <label for="r_out">Red</label>
+                        <label for="g_out">Green</label>
+                        <label for="b_out">Blue</label>
+
+
+                        <input id="r_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
+                        <input id="g_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
+                        <input id="b_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
+
+
+                    </div>
+
+
+                    <div  class="colour">
 
                     
 
-                </div>
+
+                        <svg width="100%" height="100%" viewBox="0 0 200 200">
+                            <polygon id ="colour" points="50,150 100,50 150,150 100,100" fill="rgb(0,0,0)" />
+                        </svg>
 
 
-                <div class="numeric">
-
-                    
-                    <label for="r_out">Red</label>
-                    <label for="g_out">Green</label>
-                    <label for="b_out">Blue</label>
+                        
 
 
-                    <input id="r_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
-                    <input id="g_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
-                    <input id="b_out" type="number" min="0" max="255" value="0" (change)="calculateRGB($event ,true)">
-
-
-                </div>
-
-
-                <div  class="colour">
-
-                   
-
-
-                    <svg width="100%" height="100%" viewBox="0 0 200 200">
-                        <polygon id ="colour" points="50,150 100,50 150,150 100,100" fill="rgb(0,0,0)" />
-                    </svg>
-
-
-                       
-
+                    </div>
 
                 </div>
 
             </div>
 
-        </div>
 
+            <div class="p_bfr" id="P_BFR">
 
-        <div class="p_bfr" id="P_BFR">
-
-            <label for="BFR">Protected Buffer size:</label>
-            <input id="BFR" type="number" min="0" max="4" value="0"  (change)="validateNumerical($event,0,4)">
-    
-
-        </div>
-
-
-        <div class="post">
-            <button (click)="postRPF($event)">Post</button>
-        </div>
+                <label for="BFR">Protected Buffer size:</label>
+                <input id="BFR" type="number" min="0" max="4" value="0"  (change)="validateNumerical($event,0,4)">
         
 
+            </div>
+
+
+            <div class="post">
+                <button (click)="postRPF($event)">Post</button>
+            </div>
+            
+
+    </div>
        
 
     </div>
