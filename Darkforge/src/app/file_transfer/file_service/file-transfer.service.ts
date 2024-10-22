@@ -1,24 +1,21 @@
 import { Injectable } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
-import { style } from '@angular/animations';
-import { ImageJson,TextureJson } from '../../../models/models';
 import { base_url,image_actions } from '../../app.routes';
-import { tex } from '../../../assets/global_assets';
-import { toggle_visibility } from '../../../utils/dynamic_html';
+
+
 
 @Injectable({
   providedIn: 'root'
   
 })
 export class FileTransferService {
-    private base_url = 'https://localhost:7032/api/';
     private cnv?:HTMLCanvasElement;
     private ctx? : CanvasRenderingContext2D;
     private preview? : HTMLImageElement;
     private reader? :FileReader;
-    private img_text? : string;
+    public img_text? : string;
 
-  constructor(private http:HttpClient) {
+  constructor(public http:HttpClient) {
     this.reader = new FileReader();
     this.img_text ="";
   
@@ -27,19 +24,6 @@ export class FileTransferService {
 
 
 
-  sendData(endpoint:string, data:JSON){
-
-
-    const headers = new HttpHeaders({
-      'Content-Type': 'application/json',
-    });
-
-    const url = this.base_url+endpoint;
-
-    return this.http.post(url,data,{headers:headers});
-
-    
-  }
 
 
   async process_bmp(file:File){
@@ -70,7 +54,7 @@ export class FileTransferService {
       this.preview!.onload = () =>{
         
      
-        toggle_visibility("rpf",true);
+        
         this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
 
         
@@ -82,62 +66,18 @@ export class FileTransferService {
     
   }
 
+  async process_wav(file : File){
 
+    
+
+
+  }
 
  
 
 
 
-  async create_image_json() : Promise<ImageJson>{   
 
-    
-
-    let CLUT_ctrl = document.getElementById("CLUT") as HTMLInputElement;
-    
-    let r_out = document.getElementById("r_out") as HTMLOutputElement;
-    let g_out = document.getElementById("g_out") as HTMLOutputElement;
-    let b_out = document.getElementById("b_out") as HTMLOutputElement; 
-   
-    let mode_slc = document.getElementById("Mode") as HTMLSelectElement;
-
-    let BFR_ctrl = document.getElementById("BFR") as HTMLInputElement;
-
-    let CHK = document.getElementById("use_alpha") as HTMLInputElement;
-
-    const $instance = await ImageJson.create(this.img_text!,parseInt(CLUT_ctrl.value),(CHK.checked==true)?[parseInt(r_out.value),parseInt(g_out.value),parseInt(b_out.value)]:null,(mode_slc.selectedIndex==1),parseInt(BFR_ctrl.value));
-
-    return $instance;
-
-  }
-
-
-
-  post_image(){
-
-   (this.create_image_json()).then($result=>{
-
-
-
-    let post_url = `${base_url}/${image_actions}`;
-
-
-    this.http.post(post_url,$result).subscribe($response=>{
-
-      let TextureResponse = $response as TextureJson;
-      
-      tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));
-    
-
-    });
-  
-
-
-
-    });
-
-
-
-  }
 
 
 

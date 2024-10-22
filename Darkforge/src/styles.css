@@ -118,3 +118,7 @@ select{
 div{
     overflow: hidden;
 }
+
+.hidden {
+    visibility: hidden; 
+}
