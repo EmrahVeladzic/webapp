@@ -43,7 +43,7 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   }
 
  
-  private validateInput():void{
+  protected override validateInput():void{
     if(this.value<this.min){
       this.value=this.min;
      }
@@ -62,11 +62,14 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
 
   @HostListener('document:mousedown', ['$event'])
   onMouseDown($event: MouseEvent): void {
-    $event.preventDefault();
+    
     if ($event.target === this.thumb.nativeElement) {
       this.isDragging = true;
       this.beginX = $event.clientX;
+      $event.preventDefault();
+      this.onTouched();
     }
+ 
   }
 
   @HostListener('document:mousemove', ['$event'])
@@ -82,7 +85,6 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   @HostListener('document:mouseup')
   onMouseUp(): void {
     this.isDragging = false;
-  
   }
 
   public sliderWidthReset():void{
@@ -106,5 +108,7 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
     }
     
   }
+
+  
 
 }

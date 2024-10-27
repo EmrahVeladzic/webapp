@@ -15,8 +15,8 @@
         <div class="params">
 
             <label for="CLUT">CLUT size:</label>
-            <input id="CLUT" type="number" formControlName="clut">
-
+            
+            <app-numeric id="CLUT" [max]="256" [min]="0" formControlName="clut"></app-numeric>
 
             <label for="Mode">Compression method:</label>
             <select id="Mode" formControlName="mode">
@@ -49,13 +49,13 @@
                 <div class="backdrop">                    
                     
                     <div class="rgb_s">
-                        <app-slider id="r" #r [max]="255" formControlName="r_slider"></app-slider> 
+                        <app-slider id="r" #r_s [max]="255" formControlName="r_slider"></app-slider> 
                     </div>
                     <div class="rgb_s">
-                        <app-slider id="g" #g [max]="255" formControlName="g_slider"></app-slider> 
+                        <app-slider id="g" #g_s [max]="255" formControlName="g_slider"></app-slider> 
                     </div>
                     <div  class="rgb_s">
-                        <app-slider id="b" #b [max]="255" formControlName="b_slider"></app-slider> 
+                        <app-slider id="b" #b_s [max]="255" formControlName="b_slider"></app-slider> 
                     </div>
                     
 
@@ -64,9 +64,16 @@
 
                 <div class="numeric">                
 
-                    <input id="r_out" type="number" formControlName="r_numeric">
-                    <input id="g_out" type="number" formControlName="g_numeric">
-                    <input id="b_out" type="number" formControlName="b_numeric">
+                    <div class="rgb_n">
+                        <app-numeric id="r_out" [max]="255" [min]="0" formControlName="r_numeric"></app-numeric>
+                    </div>
+                    <div class="rgb_n">
+                        <app-numeric id="g_out" [max]="255" [min]="0" formControlName="g_numeric"></app-numeric>
+                    </div>
+                    <div class="rgb_n">
+                        <app-numeric id="b_out" [max]="255" [min]="0" formControlName="b_numeric"></app-numeric>
+                    </div>
+
 
 
                 </div>
@@ -89,14 +96,13 @@
         <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
             <label for="BFR">Protected Buffer size:</label>
-            <input id="BFR" type="number" formControlName="bfr">
-        
+            <app-numeric id="BFR" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 
 
         <div class="post">
-            <button (click)="this.post_image($event)">Post</button>
+            <button type="button" (click)="this.post_image($event)">Post</button>
         </div>
             
 

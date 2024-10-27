@@ -7,12 +7,12 @@ import { CommonModule } from '@angular/common';
 import { base_url, image_actions } from '../../app/app.routes';
 import { tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
-
+import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
 
 @Component({
   selector: 'app-rpf-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SliderComponent],
+  imports: [ReactiveFormsModule, CommonModule, SliderComponent,NumericComponent],
   templateUrl: './rpf-form.component.html',
   styleUrl: './rpf-form.component.css'
 })
@@ -20,9 +20,9 @@ export class RpfFormComponent implements OnInit{
   @Input() transfer!: FileTransferService;
   form :FormGroup;
  
-  @ViewChild('r',{static:false})r!:SliderComponent;
-  @ViewChild('g',{static:false})g!:SliderComponent;
-  @ViewChild('b',{static:false})b!:SliderComponent;
+  @ViewChild('r_s',{static:false})r_s!:SliderComponent;
+  @ViewChild('g_s',{static:false})g_s!:SliderComponent;
+  @ViewChild('b_s',{static:false})b_s!:SliderComponent;
 
   constructor(){
     this.form = new FormGroup({
@@ -55,9 +55,9 @@ export class RpfFormComponent implements OnInit{
 
     this.form.get('use_alpha')?.valueChanges.subscribe(value=>{
       if(value){
-        this.r.sliderWidthReset();
-        this.g.sliderWidthReset();
-        this.b.sliderWidthReset();
+        this.r_s.sliderWidthReset();
+        this.g_s.sliderWidthReset();
+        this.b_s.sliderWidthReset();
       }
 
     }); 
@@ -67,6 +67,7 @@ export class RpfFormComponent implements OnInit{
       if(value<0){
         this.form.get('r_slider')?.setValue(0,{emitEvent:false});
         this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
+        console.log(value);
       }
       else if(value>255){
         this.form.get('r_slider')?.setValue(255,{emitEvent:false});

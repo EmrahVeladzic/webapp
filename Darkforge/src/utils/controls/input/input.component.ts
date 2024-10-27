@@ -21,6 +21,7 @@ export class InputComponent implements ControlValueAccessor {
   constructor(protected el: ElementRef) {} 
 
   protected value:any = 0;
+  
 
   protected onChange: (value: number) => void = () => {};
   protected onTouched: () => void = () => {};
@@ -45,10 +46,10 @@ export class InputComponent implements ControlValueAccessor {
 
   writeValue(v: any): void {
     if (v !== undefined) {
-      this.value = v;
-      
+      this.value = v;      
     }
   }
 
-  
+  protected  validateInput():void{
+  }
 }

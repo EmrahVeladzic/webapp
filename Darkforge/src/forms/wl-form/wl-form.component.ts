@@ -4,11 +4,12 @@ import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
+import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 
 @Component({
   selector: 'app-wl-form',
   standalone: true,
-  imports: [SliderComponent],
+  imports: [SliderComponent, NumericComponent],
   templateUrl: './wl-form.component.html',
   styleUrl: './wl-form.component.css'
 })
