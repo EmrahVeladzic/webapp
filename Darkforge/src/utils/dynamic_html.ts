@@ -1,30 +1,9 @@
-export function toggle_visibility($id:string, $visible : boolean , $resize : boolean){
+let appWidth:number=0;
+let appHeight:number=0;
 
-    var $element = document.getElementById($id) as HTMLDivElement;
-
-    if($visible){
-        $element!.style.visibility="visible";
-        if($resize){
-            $element!.style.height="100%";
-        }
-       
-    }
-    else{
-        $element!.style.visibility="collapse";
-        if($resize){
-            $element!.style.height="0%";
-        }
-        
-    }
-      
+export function setAppDimensions(w:number,h:number){
+    appWidth=w;
+    appHeight=h;
 }
 
-export function reset_visibility($ids:string[]){
-
-    $ids.forEach($id => {
-        
-        toggle_visibility($id,false,true);
-
-    });
-
-}
+export{appWidth,appHeight}

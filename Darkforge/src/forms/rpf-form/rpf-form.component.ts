@@ -1,18 +1,18 @@
-import { Component ,Input, OnInit} from '@angular/core';
+import { Component ,Input, OnInit, ViewChild} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
-import { toggle_visibility } from '../../utils/dynamic_html';
 import { ImageJson,TextureJson } from '../../models/models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { base_url, image_actions } from '../../app/app.routes';
 import { tex } from '../../assets/global_assets';
+import { SliderComponent } from "../../utils/controls/slider/slider.component";
 
 
 @Component({
   selector: 'app-rpf-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, SliderComponent],
   templateUrl: './rpf-form.component.html',
   styleUrl: './rpf-form.component.css'
 })
@@ -20,21 +20,23 @@ export class RpfFormComponent implements OnInit{
   @Input() transfer!: FileTransferService;
   form :FormGroup;
  
-
+  @ViewChild('r',{static:false})r!:SliderComponent;
+  @ViewChild('g',{static:false})g!:SliderComponent;
+  @ViewChild('b',{static:false})b!:SliderComponent;
 
   constructor(){
     this.form = new FormGroup({
 
-      clut: new FormControl(256,[Validators.min(2),Validators.max(256)]),
+      clut: new FormControl(256,[Validators.min(2),Validators.max(256),Validators.required]),
       mode: new FormControl('0'),
       use_alpha: new FormControl(false),
-      r_slider : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      g_slider : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      b_slider : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      r_numeric : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      g_numeric : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      b_numeric : new FormControl(0,[Validators.min(0),Validators.max(255)]),
-      bfr : new FormControl(0,[Validators.min(0),Validators.max(4)])
+      r_slider : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      g_slider : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      b_slider : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      r_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      g_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      b_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
+      bfr : new FormControl(0,[Validators.min(0),Validators.max(4),Validators.required])
 
 
     });
@@ -45,12 +47,21 @@ export class RpfFormComponent implements OnInit{
       if(value<2){
        this.form.get('clut')?.setValue(2,{emitEvent:false});
       }
-      else if (value>256){
+      else if (value>256 || value===null){
         this.form.get('clut')?.setValue(256,{emitEvent:false});
       }
 
-      console.log(this.form.get('mode')?.value);
     }); 
+
+    this.form.get('use_alpha')?.valueChanges.subscribe(value=>{
+      if(value){
+        this.r.sliderWidthReset();
+        this.g.sliderWidthReset();
+        this.b.sliderWidthReset();
+      }
+
+    }); 
+
 
     this.form.get('r_slider')?.valueChanges.subscribe(value=>{
       if(value<0){
@@ -99,7 +110,7 @@ export class RpfFormComponent implements OnInit{
 
 
     this.form.get('r_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0){
+      if(value<0 || value===null){
         this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
         this.form.get('r_slider')?.setValue(0,{emitEvent:false});
       }
@@ -114,7 +125,7 @@ export class RpfFormComponent implements OnInit{
     });
 
     this.form.get('g_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0){
+      if(value<0 || value===null){
         this.form.get('g_numeric')?.setValue(0,{emitEvent:false});
         this.form.get('g_slider')?.setValue(0,{emitEvent:false});
       }
@@ -129,7 +140,7 @@ export class RpfFormComponent implements OnInit{
     });
     
     this.form.get('b_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0){
+      if(value<0 || value===null){
         this.form.get('b_numeric')?.setValue(0,{emitEvent:false});
         this.form.get('b_slider')?.setValue(0,{emitEvent:false});
       }
@@ -144,7 +155,7 @@ export class RpfFormComponent implements OnInit{
     });
 
     this.form.get('bfr')?.valueChanges.subscribe(value=>{
-      if(value<0){
+      if(value<0 || value===null){
        this.form.get('bfr')?.setValue(0,{emitEvent:false});
       }
       else if (value>4){

@@ -242,7 +242,7 @@ export class WebGLService {
       mat4.rotate(this.wMat,idM,ang,[0.7,1.0,0.3]);
       this.gl!.uniformMatrix4fv(this.WMatLoc,false,this.wMat);
 
-      this.gl!.clearColor(0.175,0.175,0.175,1.0);
+      this.gl!.clearColor(0.2,0.2,0.2,1.0);
       this.gl!.clear(this.gl!.COLOR_BUFFER_BIT|this.gl!.DEPTH_BUFFER_BIT);
 
           

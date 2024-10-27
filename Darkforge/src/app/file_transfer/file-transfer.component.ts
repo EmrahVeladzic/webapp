@@ -5,13 +5,14 @@ import { HttpClientModule } from '@angular/common/http';
 import { FormControl,FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { style } from '@angular/animations';
 import { RpfFormComponent } from "../../forms/rpf-form/rpf-form.component";
+import { WlFormComponent } from "../../forms/wl-form/wl-form.component";
 
 
 
 @Component({
   selector: 'app-file-transfer',
   standalone: true,
-  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent],
+  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent, WlFormComponent],
   templateUrl: './file-transfer.component.html',
   styleUrl: './file-transfer.component.css',
 

@@ -5,7 +5,6 @@ body{
 }
 canvas{
     height: 40%;
-    background-color: black;  
 }
 form{
     height: 60%;
@@ -31,8 +30,9 @@ form{
     font-size: 2vh;
     margin-left: 10%;
     margin-right: 10%;
+    
 }
-.params input{
+.params input[type="number"]{
     
     width: 80%;
     font-size: 2vh;
@@ -74,8 +74,8 @@ form{
     margin-right: 10%;
 }
 
-.rgb_out{
-   
+.rgb_out{   
+    
     height: 80%;
     display: flex;
     box-sizing: content-box;
@@ -85,11 +85,11 @@ form{
 .backdrop{
 
     width: 33.3%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     
 }
-
 
 .backdrop input[type="range"]{
 
@@ -100,9 +100,15 @@ form{
     margin-top: 1%;
     margin-bottom: 1%;
 }
-
+.rgb_s{
+    height: 31.3%;   
+    width: 50%;
+    margin-left: 25%;
+    margin-right: 25%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+}
 .numeric{
-
     width: 33.3%;
     display: flex;
     flex-direction: column;

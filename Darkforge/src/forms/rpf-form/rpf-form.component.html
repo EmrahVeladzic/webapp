@@ -43,31 +43,26 @@
 
 
 
-            <div class="rgb_out" id="RGB_OUT" [ngClass]="{'hidden':this.form.get('use_alpha')?.value===false}">
+            <div class="rgb_out" id="RGB_OUT" [ngClass]="{'hidden':form.get('use_alpha')?.value===false}">
 
 
                 <div class="backdrop">                    
-
-                    <label for="r">Red</label>
-                    <label for="g">Green</label>
-                    <label for="b">Blue</label>
-
-                    <input id="r" type="range" min="0" max="255" step="1" formControlName="r_slider">
-                    <input id="g" type="range" min="0" max="255" step="1" formControlName="g_slider">
-                    <input id="b" type="range" min="0" max="255" step="1" formControlName="b_slider">
-
-                        
+                    
+                    <div class="rgb_s">
+                        <app-slider id="r" #r [max]="255" formControlName="r_slider"></app-slider> 
+                    </div>
+                    <div class="rgb_s">
+                        <app-slider id="g" #g [max]="255" formControlName="g_slider"></app-slider> 
+                    </div>
+                    <div  class="rgb_s">
+                        <app-slider id="b" #b [max]="255" formControlName="b_slider"></app-slider> 
+                    </div>
+                    
 
                 </div>
 
 
-                <div class="numeric">
-
-                        
-                    <label for="r_out">Red</label>
-                    <label for="g_out">Green</label>
-                    <label for="b_out">Blue</label>
-
+                <div class="numeric">                
 
                     <input id="r_out" type="number" formControlName="r_numeric">
                     <input id="g_out" type="number" formControlName="g_numeric">
@@ -78,16 +73,10 @@
 
 
                 <div  class="colour">
-
-                    
-
-
+                  
                     <svg width="100%" height="100%" viewBox="0 0 200 200">
                         <polygon id ="colour" points="50,150 100,50 150,150 100,100" [attr.fill]="this.getRGBColor()"/>
                     </svg>
-
-
-                        
 
 
                 </div>
@@ -97,7 +86,7 @@
         </div>
 
 
-        <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':this.form.get('mode')?.value==='0'}">
+        <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
             <label for="BFR">Protected Buffer size:</label>
             <input id="BFR" type="number" formControlName="bfr">
