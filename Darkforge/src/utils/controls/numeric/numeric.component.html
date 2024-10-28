@@ -9,8 +9,8 @@
 <input type="text" #input (change)="setValue(input!.value)">
 
 <div class="buttons">
-    <button type="button" id="top" (click)="increment_decrement(step)" ></button>
-    <button type="button" id="bottom" (click)="increment_decrement(-step)"></button>
+    <button type="button" (click)="increment_decrement(step)" ></button>
+    <button type="button" (click)="increment_decrement(-step)"></button>
 </div>
 
 </body>

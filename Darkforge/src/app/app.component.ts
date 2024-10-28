@@ -8,7 +8,7 @@ import { FileTransferComponent } from './file_transfer/file-transfer.component';
 import { FileTransferService } from './file_transfer/file_service/file-transfer.service';
 import { WebGLService } from './renderer/webgl_service/web-gl.service';
 import { ReactiveFormsModule } from '@angular/forms';
-import { appWidth, setAppDimensions} from '../utils/dynamic_html';
+
 
 @Component({
   selector: 'app-root',
@@ -28,15 +28,7 @@ export class AppComponent {
   constructor(private fileService:FileTransferService, private el:ElementRef) {
     
   }
-
-  @HostListener('window:resize')
-  onResize() {
-    setAppDimensions(this.el.nativeElement.offsetWidth,this.el.nativeElement.offsetHeight);
-  }
-  ngAfterViewInit() {
-    setAppDimensions(this.el.nativeElement.offsetWidth,this.el.nativeElement.offsetHeight);
-  }
-
+ 
   upload_click():void{
 
     if(this.input){

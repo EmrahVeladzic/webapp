@@ -1,7 +1,7 @@
 import { Component, ElementRef, HostListener, ViewChild,Input, forwardRef, AfterViewInit } from '@angular/core';
-import { appWidth } from '../../dynamic_html';
+
 import { InputComponent } from '../input/input.component';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import {NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-slider',
@@ -61,9 +61,9 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   }
 
   @HostListener('document:mousedown', ['$event'])
-  onMouseDown($event: MouseEvent): void {
-    
+  onMouseDown($event: MouseEvent): void {    
     if ($event.target === this.thumb.nativeElement) {
+      this.sliderWidthReset();
       this.isDragging = true;
       this.beginX = $event.clientX;
       $event.preventDefault();
@@ -75,7 +75,9 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   @HostListener('document:mousemove', ['$event'])
   onMouseMove($event: MouseEvent): void {
     if (this.isDragging) {
-      var deltaX = ($event.clientX - this.beginX) / ((appWidth/(this.sliderWidth*64)/(this.max/100)));
+      const mouseMovement = $event.clientX - this.beginX;   
+      const deltaX = (mouseMovement / this.sliderWidth) * (this.max - this.min);  
+      this.beginX = $event.clientX;
        this.beginX = $event.clientX;
        this.value += deltaX;
       this.validateInput();

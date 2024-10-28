@@ -334,8 +334,6 @@ export class WebGLService {
 
       
 
-
-
       window.addEventListener('resize', (event) => this.onresize(event));
 
       

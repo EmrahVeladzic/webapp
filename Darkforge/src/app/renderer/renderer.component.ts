@@ -1,6 +1,5 @@
-import { AfterViewInit, Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnInit, ViewChild, ElementRef } from '@angular/core';
 import { WebGLService } from './webgl_service/web-gl.service';
-import { tick } from '@angular/core/testing';
 import { HttpClientModule } from '@angular/common/http';
 
 
@@ -13,19 +12,16 @@ import { HttpClientModule } from '@angular/common/http';
   providers: []
 })
 export class RendererComponent implements OnInit, AfterViewInit {
-private out!: HTMLCanvasElement;
-
+@ViewChild('output',{static:false}) out!: ElementRef<HTMLCanvasElement>;
 
 ngOnInit(): void {
-  this.out = document.getElementById('output') as HTMLCanvasElement;
-  if(this.out){
-  this.webgl.initialise(this.out);
-  
-  }
+ 
 }
 
 ngAfterViewInit(): void {
-  
+  if(this.out){
+    this.webgl.initialise(this.out.nativeElement);    
+  }
 }
 
 constructor(private webgl:WebGLService){
