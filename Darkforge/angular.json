@@ -26,7 +26,6 @@
               "src/assets/shaders"
             ],
             "styles": [
-              "src/custom-theme.scss",
               "src/styles.css"
             ],
             "scripts": []
