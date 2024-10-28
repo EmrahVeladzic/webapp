@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
 import { base_url,image_actions } from '../../app.routes';
-
+import { Subject } from 'rxjs';
 
 
 @Injectable({
@@ -9,11 +9,12 @@ import { base_url,image_actions } from '../../app.routes';
   
 })
 export class FileTransferService {
-    private cnv?:HTMLCanvasElement;
-    private ctx? : CanvasRenderingContext2D;
-    private preview? : HTMLImageElement;
     private reader? :FileReader;
     public img_text? : string;
+    private bmpTaskSource = new Subject<void>();
+    bmpTaskCompleted$ = this.bmpTaskSource.asObservable();
+
+
 
   constructor(public http:HttpClient) {
     this.reader = new FileReader();
@@ -22,63 +23,31 @@ export class FileTransferService {
    }
 
 
-
-
-
-
-  async process_bmp(file:File){
-
-    this.cnv = document.getElementById("bmp_preview") as HTMLCanvasElement;
-    this.ctx = this.cnv.getContext("2d") as CanvasRenderingContext2D;
-    this.ctx!.imageSmoothingEnabled=false;
-
-
-    this.reader!.readAsDataURL(file);
-  
-
-    this.reader!.onload = ($event:any)=>{
-
-     
-      let img_data = this.reader?.result;
-    
-      if(img_data!=undefined){
-       this.img_text=img_data.toString();
-      }
-             
-           
-
-      this.preview! = new Image();
-
-      this.preview!.src=URL.createObjectURL(file);
-
-      this.preview!.onload = () =>{
-        
-     
-        
-        this.ctx?.drawImage(this.preview!,0,0,this.cnv!.width,this.cnv!.height);
-
-        
-      }
-
-    };
-     
+   async process_bmp(file: File): Promise<void> {
    
-    
+    this.reader!.readAsDataURL(file);
+
+    this.reader!.onload = ($event: any) => {
+      let img_data = this.reader?.result;
+
+      if (img_data !== undefined) {
+        this.img_text = img_data!.toString();
+      }
+
+   
+      bmp_preview_url = URL.createObjectURL(file);
+
+     
+      this.bmpTaskSource.next();
+    };
   }
 
   async process_wav(file : File){
 
-    
-
 
   }
-
- 
-
-
-
-
 
 
 
 }
+export let bmp_preview_url :string;

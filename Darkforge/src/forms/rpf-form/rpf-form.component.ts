@@ -1,4 +1,4 @@
-import { Component ,Input, OnInit, ViewChild} from '@angular/core';
+import { Component ,Input, OnInit, ViewChild, OnDestroy, ElementRef} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ImageJson,TextureJson } from '../../models/models';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -8,6 +8,8 @@ import { base_url, image_actions } from '../../app/app.routes';
 import { tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
+import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-rpf-form',
@@ -19,6 +21,10 @@ import { NumericComponent } from '../../utils/controls/numeric/numeric.component
 export class RpfFormComponent implements OnInit{
   @Input() transfer!: FileTransferService;
   form :FormGroup;
+  @ViewChild('bmp_preview',{static:false})cnv!:ElementRef<HTMLCanvasElement>;
+  private ctx? : CanvasRenderingContext2D;
+  private preview? : HTMLImageElement;
+  private taskCompletedSubscription!: Subscription;
  
   @ViewChild('r_s',{static:false})r_s!:SliderComponent;
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
@@ -42,7 +48,36 @@ export class RpfFormComponent implements OnInit{
     });
   }
 
+  draw_preview(){
+  
+ 
+    this.ctx = this.cnv.nativeElement.getContext("2d") as CanvasRenderingContext2D;
+    this.ctx!.imageSmoothingEnabled=false;
+
+    
+    this.preview! = new Image();
+
+    this.preview!.src=bmp_preview_url;
+
+    this.preview!.onload = () =>{
+      
+        
+      this.ctx?.drawImage(this.preview!,0,0,this.cnv!.nativeElement.width,this.cnv!.nativeElement.height);
+
+      
+    }
+  
+  }
+
+  ngOnDestroy() {
+    this.taskCompletedSubscription.unsubscribe();
+  }
+
   ngOnInit(){
+    this.taskCompletedSubscription = this.transfer.bmpTaskCompleted$.subscribe(() => {
+      this.draw_preview();
+    });
+
     this.form.get('clut')?.valueChanges.subscribe(value=>{
       if(value<2){
        this.form.get('clut')?.setValue(2,{emitEvent:false});

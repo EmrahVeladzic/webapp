@@ -8,6 +8,7 @@ import { FileTransferComponent } from './file_transfer/file-transfer.component';
 import { FileTransferService } from './file_transfer/file_service/file-transfer.service';
 import { WebGLService } from './renderer/webgl_service/web-gl.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Subject, Subscription } from 'rxjs';
 
 
 @Component({
@@ -44,17 +45,13 @@ export class AppComponent {
     const selected:File = $event.target.files[0];
 
     if(selected!=null){
-      if(selected.name.endsWith('.bmp')){
-        
-        this.Menu='rpf';
+      if(selected.name.endsWith('.bmp')){      
         this.fileService.process_bmp(selected);
-
+        this.Menu='rpf';
       }
-      else if(selected.name.endsWith('.wav')){
-        
-        this.Menu='wl';
+      else if(selected.name.endsWith('.wav')){              
         this.fileService.process_wav(selected);
-       
+        this.Menu='wl';
       }
       else{
         
