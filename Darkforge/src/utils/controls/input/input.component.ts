@@ -1,6 +1,6 @@
 import { Component,ElementRef ,forwardRef} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-
+import { BehaviorSubject } from 'rxjs';
 
 @Component({
   selector: 'app-input',
@@ -17,10 +17,13 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
   ]
 })
 export class InputComponent implements ControlValueAccessor {
-
   constructor(protected el: ElementRef) {} 
 
   protected value:any = 0;
+  protected active:boolean=false;
+
+  protected valueSubject = new BehaviorSubject<any>(this.value);
+  public valueChanges$ = this.valueSubject.asObservable();
   
 
   protected onChange: (value: number) => void = () => {};
@@ -29,7 +32,7 @@ export class InputComponent implements ControlValueAccessor {
 
   public setValue(v:any):void{
     this.value=v;
-    this.onChange(v);
+    this.validateInput();
   }
   public getValue():any{
     return this.value;
@@ -47,9 +50,12 @@ export class InputComponent implements ControlValueAccessor {
   writeValue(v: any): void {
     if (v !== undefined) {
       this.value = v;      
+      this.validateInput();
     }
   }
 
   protected  validateInput():void{
+    this.onChange(this.value);
+    this.valueSubject.next(this.value);
   }
 }

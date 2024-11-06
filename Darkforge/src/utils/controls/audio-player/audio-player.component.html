@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<meta charset="uft-8">
+<head>
+
+</head>
+
+<body>
+    
+    <audio #audio controls></audio>
+
+    <div class="controls">        
+        <button #play type="button" (click)="this.playButtonEvent($event)">Play/Stop</button>        
+        <div class="volume">
+            <app-slider #volume></app-slider>
+        </div>
+    </div>
+    
+
+</body>

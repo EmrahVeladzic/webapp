@@ -37,6 +37,13 @@ export class NumericComponent extends InputComponent {
       this.value=this.min;
     }
     this.past_value=this.value;
+    
+    if(this.active){
+      this.onChange(this.value);
+      this.valueSubject.next(this.value);
+    }
+   
+
   }
 
   ngAfterViewInit(){
@@ -46,16 +53,18 @@ export class NumericComponent extends InputComponent {
   public override setValue(v:any): void {
     if(Number.parseInt(v)){
       this.value = Math.round(v);
+      this.active=true;
       this.validateInput();
+      this.active=false;
     }
-
     this.input.nativeElement.value=this.past_value;
-    this.onChange(this.value);
   }
 
   public increment_decrement(i_d:number){
     this.value+=i_d;
+    this.active=true;
     this.validateInput();
+    this.active=false;
     this.input.nativeElement.value=this.past_value;
   }
 

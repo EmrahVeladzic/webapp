@@ -225,7 +225,7 @@ export class RpfFormComponent implements OnInit{
 
     let CHK = this.form.get('use_alpha')?.value;
 
-    const $instance = await ImageJson.create(this.transfer.img_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
+    const $instance = await ImageJson.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
 
     return $instance;
 

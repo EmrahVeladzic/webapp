@@ -65,9 +65,9 @@ form{
     margin-right: auto;
 
 }
-.rgb input{
-
+.rgb input[type="checkbox"]{
     width: 2vh;
+    height: 2vh;
     margin-right: 10%;
 }
 
