@@ -1,0 +1,18 @@
+body{
+    display: flex;
+    flex-direction: row;
+}
+
+.params{
+    width: 25%;
+}
+
+.audio{
+    height: 25%;
+    width: 100%;
+}
+
+.timeline_holder{
+    width: 75%;
+}
+

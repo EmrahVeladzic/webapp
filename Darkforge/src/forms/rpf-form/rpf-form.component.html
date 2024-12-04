@@ -7,16 +7,16 @@
 <body>
     
 
-    <canvas id="bmp_preview" width="256" height="256" ></canvas>
+    <canvas #bmp_preview id="bmp_preview" width="256" height="256" ></canvas>
 
 
     <form [formGroup]="form">
 
         <div class="params">
 
-            <label for="CLUT">CLUT size:</label>
-            <input id="CLUT" type="number" formControlName="clut">
-
+            <label>CLUT size:</label>
+            
+            <app-numeric id="CLUT" [max]="256" [min]="0" formControlName="clut"></app-numeric>
 
             <label for="Mode">Compression method:</label>
             <select id="Mode" formControlName="mode">
@@ -43,51 +43,47 @@
 
 
 
-            <div class="rgb_out" id="RGB_OUT" [ngClass]="{'hidden':this.form.get('use_alpha')?.value===false}">
+            <div class="rgb_out" id="RGB_OUT" [ngClass]="{'hidden':form.get('use_alpha')?.value===false}">
 
 
                 <div class="backdrop">                    
-
-                    <label for="r">Red</label>
-                    <label for="g">Green</label>
-                    <label for="b">Blue</label>
-
-                    <input id="r" type="range" min="0" max="255" step="1" formControlName="r_slider">
-                    <input id="g" type="range" min="0" max="255" step="1" formControlName="g_slider">
-                    <input id="b" type="range" min="0" max="255" step="1" formControlName="b_slider">
-
-                        
+                    
+                    <div class="rgb_s">
+                        <app-slider id="r" #r_s [max]="255" formControlName="r_slider"></app-slider> 
+                    </div>
+                    <div class="rgb_s">
+                        <app-slider id="g" #g_s [max]="255" formControlName="g_slider"></app-slider> 
+                    </div>
+                    <div  class="rgb_s">
+                        <app-slider id="b" #b_s [max]="255" formControlName="b_slider"></app-slider> 
+                    </div>
+                    
 
                 </div>
 
 
-                <div class="numeric">
+                <div class="numeric">                
 
-                        
-                    <label for="r_out">Red</label>
-                    <label for="g_out">Green</label>
-                    <label for="b_out">Blue</label>
+                    <div class="rgb_n">
+                        <app-numeric id="r_out" [max]="255" [min]="0" formControlName="r_numeric"></app-numeric>
+                    </div>
+                    <div class="rgb_n">
+                        <app-numeric id="g_out" [max]="255" [min]="0" formControlName="g_numeric"></app-numeric>
+                    </div>
+                    <div class="rgb_n">
+                        <app-numeric id="b_out" [max]="255" [min]="0" formControlName="b_numeric"></app-numeric>
+                    </div>
 
-
-                    <input id="r_out" type="number" formControlName="r_numeric">
-                    <input id="g_out" type="number" formControlName="g_numeric">
-                    <input id="b_out" type="number" formControlName="b_numeric">
 
 
                 </div>
 
 
                 <div  class="colour">
-
-                    
-
-
+                  
                     <svg width="100%" height="100%" viewBox="0 0 200 200">
                         <polygon id ="colour" points="50,150 100,50 150,150 100,100" [attr.fill]="this.getRGBColor()"/>
                     </svg>
-
-
-                        
 
 
                 </div>
@@ -97,24 +93,23 @@
         </div>
 
 
-        <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':this.form.get('mode')?.value==='0'}">
+        <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
-            <label for="BFR">Protected Buffer size:</label>
-            <input id="BFR" type="number" formControlName="bfr">
-        
+            <label>Protected Buffer size:</label>
+            <app-numeric id="BFR" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 
 
-        <div class="post">
-            <button (click)="this.post_image($event)">Post</button>
-        </div>
-            
 
     </form>
        
 
 
+    <div class="post">
+        <button type="button" (click)="this.post_image($event)">Post</button>
+    </div>
+        
     
 
   

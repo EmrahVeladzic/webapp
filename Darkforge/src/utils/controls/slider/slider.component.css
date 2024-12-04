@@ -1,0 +1,54 @@
+.bodyH{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    background-color: rgb(200,200,200);
+}
+.bodyV{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: rgb(150, 100, 150);
+}
+
+.thumbH{
+    height: 100%;
+    width: 20%;
+    background-color: rgb(222,222,222);   
+    cursor: pointer;
+    pointer-events: auto;
+    margin-right: auto;
+}
+
+.thumbV{
+    height: 20%;
+    width: 100%;
+    background-color: rgb(222,222,222);   
+    cursor: pointer;
+    pointer-events: auto;
+    margin-bottom: auto;
+}
+
+
+.thumbH:hover, .thumbV:hover{
+    background-color: rgb(200, 150, 175);
+}
+.thumbH:active, .thumbV:active{
+    background-color: rgb(200, 150, 175);
+    
+}
+
+
+.left{
+    height: 100%;
+    width: 0%;
+    background-color: rgb(150, 100, 150);
+}
+
+.top{
+    height: 80%;
+    width: 100%;
+    background-color: rgb(200,200,200);
+}

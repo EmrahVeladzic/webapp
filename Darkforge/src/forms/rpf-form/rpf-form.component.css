@@ -1,53 +1,33 @@
 body{
     display: flex;
     flex-direction: column;
-    overflow: hidden;  
 }
 canvas{
     height: 40%;
-    background-color: black;  
 }
 form{
-    height: 60%;
+    height: 45%;
     display: flex;
     flex-direction: column;  
 }
 .params{
-    height: 25%;    
+    height: 33%;    
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
     display: flex;
     flex-direction: column;    
-}
-.params label{
-
-    color: rgb(222, 222, 222);
-    width: 80%;
-    margin-left: 10%;
-    margin-right: 10%;
-    font-size: 2vh;
-}    
+}  
 .params select{
     
-    width: 80%;
     font-size: 2vh;
-    margin-left: 10%;
-    margin-right: 10%;
-}
-.params input{
     
-    width: 80%;
-    font-size: 2vh;
-    background-color: rgb(75, 75, 75);
-    color: rgb(222, 222, 222);
-    margin-left: 10%;
-    margin-right: 10%;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
+
 .rgb_holder{
 
     display: flex;
-    height: 25%;
+    height: 33%;
     flex-direction: column;
  
 
@@ -61,21 +41,20 @@ form{
 }
 .rgb label{
 
-    color: rgb(222, 222, 222);
     width: 60%;
 
     margin-left: 10%;
     margin-right: auto;
 
 }
-.rgb input{
-
+.rgb input[type="checkbox"]{
     width: 2vh;
+    height: 2vh;
     margin-right: 10%;
 }
 
-.rgb_out{
-   
+.rgb_out{   
+    
     height: 80%;
     display: flex;
     box-sizing: content-box;
@@ -85,14 +64,14 @@ form{
 .backdrop{
 
     width: 33.3%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     
 }
 
 
-.backdrop input[type="range"]{
-
+.rgb_s{
     height: 31.3%;   
     width: 50%;
     margin-left: 25%;
@@ -100,44 +79,37 @@ form{
     margin-top: 1%;
     margin-bottom: 1%;
 }
-
 .numeric{
-
     width: 33.3%;
     display: flex;
     flex-direction: column;
    
 }
-.numeric input[type="number"]{
-    
+.rgb_n{
     height: 31%;   
     width: 100%;
     margin-top: 1%;
     margin-bottom: 1%;
-    font-size: 2vh;
-
-    
-  
 }
+
+
 .colour{
     width: 33.3%;
 }
 .buffer_holder{
 
     
-    height: 15%;
+    height: 24%;
     margin-top: 10%;
     margin-bottom: 10%;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
     display: flex;
     flex-direction: column;
 
 }
 
-.buffer_holder label{
-    width: 80%;
-    margin-left: 10%;
-    margin-right: 10%; 
-}
 .buffer_holder input{  
     width: 80%;
     margin-left: 10%;

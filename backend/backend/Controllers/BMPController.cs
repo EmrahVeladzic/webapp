@@ -17,6 +17,8 @@ namespace backend.Controllers
         [HttpPost]
         public TextureJson Post(ImageJson input)
         {
+
+
             DarkforgeDBContext ctx = new DarkforgeDBContext();
 
             BMP? temp = ctx.BMPs.Where(b=>b.Hash==input.ImageHash).FirstOrDefault();

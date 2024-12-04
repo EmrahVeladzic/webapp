@@ -8,11 +8,14 @@ import { FileTransferComponent } from './file_transfer/file-transfer.component';
 import { FileTransferService } from './file_transfer/file_service/file-transfer.service';
 import { WebGLService } from './renderer/webgl_service/web-gl.service';
 import { ReactiveFormsModule } from '@angular/forms';
+import { Subject, Subscription } from 'rxjs';
+import { DashboardComponent } from "../forms/dashboard/dashboard.component";
+
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet,ReactiveFormsModule, RendererComponent,FileTransferComponent],
+  imports: [CommonModule, ReactiveFormsModule, RendererComponent, FileTransferComponent, DashboardComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   providers:[FileTransferService, WebGLService]
@@ -20,15 +23,15 @@ import { ReactiveFormsModule } from '@angular/forms';
 export class AppComponent {
   title = 'Darkforge';
   public Menu : string = "NONE";
+  public transfer:FileTransferService;
   
   @ViewChild('file_input') input? : ElementRef<HTMLInputElement>;
 
 
-  constructor(private fileService:FileTransferService) {
-    
+  constructor(public fileService:FileTransferService, private el:ElementRef) {
+    this.transfer=fileService;
   }
-
-
+ 
   upload_click():void{
 
     if(this.input){
@@ -44,16 +47,13 @@ export class AppComponent {
     const selected:File = $event.target.files[0];
 
     if(selected!=null){
-      if(selected.name.endsWith('.bmp')){
-        
-        this.Menu='rpf';
+      if(selected.name.endsWith('.bmp')){      
         this.fileService.process_bmp(selected);
-
+        this.Menu='rpf';
       }
-      else if(selected.name.endsWith('.wav')){
-        
+      else if(selected.name.endsWith('.wav')){              
         this.fileService.process_wav(selected);
-       
+        this.Menu='wl';
       }
       else{
         

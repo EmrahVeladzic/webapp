@@ -39,7 +39,9 @@ namespace backend.Database
 
         public DbSet<BMP> BMPs { get; set; }
 
-        
+        public DbSet<WAV> WAVs { get; set; }
+
+        public DbSet<WL> WLs { get; set; }
 
         public DbSet<FKR> FKRs { get; set; }
     }

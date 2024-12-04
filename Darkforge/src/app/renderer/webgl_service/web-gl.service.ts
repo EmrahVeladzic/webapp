@@ -233,8 +233,8 @@ export class WebGLService {
       this.gl.uniformMatrix4fv(this.VMatLoc,false,this.vMat);
       this.gl.uniformMatrix4fv(this.PMatLoc,false,this.pMat);
           
-      var ang = 0;
-      var idM = new Float32Array(16);
+      let ang = 0;
+      let idM = new Float32Array(16);
       mat4.identity(idM);   
        
 
@@ -242,7 +242,7 @@ export class WebGLService {
       mat4.rotate(this.wMat,idM,ang,[0.7,1.0,0.3]);
       this.gl!.uniformMatrix4fv(this.WMatLoc,false,this.wMat);
 
-      this.gl!.clearColor(0.175,0.175,0.175,1.0);
+      this.gl!.clearColor(0.2,0.2,0.2,1.0);
       this.gl!.clear(this.gl!.COLOR_BUFFER_BIT|this.gl!.DEPTH_BUFFER_BIT);
 
           
@@ -333,8 +333,6 @@ export class WebGLService {
       this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);    
 
       
-
-
 
       window.addEventListener('resize', (event) => this.onresize(event));
 
