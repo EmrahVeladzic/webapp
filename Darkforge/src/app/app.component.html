@@ -31,13 +31,15 @@
 
     
         <div class="side_menu">
-            <app-file-transfer [Menu]="Menu"></app-file-transfer>
+            <app-file-transfer [Menu]="Menu" [transfer]="transfer"></app-file-transfer>
         </div>
 
     </div>
    
-    <div class="timeline">
-
+    <div class="dashboard">
+        
+        <app-dashboard [transfer]="transfer"></app-dashboard>
+        
     </div>
     
     <div class="footer">

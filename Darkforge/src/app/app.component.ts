@@ -9,12 +9,13 @@ import { FileTransferService } from './file_transfer/file_service/file-transfer.
 import { WebGLService } from './renderer/webgl_service/web-gl.service';
 import { ReactiveFormsModule } from '@angular/forms';
 import { Subject, Subscription } from 'rxjs';
+import { DashboardComponent } from "../forms/dashboard/dashboard.component";
 
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [CommonModule, RouterOutlet,ReactiveFormsModule, RendererComponent,FileTransferComponent],
+  imports: [CommonModule, ReactiveFormsModule, RendererComponent, FileTransferComponent, DashboardComponent],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
   providers:[FileTransferService, WebGLService]
@@ -22,12 +23,13 @@ import { Subject, Subscription } from 'rxjs';
 export class AppComponent {
   title = 'Darkforge';
   public Menu : string = "NONE";
+  public transfer:FileTransferService;
   
   @ViewChild('file_input') input? : ElementRef<HTMLInputElement>;
 
 
-  constructor(private fileService:FileTransferService, private el:ElementRef) {
-    
+  constructor(public fileService:FileTransferService, private el:ElementRef) {
+    this.transfer=fileService;
   }
  
   upload_click():void{

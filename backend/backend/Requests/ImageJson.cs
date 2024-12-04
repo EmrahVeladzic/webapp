@@ -1,6 +1,4 @@
-﻿using backend.Models;
-
-namespace backend.Requests
+﻿namespace backend.Requests
 {
     public class ImageJson
     {
@@ -8,7 +6,7 @@ namespace backend.Requests
         
         public  string? ImageData { get; set; }
 
-        //SHA-256 Encoded
+        //SHA-256 Encoded.
         public string? ImageHash { get; set; }
 
         //Bits per pixel. Add 1 to this value.

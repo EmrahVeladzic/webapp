@@ -433,36 +433,37 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
-        public IMG_DATA(ImageJson Input)
+        public IMG_DATA(ImageJson input)
         {
             DarkforgeDBContext ctx = new DarkforgeDBContext();
 
-
-            Image = ctx.BMPs.Where(b=>b.Hash==Input.ImageHash).First();
-
-            Image.Setup(Image!.Serialized!, Image!.Hash!);
+            this.Input = input;
 
 
-            if (Input.Alpha != null)
+            this.Image = ctx.BMPs.Where(b => b.Hash == this.Input.ImageHash).First();
+
+            this.Image.Setup(this.Image!.Serialized!, this.Image!.Hash!);
+
+            if (this.Input.Alpha != null)
             {
-                Alpha = new Pixel24((byte)Input.Alpha[0], (byte)Input.Alpha[1], (byte)Input.Alpha[2]);
+                this.Alpha = new Pixel24((byte)this.Input.Alpha[0], (byte)this.Input.Alpha[1], (byte)this.Input.Alpha[2]);
 
-                Alpha15 = new Pixel15(Alpha,false);               
+                this.Alpha15 = new Pixel15(this.Alpha,false);               
                
             }
 
-            this.Input = Input;
+           
 
             this.Occurence_Table = new List<Occurence_Entry>();
             this.Swap_Table = new List<Swap_Entry>();
 
-            foreach (Pixel24 p in Image.Data!)
+            foreach (Pixel24 p in this.Image.Data!)
             {
                 bool new_clr = true;
 
-                Pixel15 val = new Pixel15(p,!p.Equals(Alpha!));
+                Pixel15 val = new Pixel15(p,!p.Equals(this.Alpha!));
 
-                foreach (Occurence_Entry oe in Occurence_Table)
+                foreach (Occurence_Entry oe in this.Occurence_Table)
                 {
                     if(val.Data==oe.Value!.Data)
                     {
@@ -604,11 +605,6 @@ namespace backend.Converters
 
             this.Output.PLT.Serialized=this.Output.PLT.ToSerialize!.ToArray();
             this.Output.PGA.Serialized=this.Output.PGA.Data!.ToArray();
-
-
-
-
-
             
 
             ctx.PLTs.Add(this.Output.PLT);

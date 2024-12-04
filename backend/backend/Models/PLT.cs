@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Table("PLT", Schema ="Models")]
     public class PLT
     {

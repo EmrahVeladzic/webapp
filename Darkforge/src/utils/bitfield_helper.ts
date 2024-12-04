@@ -37,3 +37,19 @@ export function get_bit_mask(bpi:number):number{
     }
 
 }
+
+export function get_pcm_value(nibble:number, combined_shift:number):number{
+
+    let mult = (1<<combined_shift);
+
+    let val = nibble;
+
+    if(val>7){
+        val-=16;
+    }
+
+    val*=mult;  
+
+    return (val/32768);
+
+}

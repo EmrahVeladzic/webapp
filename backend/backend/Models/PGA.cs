@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Table("PGA", Schema ="Models")]
     public class PGA
     {

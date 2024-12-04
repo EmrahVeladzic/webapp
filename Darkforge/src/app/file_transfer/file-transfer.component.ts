@@ -6,7 +6,7 @@ import { FormControl,FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { style } from '@angular/animations';
 import { RpfFormComponent } from "../../forms/rpf-form/rpf-form.component";
 import { WlFormComponent } from "../../forms/wl-form/wl-form.component";
-import { Subscription } from 'rxjs';
+
 
 
 @Component({
@@ -19,6 +19,7 @@ import { Subscription } from 'rxjs';
   
 })
 export class FileTransferComponent {
+@Input() transfer!: FileTransferService;
 @Input() public Menu! :string;
 private endpoint :string ;
 
@@ -28,7 +29,7 @@ changeFileType(type:string){
 }
 
 
-constructor(public transfer:FileTransferService) {
+constructor() {
   this.endpoint="";
 
 }

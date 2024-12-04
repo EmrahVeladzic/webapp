@@ -4,8 +4,7 @@
 
 </head>
 
-<body>   
-    <div #left id="left" class="left"></div>
-    <div #thumb id="thumb" class="thumb"></div>
-    <div #right id="right" class="right"></div>
+<body id="body" [ngClass]="vertical? 'bodyV':'bodyH'">   
+    <div #coloured id="coloured" [ngClass]="vertical? 'top':'left'"></div>
+    <div #thumb id="thumb" [ngClass]="vertical? 'thumbV':'thumbH'"></div>
 </body>

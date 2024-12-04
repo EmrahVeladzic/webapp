@@ -27,6 +27,31 @@ export class ImageJson{
 
 }
 
+export class SoundJson{
+   
+    public soundData : string;
+    public soundHash : string;
+    public thresholdBits : number;
+    public channelCount : number;
+    public looping :boolean;
+    
+    constructor(data:string, threshold : number, channels : number , loop:boolean, hash:string) {
+        this.soundData=data;
+        this.soundHash=hash;
+        this.thresholdBits=threshold;
+        this.channelCount=channels;
+        this.looping = loop;
+    }
+    
+    static async create(data:string, threshold : number, channels : number, loop:boolean): Promise<SoundJson> {
+        const soundHash = await hash_data(data);
+        return new SoundJson(data, threshold, channels, loop, soundHash);
+    }
+
+}
+
+
+
 export class TextureJson{
 
 
@@ -55,3 +80,27 @@ public pixels:number[];
 
 
 }
+
+
+export class AudioJson{
+
+    public sampleRate : number;
+    public thresholdBits : number;
+    public channelCount : number;
+    public blockCountPerChannel :number;
+    public audioData : number[];
+    public wl_ID : number;
+    
+    constructor(sR:number,threshold:number,channels:number,blocks:number,wl:number,data:number[]){
+           
+      this.sampleRate=sR;
+      this.thresholdBits=threshold;
+      this.channelCount=channels;
+      this.blockCountPerChannel=blocks;
+      this.wl_ID=wl;
+      this.audioData=data;
+            
+    }
+    
+    
+ }

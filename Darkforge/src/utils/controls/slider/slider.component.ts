@@ -1,13 +1,14 @@
-import { Component, ElementRef, HostListener, ViewChild,Input, forwardRef, AfterViewInit } from '@angular/core';
+import { Component, ElementRef, HostListener, ViewChild,Input, forwardRef} from '@angular/core';
 import { InputComponent } from '../input/input.component';
 import {NG_VALUE_ACCESSOR } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 
 
 
 @Component({
   selector: 'app-slider',
   standalone: true,
-  imports: [],
+  imports: [CommonModule],
   templateUrl: './slider.component.html',
   styleUrl: './slider.component.css',
   providers: [
@@ -18,21 +19,21 @@ import {NG_VALUE_ACCESSOR } from '@angular/forms';
     },
   ],
 })
-export class SliderComponent extends InputComponent implements AfterViewInit {
+export class SliderComponent extends InputComponent {
   @ViewChild('thumb',{static:false})thumb!:ElementRef;
-  @ViewChild('left',{static:false})left!:ElementRef;
-  @ViewChild('right',{static:false})right!:ElementRef;
-
-
+  @ViewChild('coloured',{static:false})coloured!:ElementRef;
 
 
   protected override value: number = 0;
 
-  private beginX:number = 0;
-  private sliderWidth:number=0;
+  private begin:number = 0;
+  private sliderDimension:number=0;
     
-  private min:number = 0;
-  @Input() max:number = 100;
+  override min:number = 0;
+  override max:number = 100;
+  override default: number = 0;
+
+  @Input() vertical:boolean = false;
 
   public override setValue(v:number):void{
     super.setValue(v);
@@ -51,12 +52,19 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
       this.value=this.max;
      }
      else{
+      this.value/=this.step;
       this.value=Math.round(this.value);
+      this.value*=this.step;
      }
-     var dispValue = (this.value / this.max)*80;
+     let dispValue = ((this.value - this.min) / (this.max - this.min)) * 80;
+
      
-     this.left.nativeElement.style.width = `${dispValue}%`; 
-     this.right.nativeElement.style.width = `${80 - dispValue}%`;
+     if(this.vertical){
+      this.coloured.nativeElement.style.height = `${80-dispValue}%`; 
+     }
+     else{
+      this.coloured.nativeElement.style.width = `${dispValue}%`; 
+     }
 
       if(this.active){
         this.onChange(this.value);
@@ -68,9 +76,9 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   @HostListener('document:mousedown', ['$event'])
   onMouseDown($event: MouseEvent): void {    
     if ($event.target === this.thumb.nativeElement) {
-      this.sliderWidthReset();
+      this.sliderDimensionReset();
       this.active = true;
-      this.beginX = $event.clientX;
+      this.begin = (this.vertical)? $event.clientY : $event.clientX;
       $event.preventDefault();
       this.onTouched();
     }
@@ -80,11 +88,22 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
   @HostListener('document:mousemove', ['$event'])
   onMouseMove($event: MouseEvent): void {
     if (this.active) {
-      const mouseMovement = $event.clientX - this.beginX;   
-      const deltaX = (mouseMovement / this.sliderWidth) * (this.max - this.min);  
-      this.beginX = $event.clientX;
-       this.beginX = $event.clientX;
-       this.value += deltaX;
+      let mouseMovement=0;
+
+      if(this.vertical){
+        mouseMovement = this.begin - $event.clientY;   
+        this.begin = $event.clientY;
+      }
+      else{
+      mouseMovement = $event.clientX - this.begin;   
+      this.begin = $event.clientX;
+      }
+
+      const delta = (mouseMovement / this.sliderDimension) * (this.max - this.min);
+     
+      
+
+       this.value += delta;
       this.validateInput();
     }
   }
@@ -94,23 +113,31 @@ export class SliderComponent extends InputComponent implements AfterViewInit {
     this.active = false;
   }
 
-  public sliderWidthReset():void{
-    this.sliderWidth = this.el.nativeElement.offsetWidth;
+  public sliderDimensionReset():void{
+    
+    this.sliderDimension = (this.vertical)? this.el.nativeElement.offsetHeight : this.el.nativeElement.offsetWidth;
+  }
+
+  
+  override ngOnInit(){
+    super.ngOnInit();
   }
 
 
-  ngAfterViewInit() {
-   this.sliderWidthReset();
+  override ngAfterViewInit() {
+    super.ngAfterViewInit();
+    this.sliderDimensionReset();
+    this.validateInput();
   }
 
   @HostListener('window:resize')
   onResize() {
-    this.sliderWidthReset();
+    this.sliderDimensionReset();
   }
 
   override writeValue(v: number): void {
     this.value=v;
-    if(this.left&&this.right&&this.thumb){
+    if(this.coloured&&this.thumb){
       this.validateInput();
     }
     

@@ -233,8 +233,8 @@ export class WebGLService {
       this.gl.uniformMatrix4fv(this.VMatLoc,false,this.vMat);
       this.gl.uniformMatrix4fv(this.PMatLoc,false,this.pMat);
           
-      var ang = 0;
-      var idM = new Float32Array(16);
+      let ang = 0;
+      let idM = new Float32Array(16);
       mat4.identity(idM);   
        
 

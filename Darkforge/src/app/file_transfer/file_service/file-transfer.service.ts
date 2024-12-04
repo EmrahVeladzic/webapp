@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core';
+import { Injectable, numberAttribute } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
 import { base_url,image_actions } from '../../app.routes';
 import { Subject } from 'rxjs';
@@ -11,13 +11,16 @@ import { Subject } from 'rxjs';
 export class FileTransferService {
     private reader? :FileReader;
     public file_text? : string;
+    private file_data:  any;
     private bmpTaskSource = new Subject<void>();
-    bmpTaskCompleted$ = this.bmpTaskSource.asObservable();
+    public bmpTaskCompleted$ = this.bmpTaskSource.asObservable();
 
     private wavTaskSource = new Subject<void>();
-    wavTaskCompleted$ = this.wavTaskSource.asObservable();
+    public wavTaskCompleted$ = this.wavTaskSource.asObservable();
 
 
+    public wlTaskSource = new Subject<void>();
+    public wlTaskCompleted$ = this.wlTaskSource.asObservable();
 
   constructor(public http:HttpClient) {
     this.reader = new FileReader();
@@ -26,15 +29,82 @@ export class FileTransferService {
    }
 
 
+  public accessBinaryFile(offset:number,bytes:number,sign:boolean = false, littleEndian:boolean=true):number|null{
+
+ 
+
+    let out:number|null = null;
+
+    if(this.file_data!=undefined){
+
+      if(bytes != 1 && bytes != 2 && bytes != 4){
+        bytes=1;
+      }
+
+
+      let bfr = new ArrayBuffer(bytes);
+      let slice = new Uint8Array(bfr);
+
+      const base64 = this.file_data.split(",")[1];
+      const arrayBufferVal = atob(base64);
+
+
+      for(let i = offset; i < (offset+bytes); i++){
+        slice[(i-offset)]=arrayBufferVal.charCodeAt(i);
+      }
+
+      let dataView = new DataView(bfr);
+      
+     switch(bytes){
+
+      case 1:
+        if(sign){
+          out = dataView.getInt8(0) as number;
+        }
+        else{
+          out = dataView.getUint8(0) as number;
+        }
+      break;
+    
+      case 2:
+        if(sign){
+          out = dataView.getInt16(0,littleEndian) as number;
+        }
+        else{
+          out = dataView.getUint16(0,littleEndian) as number;
+        }
+      break;
+      case 4:
+        if(sign){
+          out = dataView.getInt32(0,littleEndian) as number;
+        }
+        else{
+          out = dataView.getUint32(0,littleEndian) as number;
+        }
+      break;
+      
+      default:
+      
+      break;
+
+     }
+    
+   
+    }
+
+    return out;
+  }
+
    async process_bmp(file: File): Promise<void> {
    
     this.reader!.readAsDataURL(file);
 
     this.reader!.onload = ($event: any) => {
-      let img_data = this.reader?.result;
+      this.file_data = undefined;
+      this.file_data = this.reader?.result;
 
-      if (img_data !== undefined) {
-        this.file_text = img_data!.toString();
+      if (this.file_data !== undefined) {
+        this.file_text = this.file_data!.toString();
       }
 
    
@@ -50,10 +120,11 @@ export class FileTransferService {
     this.reader!.readAsDataURL(file);
 
     this.reader!.onload = ($event: any) => {
-      let sfx_data = this.reader?.result;
+      this.file_data = undefined;
+      this.file_data = this.reader?.result;
 
-      if (sfx_data !== undefined) {
-        this.file_text = sfx_data!.toString();
+      if (this.file_data !== undefined) {
+        this.file_text = this.file_data!.toString();
       }
 
    
@@ -64,6 +135,8 @@ export class FileTransferService {
     };
 
   }
+
+  
 
 
 

@@ -14,7 +14,7 @@
 
         <div class="params">
 
-            <label for="CLUT">CLUT size:</label>
+            <label>CLUT size:</label>
             
             <app-numeric id="CLUT" [max]="256" [min]="0" formControlName="clut"></app-numeric>
 
@@ -95,21 +95,21 @@
 
         <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
-            <label for="BFR">Protected Buffer size:</label>
+            <label>Protected Buffer size:</label>
             <app-numeric id="BFR" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 
 
-        <div class="post">
-            <button type="button" (click)="this.post_image($event)">Post</button>
-        </div>
-            
 
     </form>
        
 
 
+    <div class="post">
+        <button type="button" (click)="this.post_image($event)">Post</button>
+    </div>
+        
     
 
   

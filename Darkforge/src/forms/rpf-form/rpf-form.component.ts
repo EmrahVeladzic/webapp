@@ -1,8 +1,7 @@
 import { Component ,Input, OnInit, ViewChild, OnDestroy, ElementRef} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ImageJson,TextureJson } from '../../models/models';
-import { FormControl, FormGroup, Validators } from '@angular/forms';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { base_url, image_actions } from '../../app/app.routes';
 import { tex } from '../../assets/global_assets';
@@ -90,9 +89,9 @@ export class RpfFormComponent implements OnInit{
 
     this.form.get('use_alpha')?.valueChanges.subscribe(value=>{
       if(value){
-        this.r_s.sliderWidthReset();
-        this.g_s.sliderWidthReset();
-        this.b_s.sliderWidthReset();
+        this.r_s.sliderDimensionReset();
+        this.g_s.sliderDimensionReset();
+        this.b_s.sliderDimensionReset();
       }
 
     }); 
@@ -233,7 +232,7 @@ export class RpfFormComponent implements OnInit{
 
 
 
-  post_image($event : Event){
+  post_image($event : Event):void{
 
    (this.create_image_json()).then($result=>{
 

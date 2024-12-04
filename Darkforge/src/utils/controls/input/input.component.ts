@@ -1,4 +1,4 @@
-import { Component,ElementRef ,forwardRef} from '@angular/core';
+import { Component,ElementRef ,forwardRef, Input, AfterViewInit , OnInit} from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { BehaviorSubject } from 'rxjs';
 
@@ -16,8 +16,15 @@ import { BehaviorSubject } from 'rxjs';
     },
   ]
 })
-export class InputComponent implements ControlValueAccessor {
+export class InputComponent implements ControlValueAccessor, AfterViewInit {
   constructor(protected el: ElementRef) {} 
+
+
+
+  @Input()  min:number =0;
+  @Input()  max:number =100;
+  @Input()  default:number =0;
+  @Input()  step:number =1;
 
   protected value:any = 0;
   protected active:boolean=false;
@@ -57,5 +64,28 @@ export class InputComponent implements ControlValueAccessor {
   protected  validateInput():void{
     this.onChange(this.value);
     this.valueSubject.next(this.value);
+  }
+
+  ngOnInit(){
+
+    if(this.step<1){
+      this.step=1;
+    }
+
+    if(this.max<=this.min){
+      this.max=this.min+this.step;
+    }
+
+    if(this.default<this.min){
+      this.default=this.min;
+    }
+    else if(this.default>this.max){
+      this.default=this.max;
+    }
+    this.value=this.default;
+  }
+
+  ngAfterViewInit(){
+
   }
 }

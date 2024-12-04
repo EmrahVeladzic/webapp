@@ -1,6 +1,6 @@
-import { Component, ViewChild ,ElementRef, Input, forwardRef} from '@angular/core';
+import { Component, ViewChild ,ElementRef, forwardRef} from '@angular/core';
 import { InputComponent } from '../input/input.component';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
+import { NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-numeric',
@@ -19,14 +19,17 @@ import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 export class NumericComponent extends InputComponent {
   @ViewChild('input',{static:false})input!:ElementRef;
 
+  override  min:number =0;
+  override  max:number =100;
+  override  default:number =0;
+
+  
 
   protected override value: number = 0;
   protected past_value : number = 0;
 
-  @Input()  min:number =0;
-  @Input()  max:number =100;
 
-  public step:number = 1;
+  override step:number = 1;
 
   protected override validateInput(): void {
        
@@ -46,8 +49,15 @@ export class NumericComponent extends InputComponent {
 
   }
 
-  ngAfterViewInit(){
-    this.input.nativeElement.value=this.past_value;
+  override ngOnInit(){
+    super.ngOnInit();
+  }
+
+  override ngAfterViewInit(){
+    super.ngAfterViewInit();
+
+    this.past_value=this.default;   
+    this.input.nativeElement.value=this.past_value;    
   }
 
   public override setValue(v:any): void {

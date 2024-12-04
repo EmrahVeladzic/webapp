@@ -5,13 +5,12 @@ using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Table("RPF", Schema ="Models")]
     public class RPF
     {
-        /*
-         The top-level image format. The foreign keys are converted to element offsets.
-         */
+        
+        //The top-level image format. The foreign keys are converted to element offsets.
+         
 
         [Key]
         [Column("EntityID")]
