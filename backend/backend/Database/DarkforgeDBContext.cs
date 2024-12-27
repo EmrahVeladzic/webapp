@@ -44,8 +44,6 @@ namespace backend.Database
 
         public DbSet<WL> WLs { get; set; }
 
-        public DbSet<WLC> WLCs { get; set; }
-
         public DbSet<FKR> FKRs { get; set; }
     }
 }

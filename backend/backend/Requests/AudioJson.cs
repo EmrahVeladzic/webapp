@@ -15,7 +15,7 @@ namespace backend.Requests
 
         public List<byte>? AudioData { get; set; }
 
-        public int WLC_ID { get; set; }
+        public int WL_ID { get; set; }
 
 
 

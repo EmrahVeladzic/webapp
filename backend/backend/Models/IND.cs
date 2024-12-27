@@ -4,15 +4,15 @@ using System.Numerics;
 
 namespace backend.Models
 {
-    [Table("VT", Schema = "Models")]
-    public class VT:BaseBufferEntity
+    [Table("IND", Schema = "Models")]
+    public class IND : BaseBufferEntity
     {
         [NotMapped]
-        public List<Vector3> Vertices { get; set; }
+        public List<UInt16> Indices { get; set; }
 
-        public VT()
+        public IND()
         {
-            this.Vertices = new List<Vector3>();
+            this.Indices = new List<UInt16>();
         }
     }
 }
