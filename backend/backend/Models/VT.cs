@@ -3,10 +3,9 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
 {
-    [Table("FKR",Schema ="Models")]
-    public class FKR:BaseEntity
+    [Table("VT", Schema = "Models")]
+    public class VT:BaseBufferEntity
     {
-       
-
+        
     }
 }

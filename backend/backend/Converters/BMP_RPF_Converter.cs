@@ -1,4 +1,5 @@
 ﻿using backend.Database;
+using backend.Files;
 using backend.Models;
 using backend.Requests;
 using System.Linq;
@@ -611,8 +612,8 @@ namespace backend.Converters
             ctx.PGAs.Add(this.Output.PGA);
             ctx.SaveChanges();
 
-            this.Output.PLT_ID = this.Output.PLT.Id;  
-            this.Output.PGA_ID = this.Output.PGA.Id;
+            this.Output.PLT_ID = this.Output.PLT.ID;  
+            this.Output.PGA_ID = this.Output.PGA.ID;
 
 
             ctx.RPFs.Add(this.Output);

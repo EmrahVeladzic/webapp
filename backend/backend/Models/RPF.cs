@@ -6,29 +6,25 @@ using System.Runtime.InteropServices;
 namespace backend.Models
 {
     [Table("RPF", Schema ="Models")]
-    public class RPF
+    public class RPF:BaseEntity
     {
         
         //The top-level image format. The foreign keys are converted to element offsets.
          
 
-        [Key]
-        [Column("EntityID")]
-        public int ID { get; set; }
-
-        [Column("EntityOrder")]
-        public int Order { get; set; }
-
         //Size of lookup table (+1, as 0 is not a valid amount)
         [Column("CLUT")]
         public byte CLUT {  get; set; }
 
+
+        [ForeignKey(nameof(PLT))]
         [Column("PLTID")]
         public int PLT_ID { get; set; }
 
         [NotMapped]
         public virtual PLT? PLT { get; set; }
 
+        [ForeignKey(nameof(PGA))]
         [Column("PGAID")]
         public int PGA_ID { get; set; }
 

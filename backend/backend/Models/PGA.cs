@@ -7,19 +7,10 @@ using System.Runtime.InteropServices;
 namespace backend.Models
 {
     [Table("PGA", Schema ="Models")]
-    public class PGA
+    public class PGA:BaseBufferEntity
     {
         //Indexed image data. Points to slots in the CLUT. Element size is 1 byte by default but can represent multiple pixels. 
 
-        [Key]
-        [Column("EntityId")]
-        public int Id { get; set; }
-
-        [Column("EntityOrder")]
-        public int Order { get; set; }
-
-        [Column("EntityData")]
-        public byte[]? Serialized { get; set; }
 
         [NotMapped]
         public List<byte>? Data { get; set; }

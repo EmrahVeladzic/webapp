@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Files;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -42,6 +43,8 @@ namespace backend.Database
         public DbSet<WAV> WAVs { get; set; }
 
         public DbSet<WL> WLs { get; set; }
+
+        public DbSet<WLC> WLCs { get; set; }
 
         public DbSet<FKR> FKRs { get; set; }
     }

@@ -89,15 +89,15 @@ export class AudioJson{
     public channelCount : number;
     public blockCountPerChannel :number;
     public audioData : number[];
-    public wl_ID : number;
+    public wlc_ID : number;
     
-    constructor(sR:number,threshold:number,channels:number,blocks:number,wl:number,data:number[]){
+    constructor(sR:number,threshold:number,channels:number,blocks:number,wlc:number,data:number[]){
            
       this.sampleRate=sR;
       this.thresholdBits=threshold;
       this.channelCount=channels;
       this.blockCountPerChannel=blocks;
-      this.wl_ID=wl;
+      this.wlc_ID=wlc;
       this.audioData=data;
             
     }
