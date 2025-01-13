@@ -6,10 +6,7 @@ namespace backend.Files
     public class BaseFileEntity
     {
         [Key]
-        [Column("EntityID")]
-        public int ID { get; set; }
-
-        [Column("EntityHash")]
+        [Column("EntityID")]     
         public string? Hash { get; set; }
 
         [Column("EntityData")]

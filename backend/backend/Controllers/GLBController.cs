@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Http;
+﻿using backend.Files;
+using backend.Requests;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -7,5 +9,13 @@ namespace backend.Controllers
     [ApiController]
     public class GLBController : ControllerBase
     {
+
+        [HttpPost]
+        public void Post(ModelJson input)
+        {
+
+        }
+
+
     }
 }

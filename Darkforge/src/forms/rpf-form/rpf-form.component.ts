@@ -41,7 +41,7 @@ export class RpfFormComponent implements OnInit{
       r_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       g_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       b_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
-      bfr : new FormControl(0,[Validators.min(0),Validators.max(4),Validators.required])
+      bfr : new FormControl(0,[Validators.min(0),Validators.max(2),Validators.required])
 
 
     });
@@ -193,8 +193,8 @@ export class RpfFormComponent implements OnInit{
       if(value<0 || value===null){
        this.form.get('bfr')?.setValue(0,{emitEvent:false});
       }
-      else if (value>4){
-        this.form.get('bfr')?.setValue(4,{emitEvent:false});
+      else if (value>2){
+        this.form.get('bfr')?.setValue(2,{emitEvent:false});
       }
     });
 

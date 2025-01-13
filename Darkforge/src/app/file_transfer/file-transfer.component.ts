@@ -6,13 +6,14 @@ import { FormControl,FormsModule,ReactiveFormsModule } from '@angular/forms';
 import { style } from '@angular/animations';
 import { RpfFormComponent } from "../../forms/rpf-form/rpf-form.component";
 import { WlFormComponent } from "../../forms/wl-form/wl-form.component";
+import { GlbFormComponent } from "../../forms/glb-form/glb-form.component";
 
 
 
 @Component({
   selector: 'app-file-transfer',
   standalone: true,
-  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent, WlFormComponent],
+  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent, WlFormComponent, GlbFormComponent],
   templateUrl: './file-transfer.component.html',
   styleUrl: './file-transfer.component.css',
 

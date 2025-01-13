@@ -55,6 +55,11 @@ export class AppComponent {
         this.fileService.process_wav(selected);
         this.Menu='wl';
       }
+      else if(selected.name.endsWith('.glb')){              
+        this.fileService.process_glb(selected,selected.name);
+        this.Menu='ast';
+      }
+
       else{
         
       }

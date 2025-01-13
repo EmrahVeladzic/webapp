@@ -50,6 +50,32 @@ export class SoundJson{
 
 }
 
+export class ModelJson{
+
+    public modelData : string;
+    public modelHash : string;
+    public precisionBits :number;
+    public targetFPS : number;
+    public texWidth : number;
+    public texHeight : number;
+    
+    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string) {
+       
+        this.modelData=data;
+        this.precisionBits=precision;
+        this.targetFPS=fps;
+        this.texWidth=width-1;
+        this.texHeight=height-1;
+        this.modelHash=hash;
+        
+    }
+
+    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelJson> {
+        const modelHash = await hash_data(data);
+        return new ModelJson(data, precision,fps,width,height, modelHash);
+    }
+
+}
 
 
 export class TextureJson{

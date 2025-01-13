@@ -9,14 +9,13 @@
 
     <canvas #bmp_preview id="bmp_preview" width="256" height="256" ></canvas>
 
-
     <form [formGroup]="form">
 
         <div class="params">
 
             <label>CLUT size:</label>
             
-            <app-numeric id="CLUT" [max]="256" [min]="2" formControlName="clut"></app-numeric>
+            <app-numeric id="CLUT" [max]="256" [min]="2" [default]="16" formControlName="clut"></app-numeric>
 
             <label for="Mode">Compression method:</label>
             <select id="Mode" formControlName="mode">
@@ -96,7 +95,7 @@
         <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
             <label>Protected Buffer size:</label>
-            <app-numeric id="BFR" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
+            <app-numeric id="BFR" [max]="2" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 

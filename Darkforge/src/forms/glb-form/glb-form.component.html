@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<meta charset="uft-8">
+<head>
+
+</head>
+
+<body>
+
+    <output></output>
+
+    <form [formGroup]="form">
+
+        <div class="params">
+
+                <div class="select_holder">
+
+                <label for="Precision">Fixed-point precision:</label>
+                <select id="Precision" formControlName="precision">
+                    <option value='0'>Truncation - .0</option>
+                    <option value='4'>Low - .4</option>
+                    <option value='8'>Medium - .8</option>
+                    <option value='12'>Standard - .12</option>
+                    <option value='16'>High - .16</option>
+                </select>
+
+                <label for="FPS">Target FPS:</label>
+                <select id="FPS" formControlName="fps">
+                    <option value='60'>Full - NTSC</option>
+                    <option value='30'>Half - NTSC</option>
+                    <option value='50'>Full - PAL</option>
+                    <option value='25'>Half - PAL</option>
+                </select>
+
+            </div>
+
+            <div class="numeric_holder">
+
+
+                <label for="X">Target texture width:</label>
+                <div class="dimensions">
+                    <app-numeric id="X"></app-numeric>
+                </div>
+            
+                <label for="Y">Target texture height:</label>
+                <div class="dimensions">
+                    <app-numeric id="Y"></app-numeric>
+                </div>
+                
+
+            </div>   
+
+        </div> 
+
+    </form>
+
+    <div class="post">
+        <button type="button" >Post</button>
+    </div>
+
+</body>

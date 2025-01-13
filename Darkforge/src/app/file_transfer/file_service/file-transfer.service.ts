@@ -12,6 +12,8 @@ export class FileTransferService {
     private reader? :FileReader;
     public file_text? : string;
     private file_data:  any;
+    public mdl_name? :string;
+
     private bmpTaskSource = new Subject<void>();
     public bmpTaskCompleted$ = this.bmpTaskSource.asObservable();
 
@@ -21,6 +23,10 @@ export class FileTransferService {
 
     public wlTaskSource = new Subject<void>();
     public wlTaskCompleted$ = this.wlTaskSource.asObservable();
+
+    
+    public glbTaskSource = new Subject<void>();
+    public glbTaskCompleted$ = this.glbTaskSource.asObservable();
 
   constructor(public http:HttpClient) {
     this.reader = new FileReader();
@@ -137,6 +143,24 @@ export class FileTransferService {
   }
 
   
+  async process_glb(file : File, name:string): Promise<void>{
+
+    this.reader!.readAsDataURL(file);
+
+    this.reader!.onload = ($event: any) => {
+      this.file_data = undefined;
+      this.file_data = this.reader?.result;
+
+      if (this.file_data !== undefined) {
+        this.file_text = this.file_data!.toString();
+      }
+
+      this.mdl_name=name;
+     
+      this.glbTaskSource.next();
+    };
+
+  }
 
 
 
