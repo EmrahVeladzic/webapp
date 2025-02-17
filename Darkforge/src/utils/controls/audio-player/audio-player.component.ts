@@ -177,6 +177,11 @@ export class AudioPlayerComponent {
 
           }
 
+          else if(!this.source?.loop && this.playing){
+
+            this.playing=false;
+          }
+
          
 
         };

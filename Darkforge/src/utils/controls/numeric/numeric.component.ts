@@ -1,11 +1,11 @@
-import { Component, ViewChild ,ElementRef, forwardRef} from '@angular/core';
+import { Component, ViewChild ,ElementRef, forwardRef, Input} from '@angular/core';
 import { InputComponent } from '../input/input.component';
-import { NG_VALUE_ACCESSOR } from '@angular/forms';
+import { FormsModule, NG_VALUE_ACCESSOR } from '@angular/forms';
 
 @Component({
   selector: 'app-numeric',
   standalone: true,
-  imports: [],
+  imports: [FormsModule],
   templateUrl: './numeric.component.html',
   styleUrl: './numeric.component.css',
   providers: [
@@ -17,57 +17,30 @@ import { NG_VALUE_ACCESSOR } from '@angular/forms';
   ],
 })
 export class NumericComponent extends InputComponent {
-  @ViewChild('input',{static:false})input!:ElementRef;
 
-  override  min:number =0;
-  override  max:number =100;
-  override  default:number =0;
 
-  
+  @Input() override  min:number =0;
+  @Input() override  max:number =100;
+  @Input() override default:number =0;
+  @Input() override step:number = 1;
+
+  protected raw_value:string="";
 
   protected override value: number = 0;
-  protected past_value : number = 0;
 
-
-  override step:number = 1;
-
-  protected override validateInput(): void {
-       
-    if(this.value>this.max){
-      this.value=this.max;
-    }
-    else if(this.value<this.min){
-      this.value=this.min;
-    }
-    this.past_value=this.value;
-    
-    if(this.active){
-      this.onChange(this.value);
-      this.valueSubject.next(this.value);
-    }
-   
-
-  }
-
+ 
   override ngOnInit(){
     super.ngOnInit();
+    this.raw_value=this.value.toString();
   }
 
-  override ngAfterViewInit(){
-    super.ngAfterViewInit();
 
-    this.past_value=this.default;   
-    this.input.nativeElement.value=this.past_value;    
-  }
+  public override setValue(v:string): void {
+    
+   super.setValue(Number.parseInt(v));
 
-  public override setValue(v:any): void {
-    if(Number.parseInt(v)){
-      this.value = Math.round(v);
-      this.active=true;
-      this.validateInput();
-      this.active=false;
-    }
-    this.input.nativeElement.value=this.past_value;
+   this.raw_value=this.value.toString();
+   
   }
 
   public increment_decrement(i_d:number){
@@ -75,17 +48,15 @@ export class NumericComponent extends InputComponent {
     this.active=true;
     this.validateInput();
     this.active=false;
-    this.input.nativeElement.value=this.past_value;
+    this.raw_value=this.value.toString();
+
   }
 
-  override writeValue(v: number): void {
-    if(this.input){
-      this.value=v;
-      this.validateInput();
-      this.input.nativeElement.value=this.past_value;
-    }
-  }
+  public override writeValue(v: number): void {
+    super.writeValue(v);
+    this.raw_value=this.value.toString();
 
+  }
 
  
 

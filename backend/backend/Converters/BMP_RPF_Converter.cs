@@ -25,7 +25,7 @@ namespace backend.Converters
 
     public class IMG_DATA
     {
-        private Pixel24? Alpha { get; set; }
+        public Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
 
         private ImageJson? Input { get; set; }
@@ -38,14 +38,14 @@ namespace backend.Converters
 
         private List<Swap_Entry>? Swap_Table { get; set;}
 
-        private BMP? Image {  get; set; }
+        public BMP? Image {  get; set; }
 
         private RPF? Output { get; set; }
 
         private UInt32 UniqueCount { get; set; }
         private UInt32 MaxUniqueCount { get; set; }
             
-        private byte Shift_Value { get; set; }
+        public byte Shift_Value { get; set; }
 
         public TextureJson? Texture { get; set; }
 
@@ -406,7 +406,7 @@ namespace backend.Converters
 
         }
 
-        byte Get_Index(Pixel15 Value)
+        public byte Get_Index(Pixel15 Value)
         {
             Pixel15? Search = Alpha15;
 
@@ -564,49 +564,15 @@ namespace backend.Converters
 
             this.Shift_Value = Get_Shift();
 
-            byte value = 0;
-         
-
-            Pixel15 compare = new Pixel15();
-
-            for (int i = 0; i < this.Image.Data.Count; i++)
-            {
-                compare.Setup(this.Image.Data[i], !this.Image.Data[i].Equals(Alpha!));
-
-                value <<= this.Shift_Value;                
-
-                value |= Get_Index(compare);
-
-            
-
-                if (this.Shift_Value==0 || (this.Shift_Value!=0 && ((i+1)% (8/this.Shift_Value) == 0)))
-                {
-                    this.Output!.PGA!.Data!.Add(value);
-
-                   
-
-                    value = 0;
-
-      
-                }                
-                               
-            }
-                   
+            this.Output.PGA.Serialize(this);
+            this.Output.PLT.Serialize();
 
             this.Output.Width=(byte)(this.Image.Width-1);
             this.Output.Height = (byte)(this.Image.Height - 1);
 
             this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
 
-            foreach(Pixel15 pxl in this.Output.PLT.Data)
-            {
-                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data) & 0xFF));
-                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data>>8)&0xFF));               
-            }
-
-            this.Output.PLT.Serialized=this.Output.PLT.ToSerialize!.ToArray();
-            this.Output.PGA.Serialized=this.Output.PGA.Data!.ToArray();
-            
+              
 
             ctx.PLTs.Add(this.Output.PLT);
             ctx.PGAs.Add(this.Output.PGA);
@@ -634,7 +600,7 @@ namespace backend.Converters
             this.Texture.PGA_ID= this.Output.PGA_ID;
 
             this.Texture.CLUT = this.Output.PLT.Data.Select(pxl => pxl.Data).ToList();
-            this.Texture.Pixels = this.Output.PGA.Data;
+            this.Texture.Pixels = this.Output.PGA.ToSerialize;
 
            
 

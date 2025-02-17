@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using backend.Converters;
 
 namespace backend.Models
 {
@@ -32,6 +33,16 @@ namespace backend.Models
         {
             this.Data = new List<ADPCMBlock>();
             this.ToSerialize= new List<byte> { };
+        }
+
+        public override void Serialize()
+        {
+            foreach(ADPCMBlock block in this.Data!)
+            {
+                block.Serialize(this.ToSerialize!);   
+            }
+
+            this.Serialized = this.ToSerialize!.ToArray();
         }
 
     }

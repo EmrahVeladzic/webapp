@@ -16,5 +16,11 @@ namespace backend.Models
         {
             ToSerialize = new List<byte>();
         }
+
+        public virtual void Serialize() {
+        }
+
+        public virtual void Deserialize() {
+        }
     }
 }

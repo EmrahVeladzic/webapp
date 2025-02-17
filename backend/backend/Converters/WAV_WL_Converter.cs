@@ -160,22 +160,8 @@ namespace backend.Converters
             this.Audio = new AudioJson();
 
 
-            for (int i = 0; i < this.Output!.Data!.Count; i++)
-            {
-                this.Output!.ToSerialize!.Add(this.Output.Data![i].Shift_Filter);
-                
-                this.Output!.ToSerialize!.Add(this.Output.Data![i].Flags);
+            this.Output.Serialize();
 
-                for (int j = 0; j < 14 ; j++)
-                {
-                    this.Output!.ToSerialize!.Add(this.Output.Data![i].Samples![j]);
-                }
-
-            }
-
-            this.Output.Serialized = this.Output.ToSerialize!.ToArray();
-
-         
 
             ctx.WLs.Add(this.Output);            
 

@@ -1,6 +1,6 @@
 ﻿using System.Numerics;
 
-namespace backend.Models
+namespace backend.Utils
 {
     public class Transform
     {
@@ -9,11 +9,11 @@ namespace backend.Models
         public Quaternion Rotation { get; set; }
         public Vector3 Scale { get; set; }
 
-        public Transform(Vector3 t =default, Quaternion r = default, Vector3 s = default)
+        public Transform(Vector3 t = default, Quaternion r = default, Vector3 s = default)
         {
-            this.Translation = t == default ? Vector3.Zero : t; 
-            this.Rotation = r == default ? Quaternion.Identity : r;
-            this.Scale = s == default ? Vector3.One : s; 
+            Translation = t == default ? Vector3.Zero : t;
+            Rotation = r == default ? Quaternion.Identity : r;
+            Scale = s == default ? Vector3.One : s;
         }
 
         public Matrix4x4 ToMatrix()

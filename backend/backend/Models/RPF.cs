@@ -17,18 +17,19 @@ namespace backend.Models
         public byte CLUT {  get; set; }
 
 
-        [ForeignKey(nameof(PLT))]
         [Column("PLTID")]
         public int PLT_ID { get; set; }
 
-        [NotMapped]
+      
+        [ForeignKey(nameof(PLT_ID))]
         public virtual PLT? PLT { get; set; }
 
-        [ForeignKey(nameof(PGA))]
+      
         [Column("PGAID")]
         public int PGA_ID { get; set; }
 
-        [NotMapped]
+        
+        [ForeignKey(nameof(PGA_ID))]
         public virtual PGA? PGA { get; set; }
 
 

@@ -1,15 +1,16 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.Converters;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [Table("PLT", Schema ="Models")]
-    public class PLT:BaseBufferEntity
+    [Table("PLT", Schema = "Models")]
+    public class PLT : BaseBufferEntity
     {
         //A Colour lookup table (CLUT). Element size is 2 bytes.
-              
+
 
         [NotMapped]
         public List<Pixel15>? Data { get; set; }
@@ -18,6 +19,19 @@ namespace backend.Models
         public PLT()
         {
             Data = new List<Pixel15>();
+        }
+
+
+        public override void Serialize()
+        {
+            foreach (Pixel15 pxl in this.Data!)
+            {
+                pxl.Serialize(this.ToSerialize!);
+            }
+
+
+            this.Serialized = this.ToSerialize!.ToArray();
+
         }
 
     }

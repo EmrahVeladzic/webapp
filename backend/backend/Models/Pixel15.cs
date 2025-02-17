@@ -87,5 +87,11 @@ namespace backend.Models
             }
         }
 
+        public void Serialize(List<byte> output)
+        {
+            output!.Add((byte)((this.Data) & 0xFF));
+            output!.Add((byte)((this.Data >> 8) & 0xFF));
+        }
+
     }
 }

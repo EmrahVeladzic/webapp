@@ -24,16 +24,17 @@ export class SliderComponent extends InputComponent {
   @ViewChild('coloured',{static:false})coloured!:ElementRef;
 
 
-  protected override value: number = 0;
+  @Input() override value: number = this.default;
+  @Input() override min:number = 0;
+  @Input() override max:number = 100;
+  @Input() override default: number = 0;
+  @Input() vertical:boolean = false;
+
 
   private begin:number = 0;
   private sliderDimension:number=0;
-    
-  override min:number = 0;
-  override max:number = 100;
-  override default: number = 0;
-
-  @Input() vertical:boolean = false;
+  
+  
 
   public override setValue(v:number):void{
     super.setValue(v);
@@ -45,17 +46,9 @@ export class SliderComponent extends InputComponent {
 
  
   protected override validateInput():void{
-    if(this.value<this.min){
-      this.value=this.min;
-     }
-     else if(this.value>this.max){
-      this.value=this.max;
-     }
-     else{
-      this.value/=this.step;
-      this.value=Math.round(this.value);
-      this.value*=this.step;
-     }
+    
+    super.validateInput();
+
      let dispValue = ((this.value - this.min) / (this.max - this.min)) * 80;
 
      
@@ -66,10 +59,8 @@ export class SliderComponent extends InputComponent {
       this.coloured.nativeElement.style.width = `${dispValue}%`; 
      }
 
-      if(this.active){
-        this.onChange(this.value);
-        this.valueSubject.next(this.value);
-      }
+    
+  
         
   }
 
@@ -118,11 +109,6 @@ export class SliderComponent extends InputComponent {
     this.sliderDimension = (this.vertical)? this.el.nativeElement.offsetHeight : this.el.nativeElement.offsetWidth;
   }
 
-  
-  override ngOnInit(){
-    super.ngOnInit();
-  }
-
 
   override ngAfterViewInit() {
     super.ngAfterViewInit();
@@ -136,9 +122,9 @@ export class SliderComponent extends InputComponent {
   }
 
   override writeValue(v: number): void {
-    this.value=v;
+    
     if(this.coloured&&this.thumb){
-      this.validateInput();
+      super.writeValue(v);
     }
     
   }

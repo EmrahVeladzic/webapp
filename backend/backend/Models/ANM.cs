@@ -6,8 +6,14 @@ namespace backend.Models
     public class ANM:BaseEntity
     {
         [Column("FKRID")]
-        [ForeignKey(nameof(FKR))]
         public int FKR_ID { get; set; }
 
+        [NotMapped]
+        public List<TK> Tracks { get; set; }
+
+        public ANM()
+        {
+            Tracks = new List<TK>();
+        }
     }
 }

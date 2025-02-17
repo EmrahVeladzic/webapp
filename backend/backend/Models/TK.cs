@@ -6,12 +6,10 @@ namespace backend.Models
     [Table("TK",Schema ="Models")]
     public class TK:BaseBufferEntity
     {
-        [ForeignKey(nameof(BN))]
+        
         [Column("BNID")]
         public int BN_ID { get; set; }
 
-
-        [ForeignKey(nameof(ANM))]
         [Column("ANMID")]
         public int ANM_ID { get; set; }
 

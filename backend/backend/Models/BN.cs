@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore.Metadata.Internal;
+﻿using backend.Utils;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace backend.Models
@@ -7,16 +8,18 @@ namespace backend.Models
     public class BN:BaseBufferEntity
     {
         [Column("FKRID")]
-        [ForeignKey(nameof(FKR))]
         public int FKR_ID { get; set; }
 
         [Column("Parent")]
-        [ForeignKey(nameof(BN))]
         public int? Parent_ID { get; set; }
-
-
+     
         [NotMapped]
-        public Transform? InitialPosition { get; set; }
+        public Transform InitialTransform { get; set; }
+
+        public BN()
+        {
+            InitialTransform = new Transform();
+        }
 
 
     }
