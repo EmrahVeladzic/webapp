@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Utils;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
@@ -8,11 +9,11 @@ namespace backend.Models
     public class NRM : BaseBufferEntity
     {
         [NotMapped]
-        public List<Vector3> Normals { get; set; }
+        public List<FVector3> Normals { get; set; }
 
         public NRM()
         {
-            this.Normals = new List<Vector3>();
+            this.Normals = new List<FVector3>();
         }
     }
 }

@@ -103,13 +103,16 @@ export class WlFormComponent {
       let post_url = `${base_url}/${sound_actions}`;
   
   
-      this.transfer.http.post(post_url,$result).subscribe($response=>{
+      this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
   
-        let AudioResponse = $response as AudioJson;
+        if($response.status===200){
+          
+          let AudioResponse = $response.body as AudioJson;
         
-        sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
+           sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
       
-        this.transfer.wlTaskSource.next();
+           this.transfer.wlTaskSource.next();
+        }
   
       });
     

@@ -15,7 +15,7 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public AudioJson Post(SoundJson input)
+        public IActionResult Post(SoundJson input)
         {
 
 
@@ -26,23 +26,33 @@ namespace backend.Controllers
             if (temp == null)
             {
 
-                StringBuilder stringBuilder = new StringBuilder(input.SoundData!, input.SoundData!.Length);
+                if (input.SoundData == null)
+                {
+                    return StatusCode(404);
 
-                stringBuilder.Replace("\r\n", String.Empty);
-                stringBuilder.Replace(" ", String.Empty);
-                stringBuilder.Replace("data:audio/wav;base64,", String.Empty);
+                }
+
+                else
+                {
+
+                    StringBuilder stringBuilder = new StringBuilder(input.SoundData!, input.SoundData!.Length);
+
+                    stringBuilder.Replace("\r\n", String.Empty);
+                    stringBuilder.Replace(" ", String.Empty);
+                    stringBuilder.Replace("data:audio/wav;base64,", String.Empty);
 
 
-                byte[] Data = System.Convert.FromBase64String(stringBuilder.ToString());
+                    byte[] Data = System.Convert.FromBase64String(stringBuilder.ToString());
 
-                temp = new WAV();
+                    temp = new WAV();
 
-                temp!.Setup(Data, input!.SoundHash!);
+                    temp!.Setup(Data, input!.SoundHash!);
 
-                ctx.WAVs.Add(temp);
+                    ctx.WAVs.Add(temp);
 
-                ctx.SaveChanges();
+                    ctx.SaveChanges();
 
+                }
             }
 
 
@@ -52,7 +62,7 @@ namespace backend.Controllers
 
 
 
-            return Sfx.Audio!;
+            return StatusCode(200,Sfx.Audio);
         }
     }
 }

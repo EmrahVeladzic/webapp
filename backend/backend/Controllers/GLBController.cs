@@ -12,9 +12,11 @@ namespace backend.Controllers
     {
 
         [HttpPost]
-        public void Post(ModelJson input)
+        public IActionResult Post(ModelJson input)
         {
 
+
+            return StatusCode(200);
         }
 
       

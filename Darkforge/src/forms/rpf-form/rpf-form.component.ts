@@ -241,13 +241,18 @@ export class RpfFormComponent implements OnInit{
     let post_url = `${base_url}/${image_actions}`;
 
 
-    this.transfer.http.post(post_url,$result).subscribe($response=>{
+    this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+   
+      if($response.status===200){
 
-      let TextureResponse = $response as TextureJson;
+        let TextureResponse = $response.body as TextureJson;
       
-      tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));
-    
+        tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));      
+  
 
+      }
+
+      
     });
   
 

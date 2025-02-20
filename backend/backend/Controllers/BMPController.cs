@@ -15,7 +15,7 @@ namespace backend.Controllers
     {
       
         [HttpPost]
-        public TextureJson Post(ImageJson input)
+        public IActionResult Post(ImageJson input)
         {
 
 
@@ -25,24 +25,33 @@ namespace backend.Controllers
 
             if(temp == null)            
             {
-               
-                StringBuilder stringBuilder = new StringBuilder(input.ImageData!,input.ImageData!.Length);
+                if (input.ImageData == null)
+                {
 
-                stringBuilder.Replace("\r\n", String.Empty);
-                stringBuilder.Replace(" ", String.Empty);                
-                stringBuilder.Replace("data:image/bmp;base64,", String.Empty);
-                               
+                    return StatusCode(404);
+                }
 
-                byte [] Data = System.Convert.FromBase64String(stringBuilder.ToString());
+                else {
 
-                temp = new BMP();
 
-                temp!.Setup(Data, input!.ImageHash!);
+                    StringBuilder stringBuilder = new StringBuilder(input.ImageData!, input.ImageData!.Length);
 
-                ctx.BMPs.Add(temp);
+                    stringBuilder.Replace("\r\n", String.Empty);
+                    stringBuilder.Replace(" ", String.Empty);
+                    stringBuilder.Replace("data:image/bmp;base64,", String.Empty);
 
-                ctx.SaveChanges();
 
+                    byte[] Data = System.Convert.FromBase64String(stringBuilder.ToString());
+
+                    temp = new BMP();
+
+                    temp!.Setup(Data, input!.ImageHash!);
+
+                    ctx.BMPs.Add(temp);
+
+                    ctx.SaveChanges();
+
+                }
             }
 
           
@@ -52,7 +61,7 @@ namespace backend.Controllers
 
 
 
-            return Img.Texture!;
+            return StatusCode(200,Img.Texture);
         }
 
 

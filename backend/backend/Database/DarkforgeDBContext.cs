@@ -29,21 +29,18 @@ namespace backend.Database
                 optionsBuilder.UseSqlServer(Configuration.GetConnectionString("Default Connection"));
             }
         }
+        public DbSet<BMP> BMPs { get; set; }
+        public DbSet<WAV> WAVs { get; set; }
+        public DbSet<GLB> GLBs { get; set; }
 
-
-        
         public DbSet<PGA> PGAs {  get; set; }        
 
         public DbSet<PLT> PLTs { get; set; }
 
-        public DbSet<RPF> RPFs { get; set; }
-
-        public DbSet<BMP> BMPs { get; set; }
-
-        public DbSet<WAV> WAVs { get; set; }
+        public DbSet<RPF> RPFs { get; set; }       
 
         public DbSet<WL> WLs { get; set; }
 
-        public DbSet<FKR> FKRs { get; set; }
+       
     }
 }

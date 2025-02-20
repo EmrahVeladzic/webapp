@@ -14,11 +14,11 @@ namespace backend.Models
         public int? Parent_ID { get; set; }
      
         [NotMapped]
-        public Transform InitialTransform { get; set; }
+        public FTransform InitialTransform { get; set; }
 
         public BN()
         {
-            InitialTransform = new Transform();
+            InitialTransform = new FTransform();
         }
 
 

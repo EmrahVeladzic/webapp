@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using backend.Utils;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
 namespace backend.Models
@@ -14,13 +15,13 @@ namespace backend.Models
         public int ANM_ID { get; set; }
 
         [NotMapped]
-        public List<Vector3> Translations { get; set; }
+        public List<FVector3> Translations { get; set; }
 
         [NotMapped]
-        public List<Quaternion> Rotations { get; set; }
+        public List<FQuaternion> Rotations { get; set; }
 
         [NotMapped]
-        public List<Vector3> Scales { get; set; }
+        public List<FVector3> Scales { get; set; }
 
         [NotMapped]
         public List<byte> T_Frames { get; set; }
@@ -34,9 +35,9 @@ namespace backend.Models
 
         public TK()
         {
-            this.Translations = new List<Vector3>();
-            this.Rotations = new List<Quaternion>();
-            this.Scales = new List<Vector3>();
+            this.Translations = new List<FVector3>();
+            this.Rotations = new List<FQuaternion>();
+            this.Scales = new List<FVector3>();
 
             this.T_Frames = new List<byte>();
             this.R_Frames = new List<byte>();

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Utils;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
@@ -8,11 +9,11 @@ namespace backend.Models
     public class VT:BaseBufferEntity
     {
         [NotMapped]
-        public List<Vector3> Vertices { get; set; }
+        public List<FVector3> Vertices { get; set; }
 
         public VT()
         {
-            this.Vertices = new List<Vector3>();
+            this.Vertices = new List<FVector3>();
         }
     }
 }
