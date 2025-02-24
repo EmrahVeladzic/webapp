@@ -11,9 +11,21 @@ namespace backend.Models
         [NotMapped]
         public List<FVector3> Vertices { get; set; }
 
-        public VT()
+        public VT() : base()
         {
             this.Vertices = new List<FVector3>();
+        }
+
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            foreach (FVector3 v in this.Vertices)
+            {
+                v.Serialize(this.ToSerialize);
+            }
+
+            this.Serialized=this.ToSerialize.ToArray();
         }
     }
 }

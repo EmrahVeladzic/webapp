@@ -14,5 +14,13 @@ namespace backend.Models
         {
             
         }
+
+        public virtual void Serialize()
+        {
+        }
+
+        public virtual void Deserialize()
+        {
+        }
     }
 }

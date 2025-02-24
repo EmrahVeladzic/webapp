@@ -33,7 +33,7 @@ namespace backend.Models
         public List<byte> S_Frames { get; set; }
 
 
-        public TK()
+        public TK():base()
         {
             this.Translations = new List<FVector3>();
             this.Rotations = new List<FQuaternion>();
@@ -44,6 +44,36 @@ namespace backend.Models
             this.S_Frames = new List<byte>();
         }
 
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            for (int i = 0; i < this.Translations.Count; i++)
+            {
+                this.ToSerialize.Add(this.T_Frames[i]);
+
+                this.Translations[i].Serialize(this.ToSerialize);
+
+            }
+
+            for (int i = 0; i < this.Rotations.Count; i++)
+            {
+                this.ToSerialize.Add(this.R_Frames[i]);
+
+                this.Rotations[i].Serialize(this.ToSerialize);
+
+            }
+
+            for (int i = 0; i < this.Scales.Count; i++)
+            {
+                this.ToSerialize.Add(this.S_Frames[i]);
+
+                this.Scales[i].Serialize(this.ToSerialize);
+
+            }
+
+            this.Serialized=this.ToSerialize.ToArray();
+        }
 
     }
 }

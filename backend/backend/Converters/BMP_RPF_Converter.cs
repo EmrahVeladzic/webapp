@@ -564,8 +564,7 @@ namespace backend.Converters
 
             this.Shift_Value = Get_Shift();
 
-            this.Output.PGA.Serialize(this);
-            this.Output.PLT.Serialize();
+            this.Output.Serialize(this);
 
             this.Output.Width=(byte)(this.Image.Width-1);
             this.Output.Height = (byte)(this.Image.Height - 1);

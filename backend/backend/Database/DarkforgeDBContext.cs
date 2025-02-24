@@ -41,6 +41,30 @@ namespace backend.Database
 
         public DbSet<WL> WLs { get; set; }
 
+        public DbSet<AST> ASTs { get; set; }
+
+        public DbSet<MDL> MDLs { get; set; }
+
+        public DbSet<FKR> FKRs { get; set; }
+
+        public DbSet<BN> BNs { get; set; }
+
+        public DbSet<ANM> ANMs { get; set; }
+
+        public DbSet<TK> TKs { get; set; }
+
+        public DbSet<MSH> MSHs { get; set; }
+
+        public DbSet<VT> VTs { get; set; }
+
+        public DbSet<UV> UVs { get; set; }
+
+        public DbSet<IND> INDs { get; set; }
+
+        public DbSet<NRM> NRMs { get; set; }
+
+
+
        
     }
 }

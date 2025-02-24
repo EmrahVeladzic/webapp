@@ -20,8 +20,21 @@ namespace backend.Models
         [ForeignKey(nameof(FKR_ID))]
         public virtual FKR? FKR { get; set; }
 
-        [Column("ShiftBits")]
-        public byte ShiftBits { get; set; }
+        [Column("PrecisionBits")]
+        public byte PrecisionBits { get; set; }
 
+
+        public AST():base()
+        {
+           this.MDL = new MDL();
+           this.FKR = new FKR();
+        }
+
+        public override void Serialize()
+        {
+
+            this.MDL?.Serialize();
+            this.FKR?.Serialize();
+        }
     }
 }

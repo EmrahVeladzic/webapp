@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using backend.Utils;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
 
@@ -10,9 +11,21 @@ namespace backend.Models
         [NotMapped]
         public List<UInt16> Indices { get; set; }
 
-        public IND()
+        public IND():base()
         {
             this.Indices = new List<UInt16>();
+        }
+
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            foreach (UInt16 i in this.Indices)
+            {
+                PrimitiveSerialization.SerializePrimitive(i,this.ToSerialize);
+            }
+
+            this.Serialized = this.ToSerialize.ToArray();
         }
     }
 }

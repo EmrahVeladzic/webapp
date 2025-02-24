@@ -16,11 +16,23 @@ namespace backend.Models
         [NotMapped]
         public FTransform InitialTransform { get; set; }
 
-        public BN()
+        public BN():base()
         {
-            InitialTransform = new FTransform();
+            
+            InitialTransform = new FTransform(new Transform());
+            Parent_ID = null;
+
         }
 
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            this.InitialTransform.Serialize(this.ToSerialize);
+
+            this.Serialized=this.ToSerialize.ToArray();
+
+        }
 
     }
 }

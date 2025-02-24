@@ -11,23 +11,23 @@ namespace backend.Models
 
        
         [Column("VTID")]
-        public int VT_ID { get; set; }
+        public int? VT_ID { get; set; }
 
        
         [Column("INDID")]
-        public int IND_ID { get; set; }
+        public int? IND_ID { get; set; }
 
        
         [Column("UVID")]
-        public int UV_ID { get; set; }
+        public int? UV_ID { get; set; }
 
       
         [Column("NRMID")]
-        public int NRM_ID { get; set; }
+        public int? NRM_ID { get; set; }
 
      
         [Column("BNID")]
-        public int BN_ID { get; set; }
+        public int? BN_ID { get; set; }
 
         [ForeignKey(nameof(VT_ID))]
         public virtual VT? VT { get; set; }
@@ -41,6 +41,17 @@ namespace backend.Models
         [ForeignKey(nameof(UV_ID))]
         public virtual UV? UV { get; set; }
 
+        public MSH():base()
+        {
+          
+        }
 
+        public override void Serialize()
+        {
+            this.VT?.Serialize();
+            this.IND?.Serialize();
+            this.UV?.Serialize();
+            this.NRM?.Serialize();
+        }
     }
 }

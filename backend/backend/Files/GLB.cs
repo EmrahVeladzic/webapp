@@ -49,7 +49,7 @@ namespace backend.Files
 
 
 
-        GLB()
+        public GLB()
         {
 
         }

@@ -11,9 +11,18 @@ namespace backend.Models
         [NotMapped]
         public List<TK> Tracks { get; set; }
 
-        public ANM()
+        public ANM() : base()
         {
             Tracks = new List<TK>();
+
+        }
+
+        public override void Serialize()
+        {
+            foreach(TK t in Tracks)
+            {
+                t.Serialize();
+            }
         }
     }
 }

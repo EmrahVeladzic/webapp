@@ -11,9 +11,22 @@ namespace backend.Models
         [NotMapped]
         public List<FVector2> TextureCoordinates { get; set; }
 
-        public UV()
+        public UV():base()
         {
             this.TextureCoordinates = new List<FVector2>();
+        }
+
+
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            foreach (FVector2 t in this.TextureCoordinates)
+            {
+                t.Serialize(this.ToSerialize);
+            }
+
+            this.Serialized = this.ToSerialize.ToArray();
         }
     }
 }

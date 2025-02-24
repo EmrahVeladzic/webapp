@@ -29,7 +29,7 @@ namespace backend.Models
         [NotMapped]
         public List<ADPCMBlock>? Data { get; set; }
 
-        public WL()
+        public WL():base()
         {
             this.Data = new List<ADPCMBlock>();
             this.ToSerialize= new List<byte> { };

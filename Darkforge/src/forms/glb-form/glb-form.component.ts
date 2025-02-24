@@ -2,6 +2,9 @@ import { Component ,Input} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
+import { base_url, model_actions } from '../../app/app.routes';
+import { ModelJson } from '../../models/models';
+
 
 
 @Component({
@@ -18,7 +21,11 @@ export class GlbFormComponent {
 constructor(){
  
   this.form=new FormGroup({
-
+    precision:new FormControl('12'),
+    fps:new FormControl('60'),
+    tex_x : new FormControl(128,[Validators.min(2),Validators.max(256),Validators.required]),
+    tex_y : new FormControl(128,[Validators.min(2),Validators.max(256),Validators.required]),
+    
     
   });
 
@@ -30,6 +37,52 @@ constructor(){
 
 }
 
+
+ async create_model_json() : Promise<ModelJson>{   
+
+    
+  let precision_bits = this.form.get('precision')?.value;
+
+  let framerate = this.form.get('fps')?.value;
+
+  let tex_width = this.form.get('tex_x')?.value;
+
+  let tex_height = this.form.get('tex_y')?.value;
+
+  const $instance = await ModelJson.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
+
+  return $instance;
+
+  }
+
+post_model($event : Event):void{
+
+  (this.create_model_json()).then($result=>{
+
+
+
+   let post_url = `${base_url}/${model_actions}`;
+
+
+   this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+  
+     if($response.status===200){
+
+      console.log($response.body);
+      
+     }
+
+     
+   });
+ 
+
+
+
+   });
+
+
+
+ }
 
 
 }

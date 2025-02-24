@@ -13,10 +13,15 @@ namespace backend.Models
     {
         //Indexed image data. Points to slots in the CLUT. Element size is 1 byte by default but can represent multiple pixels. 
 
-
+        public PGA():base()
+        {
+            
+        }
 
         public void Serialize(IMG_DATA IMG)
         {
+            this.ToSerialize = new List<byte>();
+
             byte value = 0;
 
             Pixel15 compare = new Pixel15();
@@ -33,7 +38,7 @@ namespace backend.Models
 
                 if (IMG!.Shift_Value == 0 || (IMG!.Shift_Value != 0 && ((i + 1) % (8 / IMG!.Shift_Value) == 0)))
                 {
-                    this.ToSerialize!.Add(value);
+                    this.ToSerialize.Add(value);
 
                     value = 0;
 
@@ -42,7 +47,7 @@ namespace backend.Models
 
             }
 
-            this.Serialized = this.ToSerialize!.ToArray();
+            this.Serialized = this.ToSerialize.ToArray();
         }
     }
 

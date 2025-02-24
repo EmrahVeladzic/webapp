@@ -46,6 +46,12 @@ namespace backend.Utils
 
         }
 
+        public void Serialize(List<byte> data)
+        {
+            PrimitiveSerialization.SerializePrimitive(X, data);
+            PrimitiveSerialization.SerializePrimitive(Y, data);
+        }
+
     }
 
     public struct FVector3 
@@ -67,7 +73,12 @@ namespace backend.Utils
 
         }
 
-
+        public void Serialize(List<byte> data)
+        {
+            PrimitiveSerialization.SerializePrimitive(X, data);
+            PrimitiveSerialization.SerializePrimitive(Y, data);
+            PrimitiveSerialization.SerializePrimitive(Z, data);
+        }
     }
 
     public struct FQuaternion
@@ -95,6 +106,14 @@ namespace backend.Utils
 
         }
 
+        public void Serialize(List<byte> data)
+        {
+          
+            PrimitiveSerialization.SerializePrimitive(X, data);
+            PrimitiveSerialization.SerializePrimitive(Y, data);
+            PrimitiveSerialization.SerializePrimitive(Z, data);
+            PrimitiveSerialization.SerializePrimitive(W, data);
+        }
 
     }
 
@@ -113,6 +132,13 @@ namespace backend.Utils
             this.Translation = new FVector3(t.Translation, prec);
             this.Rotation = new FQuaternion(t.Rotation, prec);
             this.Scale = new FVector3(t.Scale, prec);
+        }
+
+        public void Serialize(List<byte> data)
+        {
+            this.Translation.Serialize(data);
+            this.Rotation.Serialize(data);
+            this.Scale.Serialize(data);
         }
 
     }

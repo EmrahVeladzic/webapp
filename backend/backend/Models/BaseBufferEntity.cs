@@ -12,15 +12,12 @@ namespace backend.Models
         [NotMapped]
         public List<byte>? ToSerialize { get; set; }
 
-        public BaseBufferEntity()
+        public BaseBufferEntity():base()
         {
-            ToSerialize = new List<byte>();
+            this.ToSerialize = new List<byte>();
+            this.Serialized = this.ToSerialize.ToArray();
         }
 
-        public virtual void Serialize() {
-        }
-
-        public virtual void Deserialize() {
-        }
+      
     }
 }

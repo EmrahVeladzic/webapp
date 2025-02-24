@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.Converters;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
@@ -41,6 +42,17 @@ namespace backend.Models
         [Column("Height")]
         public byte Height { get; set; }
 
-      
+        public RPF():base()
+        {
+            PGA = new PGA();
+            PLT = new PLT();
+        }
+
+        public void Serialize(IMG_DATA IMG)
+        {
+            this.PLT?.Serialize();
+            this.PGA?.Serialize(IMG);            
+        }
+
     }
 }

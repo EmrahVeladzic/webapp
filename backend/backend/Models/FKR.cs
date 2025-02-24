@@ -12,11 +12,23 @@ namespace backend.Models
         [NotMapped]
         public List<ANM> Animations { get; set; }
 
-        public FKR()
+        public FKR():base()
         {
             Bones = new List<BN>();
             Animations = new List<ANM>();
         }
 
+        public override void Serialize()
+        {
+            foreach (BN b in Bones)
+            {
+                b.Serialize();
+            }
+
+            foreach (ANM a in Animations)
+            {
+                a.Serialize();
+            }
+        }
     }
 }

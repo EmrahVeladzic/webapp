@@ -16,7 +16,7 @@ namespace backend.Models
         public List<Pixel15>? Data { get; set; }
 
 
-        public PLT()
+        public PLT() : base()
         {
             Data = new List<Pixel15>();
         }
@@ -24,13 +24,15 @@ namespace backend.Models
 
         public override void Serialize()
         {
+            this.ToSerialize = new List<byte>();
+
             foreach (Pixel15 pxl in this.Data!)
             {
                 pxl.Serialize(this.ToSerialize!);
             }
 
 
-            this.Serialized = this.ToSerialize!.ToArray();
+            this.Serialized = this.ToSerialize.ToArray();
 
         }
 
