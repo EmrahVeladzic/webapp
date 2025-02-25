@@ -12,7 +12,7 @@ export class FileTransferService {
     private reader? :FileReader;
     public file_text? : string;
     private file_data:  any;
-    public mdl_name? :string;
+    public mdl_name? :string="";
 
     private bmpTaskSource = new Subject<void>();
     public bmpTaskCompleted$ = this.bmpTaskSource.asObservable();

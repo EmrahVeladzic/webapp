@@ -1,27 +1,28 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
     [Table("MSH",Schema ="Models")]
     public class MSH:BaseEntity
     {
-       
+        [JsonIgnore]
         [Column("MDLID")]
         public int MDL_ID { get; set; }
 
-       
+        [JsonIgnore]
         [Column("VTID")]
         public int? VT_ID { get; set; }
 
-       
+        [JsonIgnore]
         [Column("INDID")]
         public int? IND_ID { get; set; }
 
-       
+        [JsonIgnore]
         [Column("UVID")]
         public int? UV_ID { get; set; }
 
-      
+        [JsonIgnore]
         [Column("NRMID")]
         public int? NRM_ID { get; set; }
 

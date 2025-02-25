@@ -1,17 +1,18 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
     [Table("AST",Schema ="Models")]
     public class AST:BaseEntity
     {
-       
+        [JsonIgnore]
         [Column("MDLID")]
         public int MDL_ID { get; set; }
 
-       
+        [JsonIgnore]
         [Column("FKRID")]
-        public int FKR_ID { get; set; }
+        public int? FKR_ID { get; set; }
 
         
         [ForeignKey(nameof(MDL_ID))]

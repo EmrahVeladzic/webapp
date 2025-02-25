@@ -1,12 +1,14 @@
 ﻿using backend.Utils;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
     [Table("BN",Schema ="Models")]
     public class BN:BaseBufferEntity
     {
+        [JsonIgnore]
         [Column("FKRID")]
         public int FKR_ID { get; set; }
 
@@ -14,12 +16,12 @@ namespace backend.Models
         public int? Parent_ID { get; set; }
      
         [NotMapped]
-        public FTransform InitialTransform { get; set; }
+        public List<Int32> InitialTransform { get; set; }
 
         public BN():base()
         {
             
-            InitialTransform = new FTransform(new Transform());
+            InitialTransform = new List<Int32>();
             Parent_ID = null;
 
         }
@@ -28,7 +30,10 @@ namespace backend.Models
         {
             this.ToSerialize = new List<byte>();
 
-            this.InitialTransform.Serialize(this.ToSerialize);
+            for (int i = 0; i < 10; i++)
+            {
+
+            }
 
             this.Serialized=this.ToSerialize.ToArray();
 

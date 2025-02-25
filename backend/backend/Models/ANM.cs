@@ -1,10 +1,12 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
     [Table("ANM",Schema ="Models")]
     public class ANM:BaseEntity
     {
+        [JsonIgnore]
         [Column("FKRID")]
         public int FKR_ID { get; set; }
 

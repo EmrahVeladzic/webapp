@@ -9,20 +9,20 @@ namespace backend.Models
     public class VT:BaseBufferEntity
     {
         [NotMapped]
-        public List<FVector3> Vertices { get; set; }
+        public List<Int32> Vertices { get; set; }
 
         public VT() : base()
         {
-            this.Vertices = new List<FVector3>();
+            this.Vertices = new List<Int32>();
         }
 
         public override void Serialize()
         {
             this.ToSerialize = new List<byte>();
 
-            foreach (FVector3 v in this.Vertices)
+            foreach (Int32 v in this.Vertices)
             {
-                v.Serialize(this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(v, this.ToSerialize);
             }
 
             this.Serialized=this.ToSerialize.ToArray();

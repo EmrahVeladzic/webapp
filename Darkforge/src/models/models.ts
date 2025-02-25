@@ -86,19 +86,15 @@ public width:number;
 public height:number;
 
 public rpF_ID:number;
-public pgA_ID:number;
-public plT_ID:number;
 
 public clut:number[];
 public pixels:number[];
 
-    constructor(col:number,w:number,h:number,rpf:number,pga:number,plt:number,clut:number[],pxl:number[]){
+    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[]){
         this.colours=col;
         this.width=w;
         this.height=h;
         this.rpF_ID=rpf;
-        this.pgA_ID=pga;
-        this.plT_ID=plt;
         this.clut=clut;
         this.pixels=pxl;
         

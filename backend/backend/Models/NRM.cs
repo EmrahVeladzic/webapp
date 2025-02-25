@@ -9,20 +9,20 @@ namespace backend.Models
     public class NRM : BaseBufferEntity
     {
         [NotMapped]
-        public List<FVector3> Normals { get; set; }
+        public List<Int32> Normals { get; set; }
 
         public NRM():base()
         {
-            this.Normals = new List<FVector3>();
+            this.Normals = new List<Int32>();
         }
 
         public override void Serialize()
         {
             this.ToSerialize = new List<byte>();
 
-            foreach (FVector3 n in this.Normals)
+            foreach (Int32 n in this.Normals)
             {
-                n.Serialize(this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(n,this.ToSerialize);
             }
 
             this.Serialized = this.ToSerialize.ToArray();

@@ -595,8 +595,8 @@ namespace backend.Converters
             this.Texture.Height = this.Output.Height;
 
             this.Texture.RPF_ID = this.Output.ID;
-            this.Texture.PLT_ID = this.Output.PLT_ID;
-            this.Texture.PGA_ID= this.Output.PGA_ID;
+           
+          
 
             this.Texture.CLUT = this.Output.PLT.Data.Select(pxl => pxl.Data).ToList();
             this.Texture.Pixels = this.Output.PGA.ToSerialize;

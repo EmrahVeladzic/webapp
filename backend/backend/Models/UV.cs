@@ -9,24 +9,24 @@ namespace backend.Models
     public class UV : BaseBufferEntity
     {
         [NotMapped]
-        public List<FVector2> TextureCoordinates { get; set; }
+        public List<byte> TextureCoordinates { get; set; }
+
+        [Column("Width")]
+        public byte Width { get; set; }
+
+        [Column("Height")]
+        public byte Height { get; set; }
+
 
         public UV():base()
         {
-            this.TextureCoordinates = new List<FVector2>();
+            this.TextureCoordinates = new List<byte>();
         }
 
 
-        public override void Serialize()
-        {
-            this.ToSerialize = new List<byte>();
-
-            foreach (FVector2 t in this.TextureCoordinates)
-            {
-                t.Serialize(this.ToSerialize);
-            }
-
-            this.Serialized = this.ToSerialize.ToArray();
+        public override void Serialize(){
+                   
+            this.Serialized = this.TextureCoordinates.ToArray();
         }
     }
 }

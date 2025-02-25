@@ -1,6 +1,7 @@
 ﻿using backend.Utils;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
@@ -11,17 +12,18 @@ namespace backend.Models
         [Column("BNID")]
         public int BN_ID { get; set; }
 
+        [JsonIgnore]
         [Column("ANMID")]
         public int ANM_ID { get; set; }
 
         [NotMapped]
-        public List<FVector3> Translations { get; set; }
+        public List<Int32> Translations { get; set; }
 
         [NotMapped]
-        public List<FQuaternion> Rotations { get; set; }
+        public List<Int32> Rotations { get; set; }
 
         [NotMapped]
-        public List<FVector3> Scales { get; set; }
+        public List<Int32> Scales { get; set; }
 
         [NotMapped]
         public List<byte> T_Frames { get; set; }
@@ -35,9 +37,9 @@ namespace backend.Models
 
         public TK():base()
         {
-            this.Translations = new List<FVector3>();
-            this.Rotations = new List<FQuaternion>();
-            this.Scales = new List<FVector3>();
+            this.Translations = new List<Int32>();
+            this.Rotations = new List<Int32>();
+            this.Scales = new List<Int32>();
 
             this.T_Frames = new List<byte>();
             this.R_Frames = new List<byte>();
@@ -48,29 +50,7 @@ namespace backend.Models
         {
             this.ToSerialize = new List<byte>();
 
-            for (int i = 0; i < this.Translations.Count; i++)
-            {
-                this.ToSerialize.Add(this.T_Frames[i]);
-
-                this.Translations[i].Serialize(this.ToSerialize);
-
-            }
-
-            for (int i = 0; i < this.Rotations.Count; i++)
-            {
-                this.ToSerialize.Add(this.R_Frames[i]);
-
-                this.Rotations[i].Serialize(this.ToSerialize);
-
-            }
-
-            for (int i = 0; i < this.Scales.Count; i++)
-            {
-                this.ToSerialize.Add(this.S_Frames[i]);
-
-                this.Scales[i].Serialize(this.ToSerialize);
-
-            }
+            
 
             this.Serialized=this.ToSerialize.ToArray();
         }

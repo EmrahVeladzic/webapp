@@ -101,7 +101,7 @@ export class RpfFormComponent implements OnInit{
       if(value<0){
         this.form.get('r_slider')?.setValue(0,{emitEvent:false});
         this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
-        console.log(value);
+        
       }
       else if(value>255){
         this.form.get('r_slider')?.setValue(255,{emitEvent:false});

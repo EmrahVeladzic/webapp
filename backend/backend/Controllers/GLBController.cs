@@ -57,9 +57,15 @@ namespace backend.Controllers
 
             AST_DATA Ast = new AST_DATA(input); 
 
-            return StatusCode(200,Ast.Output);
+            return StatusCode(200,Ast.Asset);
         }
 
+
+        [HttpGet]
+        public AssetJson Get()
+        {
+            return new AssetJson();
+        }
       
     }
 }
