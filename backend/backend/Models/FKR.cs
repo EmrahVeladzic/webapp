@@ -12,6 +12,12 @@ namespace backend.Models
         [NotMapped]
         public List<ANM> Animations { get; set; }
 
+        [Column("TargetFPS")]
+        public byte? FPS { get; set; }
+
+        [NotMapped]       
+        public int? Root { get; set; }
+
         public FKR():base()
         {
             Bones = new List<BN>();

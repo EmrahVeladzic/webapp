@@ -3,7 +3,8 @@ import { FileTransferService } from '../../app/file_transfer/file_service/file-t
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 import { base_url, model_actions } from '../../app/app.routes';
-import { ModelJson } from '../../models/models';
+import { AssetJson, ModelJson } from '../../models/models';
+import { Asset } from '../../app/renderer/formats';
 
 
 
@@ -66,11 +67,23 @@ post_model($event : Event):void{
 
    this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
   
-     if($response.status===200){
+    if($response.status===200){
 
-      console.log($response.body);
+      let raw = $response.body as any;
       
-     }
+      let assetInstance = new Asset(
+          raw.asset.id,
+          raw.asset.precisionBits,
+          raw.asset.mdl ?? null,
+          raw.asset.fkr ?? null
+      );  
+      
+      console.log(assetInstance);
+
+
+
+    
+    }
 
      
    });

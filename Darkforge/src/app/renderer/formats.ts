@@ -1,5 +1,6 @@
 import { get_bit_mask, get_bits_per_index,get_pcm_value } from "../../utils/bitfield_helper";
 import { flip_tex_state } from "../../assets/global_assets";
+import { get_float, normalize_uv, time_float } from "../../utils/fixed_point";
 
 
 
@@ -124,5 +125,246 @@ export class Audio{
         this.Samples=[];
 
     }
+
+}
+
+export class Vertex{
+    public id:number;
+    public vertices:number[];
+
+    
+    constructor(i:number, v:number[]) {
+        this.id=i;
+        this.vertices=v;        
+    }
+}
+
+export class Index{
+    public id:number;
+    public indices:number[];
+
+    
+    constructor(i:number, ind:number[]) {
+        this.id=i;
+        this.indices=ind;        
+    }
+}
+
+export class UV{
+    public id:number;
+    public textureCoordinates:number[];
+
+    
+    constructor(i:number, t:number[]) {
+        this.id=i;
+        this.textureCoordinates=t;        
+    }
+}
+
+
+export class Normal{
+    public id:number;
+    public normals:number[];
+
+    
+    constructor(i:number, n:number[]) {
+        this.id=i;
+        this.normals=n;        
+    }
+}
+
+
+
+
+export class Mesh{
+    public id:number;
+    public bN_ID:number | null;
+    public vt?:Vertex |null;
+    public ind?:Index | null;
+    public nrm?:Normal | null;
+    public uv?:UV | null;
+
+    
+    constructor(id:number,v:Vertex | null,i:Index | null,n:Normal | null,u:UV | null,b:number | null) {
+        
+        this.id=id;
+        this.bN_ID=b;
+        this.vt=v;
+        this.ind=i;
+        this.nrm=n;
+        this.uv=u;
+    }
+
+}
+
+export class Model{
+
+    public id:number;
+    public meshes:Mesh[];
+    public width:number;
+    public height:number;
+    
+    constructor(i:number,m:Mesh[],w:number,h:number) {
+        
+        this.id=i;
+        this.meshes=m;
+        this.width=w;
+        this.height=h;
+    }
+
+
+}
+
+export class Track{
+
+    public id:number;
+    public bN_ID:number;
+    public translations:number[];
+    public rotations:number[];
+    public scales:number[];
+    public t_Frames:number[];
+    public r_Frames:number[];
+    public s_Frames:number[];
+
+    
+    constructor(i:number, b:number, t:number[],r:number[],s:number[],tt:number[],rt:number[],st:number[]) {
+        
+        this.id=i;
+        this.bN_ID=b;
+        this.translations=t;
+        this.rotations=r;
+        this.scales=s;
+        this.t_Frames=tt;
+        this.r_Frames=rt;
+        this.s_Frames=st;
+                
+        
+    }
+
+}
+
+export class Animation{
+
+    public id:number;
+    public tracks:Track[];
+
+    constructor(i:number, t:Track[]) {
+        
+        this.id=i;
+        this.tracks=t;
+                
+    }
+
+}
+
+export class Bone{
+    public id :number;
+    public parent_ID?:number;
+    public initialTransform:number[];
+
+    constructor(i:number, t:number[],p?:number) {
+        this.id=i;
+        this.parent_ID=p;
+        this.initialTransform=t;
+        
+    }
+}
+
+
+
+export class SkeletalRig{
+
+    public id:number;
+    public bones:Bone[];
+    public animations:Animation[];
+    public FPS:number | null;
+    public root:number;
+    
+    constructor(i:number,b:Bone[],a:Animation[],f:number|null,r:number) {
+        
+        this.id=i;
+        this.bones=b;
+        this.animations=a;
+        this.FPS=f;
+        this.root=r;
+
+    }
+
+}
+
+export class Asset{
+
+    public id!:number;
+    public mdl?:Model | null;
+    public fkr?:SkeletalRig |null;
+
+    public precisionBits!:number;
+
+    public reset(i:number,p:number,m:Model | null,f:SkeletalRig | null) : void{
+
+        this.id=i;
+        this.precisionBits=p;
+
+        if(m!=null){
+
+            m.width++;
+            m.height++;
+
+            for(let msh of m.meshes){
+
+                if(msh.vt!=null){
+                    msh.vt.vertices = msh.vt?.vertices.map(v=>get_float(v,this.precisionBits));     
+                }
+                if(msh.nrm!=null){
+                    msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,this.precisionBits));  
+                }                                             
+                if(msh.uv!=null){
+                    normalize_uv(msh.uv.textureCoordinates,m.width,m.height);
+                }        
+
+            }
+            
+        }
+
+        if(f!=null){
+
+            for(let b of f.bones){
+                
+                b.initialTransform= b.initialTransform.map(i=>get_float(i,this.precisionBits));
+
+            }
+
+            
+            for(let a of f.animations){
+
+                for(let t of a.tracks){
+
+                    t.translations= t.translations.map(tr=>get_float(tr,this.precisionBits));
+                    t.rotations= t.rotations.map(ro=>get_float(ro,this.precisionBits));
+                    t.scales= t.scales.map(sc=>get_float(sc,this.precisionBits));
+
+                    time_float(t.t_Frames,f.FPS!);
+                    time_float(t.r_Frames,f.FPS!);
+                    time_float(t.s_Frames,f.FPS!);
+                }
+
+
+
+            }
+            
+
+        }
+
+        
+        this.mdl=m;
+        this.fkr=f;
+    }
+
+    constructor(i:number,p:number,m:Model |null,f:SkeletalRig | null) {
+      
+        this.reset(i,p,m,f)
+        
+    }
+
 
 }

@@ -50,7 +50,40 @@ namespace backend.Models
         {
             this.ToSerialize = new List<byte>();
 
-            
+            for(int i = 0; i < this.T_Frames.Count; i++)
+            {
+                this.ToSerialize.Add(this.T_Frames[i]);
+
+                PrimitiveSerialization.SerializePrimitive(this.Translations[(i*3)],this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Translations[(i*3)+1], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Translations[(i*3)+2], this.ToSerialize);
+
+
+            }
+
+            for (int i = 0; i < this.R_Frames.Count; i ++)
+            {
+
+                this.ToSerialize.Add(this.R_Frames[i]);
+
+                PrimitiveSerialization.SerializePrimitive(this.Rotations[(i*4)], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Rotations[(i*4) + 1], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Rotations[(i*4) + 2], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Rotations[(i*4) + 3], this.ToSerialize);
+
+
+            }
+
+            for (int i = 0; i < this.S_Frames.Count; i ++)
+            {
+                this.ToSerialize.Add(this.S_Frames[i]);
+
+                PrimitiveSerialization.SerializePrimitive(this.Scales[(i*3)], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Scales[(i*3) + 1], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(this.Scales[(i*3) + 2], this.ToSerialize);
+
+
+            }
 
             this.Serialized=this.ToSerialize.ToArray();
         }

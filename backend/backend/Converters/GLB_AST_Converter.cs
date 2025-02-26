@@ -49,10 +49,8 @@ namespace backend.Converters
 
             
             if (Model!.Metadata!.RootElement.TryGetProperty("nodes", out JsonElement nodes) && nodes.ValueKind == JsonValueKind.Array && this.Model.Metadata!.RootElement.TryGetProperty("accessors", out JsonElement accessors)&& accessors.ValueKind==JsonValueKind.Array && this.Model!.Metadata.RootElement.TryGetProperty("bufferViews",out JsonElement buffers)&&buffers.ValueKind==JsonValueKind.Array)
-            {
+            {               
                 
-                
-
                 if (Model!.Metadata!.RootElement.TryGetProperty("skins", out JsonElement skins) && skins.ValueKind == JsonValueKind.Array)
                 {
 
@@ -319,6 +317,8 @@ namespace backend.Converters
 
                                 if (attributes.TryGetProperty("TEXCOORD_0", out JsonElement a_uvs) && a_uvs.TryGetInt32(out Int32 uv_access))
                                 {
+                                    this.Output.MDL.Width = this.Input.TexWidth;
+                                    this.Output.MDL.Height = this.Input.TexHeight;
 
                                     if (accessors[uv_access].TryGetProperty("bufferView", out JsonElement b_uv) && b_uv.TryGetInt32(out Int32 uv_view))
                                     {
@@ -329,9 +329,7 @@ namespace backend.Converters
 
                                             Meshes[i].UV = new UV();
 
-                                            Meshes[i].UV!.Width = input.TexWidth;
-                                            Meshes[i].UV!.Height=input.TexHeight;
-
+                                            
                                             ctx.UVs.Add(Meshes[i].UV!);
 
 
@@ -420,6 +418,10 @@ namespace backend.Converters
 
                 if(Model!.Metadata.RootElement.TryGetProperty("animations",out JsonElement anims) && anims.ValueKind == JsonValueKind.Array)
                 {
+                    if (this.Output.FKR!=null)
+                    {
+                        this.Output.FKR.FPS = this.Input.TargetFPS;
+                    }
 
                     for (int i = 0; i < anims.GetArrayLength(); i++) {
                     
@@ -663,12 +665,15 @@ namespace backend.Converters
             this.Asset.Asset = this.Output;
             this.Asset.AST_ID = this.Output.ID;
 
-            if (this.Output.FKR_ID!=null)
-            {
-                this.Asset.Root = this.Bones!.Where(b=>b.Parent_ID==null).Select(b=>b.ID).FirstOrDefault();
+            
+
+            if (this.Asset.Asset.FKR_ID!=null)
+            {             
+
+               this.Asset.Asset.FKR!.Root = this.Bones!.Where(b=>b.Parent_ID==null).Select(b=>b.ID).FirstOrDefault();
             }
 
-            this.Asset.PrecisionBits = this.Output.PrecisionBits;
+           
 
         }
 

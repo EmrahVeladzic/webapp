@@ -8,7 +8,7 @@ namespace backend.Models
     {
         [JsonIgnore]
         [Column("MDLID")]
-        public int MDL_ID { get; set; }
+        public int? MDL_ID { get; set; }
 
         [JsonIgnore]
         [Column("FKRID")]
@@ -27,8 +27,11 @@ namespace backend.Models
 
         public AST():base()
         {
-           this.MDL = new MDL();
-           this.FKR = new FKR();
+            this.MDL = null;
+            this.FKR = null;
+
+            this.MDL_ID = null;
+            this.FKR_ID = null;
         }
 
         public override void Serialize()

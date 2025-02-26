@@ -1,3 +1,4 @@
+import { Asset } from "../app/renderer/formats";
 import { hash_data } from "../utils/hash_maker";
 export class ImageJson{
    
@@ -125,4 +126,21 @@ export class AudioJson{
     }
     
     
+ }
+
+
+
+ export class AssetJson{
+
+    public asset:Asset;
+    public asT_ID:number;
+   
+
+    constructor(a:Asset,a_id:number) {
+        
+        this.asset=a;
+        this.asT_ID=a_id;
+        
+    }
+
  }

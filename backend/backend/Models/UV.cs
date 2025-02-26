@@ -9,14 +9,7 @@ namespace backend.Models
     public class UV : BaseBufferEntity
     {
         [NotMapped]
-        public List<byte> TextureCoordinates { get; set; }
-
-        [Column("Width")]
-        public byte Width { get; set; }
-
-        [Column("Height")]
-        public byte Height { get; set; }
-
+        public List<byte> TextureCoordinates { get; set; }     
 
         public UV():base()
         {
