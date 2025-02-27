@@ -4,14 +4,14 @@ import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { glMatrix, mat4, vec3, quat} from 'gl-matrix';
 import { withNoHttpTransferCache } from '@angular/platform-browser';
-import { flip_tex_state, tex,tex_update } from '../../../assets/global_assets';
+import { flip_tex_state, tex,tex_update ,ast, ast_update, flip_ast_state} from '../../../assets/global_assets';
 
 @Injectable({
   providedIn: 'root'
 })
 export class WebGLService {
   public V:number=0;
-  public H:number=0;
+  public H:number=Math.PI;
   public D:number=-7.5;
   private gl: WebGL2RenderingContext | null = null;
   private vertCode! :string;
@@ -25,9 +25,7 @@ export class WebGLService {
   private wMat  : any;
   private vMat  : any;
   private pMat  : any;
-  private verts : any;
-  private inds  : any;
-  private uvs :any;
+
   private out_tex :any;
 
 
@@ -73,93 +71,7 @@ export class WebGLService {
       this.gl.linkProgram(this.GLProgram);
     }
    
-    this.verts = 
-	[ 
-		-1.0, 1.0, -1.0,  
-		-1.0, 1.0, 1.0,   
-		1.0, 1.0, 1.0,    
-		1.0, 1.0, -1.0,   
-	
-		-1.0, 1.0, 1.0,   
-		-1.0, -1.0, 1.0,  
-		-1.0, -1.0, -1.0, 
-		-1.0, 1.0, -1.0,  
 
-		1.0, 1.0, 1.0,    
-		1.0, -1.0, 1.0,   
-		1.0, -1.0, -1.0,  
-		1.0, 1.0, -1.0,   
-
-		1.0, 1.0, 1.0,    
-		1.0, -1.0, 1.0,   
-		-1.0, -1.0, 1.0,  
-		-1.0, 1.0, 1.0,   
-
-		1.0, 1.0, -1.0,   
-		1.0, -1.0, -1.0,  
-		-1.0, -1.0, -1.0, 
-		-1.0, 1.0, -1.0,  
-
-		-1.0, -1.0, -1.0, 
-		-1.0, -1.0, 1.0,  
-		1.0, -1.0, 1.0,   
-		1.0, -1.0, -1.0  
-	];
-   
-  this.inds =
-	[
-		0, 1, 2,
-		0, 2, 3,
-		
-		5, 4, 6,
-		6, 4, 7,
-
-		8, 9, 10,
-		8, 10, 11,
-	
-		13, 12, 14,
-		15, 14, 12,
-	
-		16, 17, 18,
-		16, 18, 19,
-	
-		21, 20, 22,
-		22, 20, 23
-	];
-
-  this.uvs = 
-  [
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0, 
-    
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0, 
-    
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0, 
-    
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0, 
-    
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0, 
-    
-    0.0,  0.0,
-    0.0,  1.0,
-    1.0,  1.0,
-    1.0,  0.0 
-  ];
-       
 
        this.WMatLoc =this.gl.getUniformLocation(this.GLProgram!,'worldMat');
        this.VMatLoc =this.gl.getUniformLocation(this.GLProgram!,'viewMat');
@@ -191,37 +103,7 @@ export class WebGLService {
 
       }
 
-
-      const vBuffer = this.gl.createBuffer();
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vBuffer);
-      this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(this.verts),this.gl.STATIC_DRAW);
   
-
-
-      const iBuffer = this.gl.createBuffer();
-      this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,iBuffer);
-      this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(this.inds),this.gl.STATIC_DRAW);
-
-
-     
-        
-        
-      const uBuffer = this.gl.createBuffer();
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER, uBuffer);
-      this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(this.uvs),this.gl.STATIC_DRAW);
-    
-
-
-      const pos = this.gl.getAttribLocation(this.GLProgram!,'vPosition');
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,vBuffer);
-      this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,3*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
-      this.gl.enableVertexAttribArray(pos);
-
-
-      const uv = this.gl.getAttribLocation(this.GLProgram!,'vUV');
-      this.gl.bindBuffer(this.gl.ARRAY_BUFFER,uBuffer);  
-      this.gl.vertexAttribPointer(uv,2,this.gl.FLOAT,false,2*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
-      this.gl.enableVertexAttribArray(uv);
 
 
       this.gl.useProgram(this.GLProgram);
@@ -254,11 +136,50 @@ export class WebGLService {
       this.gl!.clearColor(0.2,0.2,0.2,1.0);
       this.gl!.clear(this.gl!.COLOR_BUFFER_BIT|this.gl!.DEPTH_BUFFER_BIT);
 
+
+      if(ast_update==false){
+
+        for(let i = 0; i < ast.mdl?.meshes.length!;i++){
+
+       
           
-      this.gl!.drawElements(this.gl!.TRIANGLES,this.inds.length,this.gl!.UNSIGNED_SHORT,0);
-
-
+          
+          const vBuffer = this.gl.createBuffer();
+          this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vBuffer);
+          this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(ast.mdl?.meshes[i].vt?.vertices??[]),this.gl.STATIC_DRAW);
+      
+    
+    
+          const iBuffer = this.gl.createBuffer();
+          this.gl.bindBuffer(this.gl.ELEMENT_ARRAY_BUFFER,iBuffer);
+          this.gl.bufferData(this.gl.ELEMENT_ARRAY_BUFFER,new Uint16Array(ast.mdl?.meshes[i].ind?.indices??[]),this.gl.STATIC_DRAW);
         
+            
+            
+          const uBuffer = this.gl.createBuffer();
+          this.gl.bindBuffer(this.gl.ARRAY_BUFFER, uBuffer);
+          this.gl.bufferData(this.gl.ARRAY_BUFFER,new Float32Array(ast.mdl?.meshes[i].uv?.textureCoordinates??[]),this.gl.STATIC_DRAW);
+        
+    
+    
+          const pos = this.gl.getAttribLocation(this.GLProgram!,'vPosition');
+          this.gl.bindBuffer(this.gl.ARRAY_BUFFER,vBuffer);
+          this.gl.vertexAttribPointer(pos,3,this.gl.FLOAT,false,3*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
+          this.gl.enableVertexAttribArray(pos);
+    
+    
+          const uv = this.gl.getAttribLocation(this.GLProgram!,'vUV');
+          this.gl.bindBuffer(this.gl.ARRAY_BUFFER,uBuffer);  
+          this.gl.vertexAttribPointer(uv,2,this.gl.FLOAT,false,2*Float32Array.BYTES_PER_ELEMENT,0*Float32Array.BYTES_PER_ELEMENT);
+          this.gl.enableVertexAttribArray(uv);
+    
+          
+          this.gl!.drawElements(this.gl!.TRIANGLES,ast.mdl?.meshes[i].ind?.indices!.length??0,this.gl!.UNSIGNED_SHORT,0);
+        
+        }
+      }
+
+       
         
       requestAnimationFrame(this.render.bind(this));
 
@@ -339,10 +260,7 @@ export class WebGLService {
       this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MIN_FILTER, this.gl.NEAREST);
       this.gl.texParameteri(this.gl.TEXTURE_2D,this.gl.TEXTURE_MAG_FILTER, this.gl.NEAREST);
 
-      this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);    
-
-      
-
+   
       window.addEventListener('resize', (event) => this.onresize(event));
 
       

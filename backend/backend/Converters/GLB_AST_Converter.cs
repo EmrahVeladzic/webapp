@@ -21,13 +21,15 @@ namespace backend.Converters
         public List<BN>? Bones { get; set; }
 
         public List<MSH>? Meshes { get; set; }
+
+        public List<Matrix4x4>? Matrices { get; set; }
         public Int32[]? Joint_Index_Array { get; set; }
 
         public AssetJson? Asset { get; set; }
 
         public byte GetFrame(byte FPS, float time)
         {
-            return (byte)((UInt64)(Math.Round(((float)(FPS-1)*time)))%(UInt64)FPS);
+            return (byte)((UInt64)(Math.Round(((float)(FPS - 1) * time))) % (UInt64)FPS);
         }
 
         public AST_DATA(ModelJson input)
@@ -36,21 +38,21 @@ namespace backend.Converters
 
             this.Input = input;
 
-            this.Model = ctx.GLBs.Where(g=>g.Hash==input.ModelHash).First();
+            this.Model = ctx.GLBs.Where(g => g.Hash == input.ModelHash).First();
 
-            this.Model.Setup(this.Model!.Serialized!,this.Model!.Hash!);
+            this.Model.Setup(this.Model!.Serialized!, this.Model!.Hash!);
 
             this.Output = new AST();
 
             ctx.ASTs.Add(this.Output);
 
-            this.Output.PrecisionBits=this.Input.PrecisionBits;
+            this.Output.PrecisionBits = this.Input.PrecisionBits;
 
 
-            
-            if (Model!.Metadata!.RootElement.TryGetProperty("nodes", out JsonElement nodes) && nodes.ValueKind == JsonValueKind.Array && this.Model.Metadata!.RootElement.TryGetProperty("accessors", out JsonElement accessors)&& accessors.ValueKind==JsonValueKind.Array && this.Model!.Metadata.RootElement.TryGetProperty("bufferViews",out JsonElement buffers)&&buffers.ValueKind==JsonValueKind.Array)
-            {               
-                
+
+            if (Model!.Metadata!.RootElement.TryGetProperty("nodes", out JsonElement nodes) && nodes.ValueKind == JsonValueKind.Array && this.Model.Metadata!.RootElement.TryGetProperty("accessors", out JsonElement accessors) && accessors.ValueKind == JsonValueKind.Array && this.Model!.Metadata.RootElement.TryGetProperty("bufferViews", out JsonElement buffers) && buffers.ValueKind == JsonValueKind.Array)
+            {
+
                 if (Model!.Metadata!.RootElement.TryGetProperty("skins", out JsonElement skins) && skins.ValueKind == JsonValueKind.Array)
                 {
 
@@ -68,7 +70,7 @@ namespace backend.Converters
 
                         Joint_Index_Array = joints.Deserialize<Int32[]>()!;
 
-                       
+
 
                         for (int i = 0; i < Joint_Index_Array.Length; i++)
                         {
@@ -76,7 +78,7 @@ namespace backend.Converters
 
                             temp_bone.FKR_ID = this.Output.FKR.ID;
 
-                           
+
                             ctx.BNs.Add(temp_bone);
 
                             ctx.SaveChanges();
@@ -116,15 +118,15 @@ namespace backend.Converters
                                 scale = new Vector3(s[0], s[1], s[2]);
                             }
 
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.X,this.Input.PrecisionBits));
+                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.X, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Y, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Z, this.Input.PrecisionBits));
-                                  
+
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.X, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Y, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Z, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.W, this.Input.PrecisionBits));
-                                
+
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.X, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Y, this.Input.PrecisionBits));
                             Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Z, this.Input.PrecisionBits));
@@ -137,10 +139,10 @@ namespace backend.Converters
                                 for (int j = 0; j < children.Length; j++)
                                 {
                                     Bones[Joint_Index_Array[children[j]]].Parent_ID = Bones[Joint_Index_Array[i]].ID;
-                                   
+
                                 }
 
-                               
+
 
                             }
 
@@ -148,15 +150,272 @@ namespace backend.Converters
 
                             ctx.SaveChanges();
 
-                            
+
+
+                        }
+
+                    }
+
+                    if (skins[0].TryGetProperty("inverseBindMatrices", out JsonElement inv) && inv.TryGetInt32(out int matrix_access))
+                    {
+
+
+                        if (accessors[matrix_access].TryGetProperty("bufferView", out JsonElement m_indices) && m_indices.TryGetInt32(out Int32 mat_view))
+                        {
+
+                            if (buffers[mat_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[mat_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                            {
+
+
+
+
+                            }
+
+
 
                         }
 
                     }
 
 
-                }
+                   
 
+
+                    if (Model!.Metadata.RootElement.TryGetProperty("animations", out JsonElement anims) && anims.ValueKind == JsonValueKind.Array)
+                    {
+                        if (this.Output.FKR != null)
+                        {
+                            this.Output.FKR.FPS = this.Input.TargetFPS;
+                        }
+
+                        for (int i = 0; i < anims.GetArrayLength(); i++)
+                        {
+
+                            ANM anim = new ANM();
+
+                            anim.FKR_ID = (int)this.Output.FKR_ID!;
+
+                            ctx.ANMs.Add(anim);
+
+                            ctx.SaveChanges();
+
+                            this.Output.FKR!.Animations.Add(anim);
+
+
+                            if (anims[i].TryGetProperty("channels", out JsonElement channels) && channels.ValueKind == JsonValueKind.Array && anims[i].TryGetProperty("samplers", out JsonElement samplers) && samplers.ValueKind == JsonValueKind.Array)
+                            {
+
+                                for (int j = 0; j < channels.GetArrayLength(); j += 3)
+                                {
+                                    TK track = new TK();
+                                    track.ANM_ID = anim.ID;
+
+                                    if (channels[j].TryGetProperty("target", out JsonElement target) && target.ValueKind == JsonValueKind.Object)
+                                    {
+                                        if (target.TryGetProperty("node", out JsonElement node) && node.TryGetInt32(out Int32 bone_index))
+                                        {
+                                            track.BN_ID = Bones![bone_index].ID;
+                                        }
+                                    }
+
+
+
+                                    if (channels[j].TryGetProperty("sampler", out JsonElement t_s) && t_s.TryGetInt32(out int t_samp))
+                                    {
+
+                                        if (samplers[t_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
+                                        {
+                                            if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
+                                            {
+
+                                                if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += sizeof(float))
+                                                    {
+
+                                                        track.T_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
+
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                        if (samplers[t_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
+                                        {
+                                            if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
+                                            {
+
+                                                if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += (sizeof(float) * 3))
+                                                    {
+
+                                                        track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
+
+
+                                                        track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
+
+
+                                                        track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
+
+
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+
+
+                                    }
+
+
+                                    if (channels[j + 1].TryGetProperty("sampler", out JsonElement r_s) && r_s.TryGetInt32(out int r_samp))
+                                    {
+
+                                        if (samplers[r_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
+                                        {
+                                            if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
+                                            {
+
+                                                if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += sizeof(float))
+                                                    {
+
+                                                        track.R_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
+
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                        if (samplers[r_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
+                                        {
+                                            if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
+                                            {
+
+                                                if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += (sizeof(float) * 4))
+                                                    {
+
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
+
+
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
+
+
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
+
+
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 3)), this.Input.PrecisionBits));
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+
+
+                                    }
+
+
+
+                                    if (channels[j + 2].TryGetProperty("sampler", out JsonElement s_s) && s_s.TryGetInt32(out int s_samp))
+                                    {
+
+                                        if (samplers[s_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
+                                        {
+                                            if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
+                                            {
+
+                                                if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += sizeof(float))
+                                                    {
+
+                                                        track.S_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
+
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+                                        if (samplers[s_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
+                                        {
+                                            if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
+                                            {
+
+                                                if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                                {
+
+                                                    for (int k = offset; k < (offset + length); k += (sizeof(float) * 3))
+                                                    {
+
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
+
+
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
+
+
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
+
+
+                                                    }
+
+
+                                                }
+
+                                            }
+
+                                        }
+
+
+
+                                    }
+
+                                    anim.Tracks.Add(track);
+
+                                    ctx.TKs.Add(track);
+
+                                    ctx.SaveChanges();
+
+
+
+
+                                }
+
+                            }
+
+                        }
+
+
+                    }
+                }
 
                 if (Model!.Metadata.RootElement.TryGetProperty("meshes", out JsonElement subMeshes) && subMeshes.ValueKind == JsonValueKind.Array)
                 {
@@ -174,7 +433,7 @@ namespace backend.Converters
                     {
                         MSH mesh = new MSH();
 
-                        mesh.MDL_ID = this.Output.MDL.ID;                        
+                        mesh.MDL_ID = this.Output.MDL.ID;
 
                         ctx.MSHs.Add(mesh);
 
@@ -186,36 +445,36 @@ namespace backend.Converters
 
                     }
 
-     
+
 
                     for (int i = 0; i < subMeshes.GetArrayLength(); i++)
                     {
 
-                        if (subMeshes[i].TryGetProperty("primitives",out JsonElement primitives)&& primitives.ValueKind==JsonValueKind.Array)
+                        if (subMeshes[i].TryGetProperty("primitives", out JsonElement primitives) && primitives.ValueKind == JsonValueKind.Array)
                         {
-                            if (primitives[0].TryGetProperty("indices",out JsonElement a_indices)&& a_indices.TryGetInt32(out Int32 ind_access))
+                            if (primitives[0].TryGetProperty("indices", out JsonElement a_indices) && a_indices.TryGetInt32(out Int32 ind_access))
                             {
 
-                                if (accessors[ind_access].TryGetProperty("bufferView",out JsonElement b_indices)&&b_indices.TryGetInt32(out Int32 ind_view))
+                                if (accessors[ind_access].TryGetProperty("bufferView", out JsonElement b_indices) && b_indices.TryGetInt32(out Int32 ind_view))
                                 {
 
-                                    if (buffers[ind_view].TryGetProperty("byteLength",out JsonElement len)&& len.TryGetInt32(out Int32 length) && buffers[ind_view].TryGetProperty("byteOffset",out JsonElement off)&&off.TryGetInt32(out Int32 offset))
+                                    if (buffers[ind_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[ind_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
                                     {
-                                        
+
 
                                         Meshes[i].IND = new IND();
                                         ctx.INDs.Add(Meshes[i].IND!);
 
-                                        ctx.SaveChanges() ;
+                                        ctx.SaveChanges();
 
                                         Meshes[i].IND_ID = Meshes[i].IND!.ID;
 
-                                        for (int j = offset; j < (offset+length); j+=sizeof(UInt16))
+                                        for (int j = offset; j < (offset + length); j += sizeof(UInt16))
                                         {
 
-                                           UInt16 temp = BitConverter.ToUInt16(this.Model!.BLOB!,j);
+                                            UInt16 temp = BitConverter.ToUInt16(this.Model!.BLOB!, j);
 
-                                           Meshes[i].IND!.Indices.Add(temp);
+                                            Meshes[i].IND!.Indices.Add(temp);
 
                                         }
 
@@ -224,17 +483,18 @@ namespace backend.Converters
                                     }
 
 
-                                }                            
+                                }
 
                             }
 
 
-                            if (primitives[0].TryGetProperty("attributes", out JsonElement attributes)&& attributes.ValueKind==JsonValueKind.Object)
+                            if (primitives[0].TryGetProperty("attributes", out JsonElement attributes) && attributes.ValueKind == JsonValueKind.Object)
                             {
-                              
-                                if(attributes.TryGetProperty("POSITION", out JsonElement a_vertices)&&a_vertices.TryGetInt32(out Int32 vert_access)){
 
-                                    if (accessors[vert_access].TryGetProperty("bufferView",out JsonElement b_vertices)&& b_vertices.TryGetInt32(out Int32 vert_view))
+                                if (attributes.TryGetProperty("POSITION", out JsonElement a_vertices) && a_vertices.TryGetInt32(out Int32 vert_access))
+                                {
+
+                                    if (accessors[vert_access].TryGetProperty("bufferView", out JsonElement b_vertices) && b_vertices.TryGetInt32(out Int32 vert_view))
                                     {
 
                                         if (buffers[vert_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[vert_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
@@ -248,17 +508,17 @@ namespace backend.Converters
 
                                             Meshes[i].VT_ID = Meshes[i].VT!.ID;
 
-                                            for (int j = offset; j < (offset + length); j += (3*sizeof(float)))
+                                            for (int j = offset; j < (offset + length); j += (3 * sizeof(float)))
                                             {
 
                                                 float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
 
-                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j+sizeof(float)));
+                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
 
-                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j+(2*sizeof(float))));
+                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j + (2 * sizeof(float))));
 
 
-                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(x,this.Input.PrecisionBits));
+                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
                                                 Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
                                                 Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
                                             }
@@ -329,7 +589,7 @@ namespace backend.Converters
 
                                             Meshes[i].UV = new UV();
 
-                                            
+
                                             ctx.UVs.Add(Meshes[i].UV!);
 
 
@@ -343,10 +603,10 @@ namespace backend.Converters
 
                                                 float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
 
-                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));                                               
-                                               
+                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
 
-                                                UInt16 w = (UInt16)((Int32)(this.Input.TexWidth)+1);
+
+                                                UInt16 w = (UInt16)((Int32)(this.Input.TexWidth) + 1);
                                                 UInt16 h = (UInt16)((Int32)(this.Input.TexHeight) + 1);
 
 
@@ -378,20 +638,20 @@ namespace backend.Converters
 
                                             List<byte> mesh_j = new List<byte>();
 
-                                            for (int j = offset; j < (offset + (4*sizeof(byte))); j += sizeof(byte))
+                                            for (int j = offset; j < (offset + (4 * sizeof(byte))); j += sizeof(byte))
                                             {
 
                                                 mesh_j.Add(Model!.BLOB![j]);
-                                              
+
                                             }
 
                                             mesh_j.OrderDescending();
 
-                                            if (Bones!=null && Joint_Index_Array!=null)
+                                            if (Bones != null && Joint_Index_Array != null)
                                             {
                                                 Meshes[i].BN_ID = Bones![Joint_Index_Array[mesh_j[0]]].ID;
 
-                                                
+
                                             }
 
                                         }
@@ -415,269 +675,32 @@ namespace backend.Converters
 
                 }
 
+                this.Output.Serialize();
 
-                if(Model!.Metadata.RootElement.TryGetProperty("animations",out JsonElement anims) && anims.ValueKind == JsonValueKind.Array)
+
+                ctx.SaveChanges();
+
+                ctx.Dispose();
+
+                this.Asset = new AssetJson();
+
+                this.Asset.Asset = this.Output;
+                this.Asset.AST_ID = this.Output.ID;
+
+               
+                if (this.Asset.Asset.FKR_ID != null)
                 {
-                    if (this.Output.FKR!=null)
-                    {
-                        this.Output.FKR.FPS = this.Input.TargetFPS;
-                    }
 
-                    for (int i = 0; i < anims.GetArrayLength(); i++) {
-                    
-                        ANM anim = new ANM();
-
-                        anim.FKR_ID = (int)this.Output.FKR_ID!;
-
-                        ctx.ANMs.Add(anim);
-
-                        ctx.SaveChanges();
-
-                        this.Output.FKR!.Animations.Add(anim);
-
-
-                        if (anims[i].TryGetProperty("channels", out JsonElement channels) && channels.ValueKind == JsonValueKind.Array && anims[i].TryGetProperty("samplers", out JsonElement samplers) && samplers.ValueKind == JsonValueKind.Array)
-                        {
-
-                            for (int j = 0; j < channels.GetArrayLength(); j += 3)
-                            {
-                                TK track = new TK();
-                                track.ANM_ID = anim.ID;
-
-                                if (channels[j].TryGetProperty("target", out JsonElement target) && target.ValueKind==JsonValueKind.Object)
-                                {
-                                    if (target.TryGetProperty("node", out JsonElement node) && node.TryGetInt32(out Int32 bone_index))
-                                    {
-                                        track.BN_ID = Bones![bone_index].ID;
-                                    }
-                                }
-
-
-
-                                if (channels[j].TryGetProperty("sampler", out JsonElement t_s)&& t_s.TryGetInt32(out int t_samp))
-                                {                                
-                                    
-                                    if( samplers[t_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
-                                    {
-                                        if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
-                                        {
-
-                                            if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for(int k = offset; k<(offset+length); k+=sizeof(float))
-                                                {
-
-                                                    track.T_Frames.Add(GetFrame(this.Input.TargetFPS,BitConverter.ToSingle(this.Model.BLOB!,k)));
-
-                                                }
-                                     
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                    if (samplers[t_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
-                                    {
-                                        if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
-                                        {
-
-                                            if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for (int k = offset; k < (offset + length); k += (sizeof(float)*3))
-                                                {
-
-                                                    track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!,k),this.Input.PrecisionBits));
-
-
-                                                    track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k+sizeof(float)), this.Input.PrecisionBits));
-
-
-                                                    track.Translations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float)*2)), this.Input.PrecisionBits));
-
-
-                                                }
-
-
-                                            }
-
-                                        }
-
-                                    }
-
-
-
-                                }
-
-
-                                if (channels[j+1].TryGetProperty("sampler", out JsonElement r_s) && r_s.TryGetInt32(out int r_samp))
-                                {
-
-                                    if (samplers[r_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
-                                    {
-                                        if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
-                                        {
-
-                                            if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for (int k = offset; k < (offset + length); k += sizeof(float))
-                                                {
-
-                                                    track.R_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
-
-                                                }
-
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                    if (samplers[r_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
-                                    {
-                                        if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
-                                        {
-
-                                            if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for (int k = offset; k < (offset + length); k += (sizeof(float) * 4))
-                                                {
-
-                                                    track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
-
-
-                                                    track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
-
-
-                                                    track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
-
-                                                   
-                                                    track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 3)), this.Input.PrecisionBits));
-                                                }
-
-
-                                            }
-
-                                        }
-
-                                    }
-
-
-
-                                }
-
-
-
-                                if (channels[j+2].TryGetProperty("sampler", out JsonElement s_s) && s_s.TryGetInt32(out int s_samp))
-                                {
-
-                                    if (samplers[s_samp].TryGetProperty("input", out JsonElement input_a) && input_a.TryGetInt32(out int input_access))
-                                    {
-                                        if (accessors[input_access].TryGetProperty("bufferView", out JsonElement input_b) && input_b.TryGetInt32(out int input_view))
-                                        {
-
-                                            if (buffers[input_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[input_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for (int k = offset; k < (offset + length); k += sizeof(float))
-                                                {
-
-                                                    track.S_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
-
-                                                }
-
-
-                                            }
-
-                                        }
-
-                                    }
-
-                                    if (samplers[s_samp].TryGetProperty("output", out JsonElement output_a) && output_a.TryGetInt32(out int output_access))
-                                    {
-                                        if (accessors[output_access].TryGetProperty("bufferView", out JsonElement output_b) && output_b.TryGetInt32(out int output_view))
-                                        {
-
-                                            if (buffers[output_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[output_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                            {
-
-                                                for (int k = offset; k < (offset + length); k += (sizeof(float) * 3))
-                                                {
-
-                                                    track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
-
-
-                                                    track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
-
-
-                                                    track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
-
-
-                                                }
-
-
-                                            }
-
-                                        }
-
-                                    }
-
-
-
-                                }
-
-                                anim.Tracks.Add(track);
-
-                                ctx.TKs.Add(track);
-
-                                ctx.SaveChanges();
-
-
-
-
-                            }
-
-                        }
-                    
-                    }
-
-                   
+                    this.Asset.Asset.FKR!.Root = this.Bones!.Where(b => b.Parent_ID == null).Select(b => b.ID).FirstOrDefault();
                 }
+
+
+
             }
 
-           
 
-            this.Output.Serialize();
-
-
-            ctx.SaveChanges();
-
-            ctx.Dispose();
-
-            this.Asset = new AssetJson();
-
-            this.Asset.Asset = this.Output;
-            this.Asset.AST_ID = this.Output.ID;
-
-            
-
-            if (this.Asset.Asset.FKR_ID!=null)
-            {             
-
-               this.Asset.Asset.FKR!.Root = this.Bones!.Where(b=>b.Parent_ID==null).Select(b=>b.ID).FirstOrDefault();
-            }
-
-           
 
         }
-
-
-
     }
+
 }

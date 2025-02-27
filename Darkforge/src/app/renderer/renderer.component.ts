@@ -88,8 +88,8 @@ constructor(private webgl:WebGLService){
 
       this.webgl.D+=mouseMovementZ/25;
 
-      if(this.webgl.D>-5){
-        this.webgl.D=-5;
+      if(this.webgl.D>-2.5){
+        this.webgl.D=-2.5;
       }
       if(this.webgl.D<-25){
         this.webgl.D=-25;
