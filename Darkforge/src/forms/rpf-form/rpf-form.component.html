@@ -95,7 +95,7 @@
         <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
             <label>Protected Buffer size:</label>
-            <app-numeric id="BFR" [max]="2" [min]="0" formControlName="bfr"></app-numeric>
+            <app-numeric id="BFR" [step]="2" [max]="2" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 

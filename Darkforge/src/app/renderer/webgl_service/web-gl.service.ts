@@ -2,7 +2,7 @@ import { HttpRequest } from '@angular/common/http';
 import { HostListener, Injectable, numberAttribute } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { glMatrix, mat4 } from 'gl-matrix';
+import { glMatrix, mat4, vec3, quat} from 'gl-matrix';
 import { withNoHttpTransferCache } from '@angular/platform-browser';
 import { flip_tex_state, tex,tex_update } from '../../../assets/global_assets';
 
@@ -10,6 +10,9 @@ import { flip_tex_state, tex,tex_update } from '../../../assets/global_assets';
   providedIn: 'root'
 })
 export class WebGLService {
+  public V:number=0;
+  public H:number=0;
+  public D:number=-7.5;
   private gl: WebGL2RenderingContext | null = null;
   private vertCode! :string;
   private fragCode! :string;
@@ -26,6 +29,7 @@ export class WebGLService {
   private inds  : any;
   private uvs :any;
   private out_tex :any;
+
 
   constructor(private http :HttpClient) { 
    
@@ -226,20 +230,25 @@ export class WebGLService {
         
       
       mat4.identity(this.wMat);
-      mat4.lookAt(this.vMat,[0.0,0.0,-7.5],[0.0,0.0,0.0],[0.0,1.0,0.0]);
+      mat4.lookAt(this.vMat,[0.0,0.0,this.D],[0.0,0.0,0.0],[0.0,1.0,0.0]);
       mat4.perspective(this.pMat,glMatrix.toRadian(45),this.gl.canvas.width/this.gl.canvas.height,0.1,1000.0);
 
       this.gl.uniformMatrix4fv(this.WMatLoc,false,this.wMat);
       this.gl.uniformMatrix4fv(this.VMatLoc,false,this.vMat);
       this.gl.uniformMatrix4fv(this.PMatLoc,false,this.pMat);
-          
-      let ang = 0;
-      let idM = new Float32Array(16);
-      mat4.identity(idM);   
-       
+        
+      let  vq = quat.create();
+      let hq = quat.create();
+      quat.setAxisAngle(vq, [1, 0, 0], this.V);
+      quat.setAxisAngle(hq, [0, 1, 0], this.H);
+      
+      let rq = quat.create();
 
-      ang=performance.now()/1000/6*2*Math.PI;
-      mat4.rotate(this.wMat,idM,ang,[0.7,1.0,0.3]);
+      quat.multiply(rq,vq,hq);
+      quat.normalize(rq,rq);
+
+      mat4.fromQuat(this.wMat,rq);
+
       this.gl!.uniformMatrix4fv(this.WMatLoc,false,this.wMat);
 
       this.gl!.clearColor(0.2,0.2,0.2,1.0);

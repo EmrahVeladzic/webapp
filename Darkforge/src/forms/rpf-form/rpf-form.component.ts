@@ -32,7 +32,7 @@ export class RpfFormComponent implements OnInit{
   constructor(){
     this.form = new FormGroup({
 
-      clut: new FormControl(256,[Validators.min(2),Validators.max(256),Validators.required]),
+      clut: new FormControl(16,[Validators.min(2),Validators.max(256),Validators.required]),
       mode: new FormControl('0'),
       use_alpha: new FormControl(false),
       r_slider : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
