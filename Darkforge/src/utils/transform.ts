@@ -20,3 +20,14 @@ export function get_Mat(t:number[]):mat4{
         
     return out;
 }
+
+
+export function get_Vec(t:number[], offset:number):vec3{
+    return vec3.fromValues(t[(offset*3)],t[(offset*3)+1],t[(offset*3)+2]);
+}
+export function get_Quat(t:number[], offset:number):quat{
+
+    let out = quat.fromValues(t[(offset*4)+0],t[(offset*4)+1],t[(offset*4)+2],t[(offset*4)+3]);
+    quat.normalize(out,out);
+    return out;
+}

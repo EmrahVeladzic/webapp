@@ -1,13 +1,14 @@
 import { HttpRequest } from '@angular/common/http';
 import { HostListener, Injectable, numberAttribute ,OnInit, OnDestroy} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { last, Observable } from 'rxjs';
 import { glMatrix, mat4, vec3, quat} from 'gl-matrix';
 import { withNoHttpTransferCache } from '@angular/platform-browser';
-import { flip_tex_state, tex,tex_update ,ast, ast_update, flip_ast_state, current_anim$} from '../../../assets/global_assets';
+import { flip_tex_state, tex,tex_update ,ast, ast_update, flip_ast_state, current_anim$, global_time, set_global_time} from '../../../assets/global_assets';
 import { SkeletalRig } from '../formats';
-import { get_Mat } from '../../../utils/transform';
+import { get_Mat, get_Quat, get_Vec } from '../../../utils/transform';
 import { Subscription } from 'rxjs';
+import { get_interpolation_value } from '../../../utils/interpolation';
 
 @Injectable({
   providedIn: 'root'
@@ -29,6 +30,7 @@ export class WebGLService {
   private wMat  : any;
   private vMat  : any;
   private pMat  : any;
+  static defaultFrameDuration : number = (1000/60);
 
    private animSubscription!: Subscription;
     public anim:number|null=null;
@@ -42,8 +44,82 @@ export class WebGLService {
       this.anim=$value;
     });
 
+    
   }
  
+  interpolate_bone_transforms(f:SkeletalRig,_time:number, bn_id:number):void{
+
+    let temp_bone = f.bones.find(b=>b.id===bn_id);
+
+    let temp_track = f.animations[this.anim!].tracks.find(t=>t.bN_ID===bn_id);
+
+    if(!temp_track){
+
+      
+      
+
+      temp_bone?.currentTRS!=get_Mat(temp_bone?.initialTransform!);
+      return;
+
+    }
+
+
+    let interp_v = get_interpolation_value(_time,temp_track?.t_Frames[(temp_track.t_Index!%temp_track.t_Frames.length)]!,temp_track?.t_Frames[((temp_track.t_Index!+1)%temp_track.t_Frames.length)]!);
+  
+
+    if(interp_v>=1){
+      interp_v=0
+      temp_track!.t_Index!++;
+    }
+
+    let index = temp_track?.t_Index!
+
+    let t_b :vec3 = get_Vec(temp_track?.translations!,(index%temp_track?.t_Frames.length!))
+    let t_e :vec3 = get_Vec(temp_track?.translations!,((index+1)%temp_track?.t_Frames.length!))
+
+    let out_t :vec3 = vec3.create();
+    vec3.lerp(out_t,t_b,t_e,interp_v);
+
+    interp_v = get_interpolation_value(_time,temp_track?.r_Frames[(temp_track.r_Index!%temp_track.r_Frames.length)]!,temp_track?.r_Frames[((temp_track.r_Index!+1)%temp_track.r_Frames.length)]!);
+
+   
+
+    if(interp_v>=1){
+      interp_v=0
+      temp_track!.r_Index!++;
+    }
+
+    index = temp_track?.r_Index!
+
+    let r_b :quat = get_Quat(temp_track?.rotations!,(index%temp_track?.r_Frames.length!))
+    let r_e :quat = get_Quat(temp_track?.rotations!,((index+1)%temp_track?.r_Frames.length!))
+
+    let out_r :quat = quat.create();
+    quat.slerp(out_r,r_b,r_e,interp_v);
+    quat.normalize(out_r,out_r);
+
+    interp_v = get_interpolation_value(_time,temp_track?.s_Frames[(temp_track.s_Index!%temp_track.s_Frames.length)]!,temp_track?.s_Frames[((temp_track.s_Index!+1)%temp_track.s_Frames.length)]!);
+
+    
+
+    if(interp_v>=1){
+      interp_v=0
+      temp_track!.s_Index!++;
+    }
+
+    index = temp_track?.s_Index!
+
+    let s_b :vec3 = get_Vec(temp_track?.scales!,(index%temp_track?.s_Frames.length!))
+    let s_e :vec3 = get_Vec(temp_track?.scales!,((index+1)%temp_track?.s_Frames.length!))
+    
+    let out_s :vec3 = vec3.create();
+    vec3.lerp(out_s,s_b,s_e,interp_v);
+
+    mat4.fromRotationTranslationScale(temp_bone?.currentTRS!,out_r,out_t,out_s);
+
+  }
+
+
   multiply_bone_matrices(f:SkeletalRig, j:number, m:mat4){
 
     let bone = f.bones.find(b=>b.id==j);    
@@ -106,7 +182,8 @@ export class WebGLService {
        this.vMat = new Float32Array(16);
        this.pMat = new Float32Array(16);
    
-   
+    
+       while(!this.gl);
      
 
       this.render();
@@ -119,7 +196,25 @@ export class WebGLService {
 
   render(){
 
-    if(this.gl){    
+    if(this.gl){   
+      
+      
+      let current_time = performance.now();
+    const diff = current_time-global_time;
+    let target_duration = WebGLService.defaultFrameDuration;
+
+    if(ast.fkr?.fps!=null){  
+      target_duration=(1000/ast.fkr.fps);
+    
+    }
+
+    if(diff>=target_duration){
+      
+    
+
+    set_global_time(current_time);
+
+    current_time/=1000;
     
 
       if(tex_update==true){
@@ -169,10 +264,12 @@ export class WebGLService {
         if(ast.fkr!=null){
 
           if(this.anim!=null){
+
+           
               
             for(let b of ast.fkr.bones){
 
-              b.currentTRS=mat4.create();
+              this.interpolate_bone_transforms(ast.fkr,current_time,b.id);
 
             }
 
@@ -237,7 +334,7 @@ export class WebGLService {
         }
       }
 
-       
+    }   
         
       requestAnimationFrame(this.render.bind(this));
 

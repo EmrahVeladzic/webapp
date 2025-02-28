@@ -1,6 +1,7 @@
 import { AfterViewInit, Component, OnInit, ViewChild, ElementRef, HostListener } from '@angular/core';
 import { WebGLService } from './webgl_service/web-gl.service';
 import { HttpClientModule } from '@angular/common/http';
+import { isEmpty } from 'rxjs';
 
 
 @Component({
@@ -73,10 +74,15 @@ constructor(private webgl:WebGLService){
     
    
         this.webgl.H%=(2*Math.PI);
-        this.webgl.V%=(2*Math.PI);
-
-      
-      
+        
+        if(this.webgl.V>(Math.PI/2)){
+          this.webgl.V=(Math.PI/2);
+        }
+        else if(this.webgl.V<(-Math.PI/2)){
+          this.webgl.V=(-Math.PI/2);
+        } 
+        
+        
 
     }
 

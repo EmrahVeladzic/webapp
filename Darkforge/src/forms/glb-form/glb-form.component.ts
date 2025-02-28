@@ -83,7 +83,6 @@ post_model($event : Event):void{
       flip_ast_state();
     
     }
-
      
    });
  
