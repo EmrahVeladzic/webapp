@@ -61,25 +61,7 @@ namespace backend.Controllers
         }
 
 
-        [HttpGet]
-        public AssetJson Get()
-        {
-            return new AssetJson();
-        }
-
-        [HttpGet("fix")]
-        public IActionResult Fix(float v, byte p)
-        {
-
-            return StatusCode(200, FixedPoint.GetFixed<Int32>(v, p));
-        }
-
-        [HttpGet("float")]
-        public IActionResult Flt(Int32 v, byte p)
-        {
-
-            return StatusCode(200, FixedPoint.GetFloat<Int32>(v, p));
-        }
+      
 
     }
 }
