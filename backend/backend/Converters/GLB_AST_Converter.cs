@@ -4,8 +4,10 @@ using backend.Models;
 using backend.Requests;
 using backend.Utils;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Numerics;
 using System.Reflection.Metadata;
+using System.Runtime.InteropServices;
 using System.Text.Json;
 
 namespace backend.Converters
@@ -32,6 +34,8 @@ namespace backend.Converters
             return (byte)((UInt64)(Math.Round(((float)(FPS - 1) * time))) % (UInt64)FPS);
         }
 
+       
+
         public AST_DATA(ModelJson input)
         {
             DarkforgeDBContext ctx = new DarkforgeDBContext();
@@ -47,6 +51,8 @@ namespace backend.Converters
             ctx.ASTs.Add(this.Output);
 
             this.Output.PrecisionBits = this.Input.PrecisionBits;
+
+
 
 
 
@@ -118,18 +124,18 @@ namespace backend.Converters
                                 scale = new Vector3(s[0], s[1], s[2]);
                             }
 
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.X, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Y, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.X, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Z, this.Input.PrecisionBits));
 
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.X, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Y, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Z, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.W, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.X, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.W, this.Input.PrecisionBits));
 
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.X, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Y, this.Input.PrecisionBits));
-                            Bones[Joint_Index_Array[i]].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.X, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Z, this.Input.PrecisionBits));
 
 
                             if (nodes[i].TryGetProperty("children", out JsonElement child_joints) && child_joints.ValueKind == JsonValueKind.Array)
@@ -138,7 +144,7 @@ namespace backend.Converters
 
                                 for (int j = 0; j < children.Length; j++)
                                 {
-                                    Bones[Joint_Index_Array[children[j]]].Parent_ID = Bones[Joint_Index_Array[i]].ID;
+                                    Bones[children[j]].Parent_ID = Bones[i].ID;
 
                                 }
 
@@ -158,17 +164,31 @@ namespace backend.Converters
 
                     if (skins[0].TryGetProperty("inverseBindMatrices", out JsonElement inv) && inv.TryGetInt32(out int matrix_access))
                     {
-
+                        Matrices = new List<Matrix4x4>();
 
                         if (accessors[matrix_access].TryGetProperty("bufferView", out JsonElement m_indices) && m_indices.TryGetInt32(out Int32 mat_view))
                         {
 
+
+
                             if (buffers[mat_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[mat_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
                             {
 
+                                for (int k = offset; k < offset + length; k += (16 * sizeof(float)))
+                                {
+
+                                    ReadOnlySpan<float> span = MemoryMarshal.Cast<byte, float>(Model.BLOB.AsSpan(k, 16 * sizeof(float)));
 
 
+                                    Matrices.Add( new Matrix4x4(
+                                    span[0], span[1], span[2], span[3],
+                                    span[4], span[5], span[6], span[7],
+                                    span[8], span[9], span[10], span[11],
+                                    span[12], span[13], span[14], span[15]
+                                    ));
 
+                                   
+                                }
                             }
 
 
@@ -236,6 +256,8 @@ namespace backend.Converters
 
                                                         track.T_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
 
+
+                                                 
                                                     }
 
 
@@ -491,89 +513,6 @@ namespace backend.Converters
                             if (primitives[0].TryGetProperty("attributes", out JsonElement attributes) && attributes.ValueKind == JsonValueKind.Object)
                             {
 
-                                if (attributes.TryGetProperty("POSITION", out JsonElement a_vertices) && a_vertices.TryGetInt32(out Int32 vert_access))
-                                {
-
-                                    if (accessors[vert_access].TryGetProperty("bufferView", out JsonElement b_vertices) && b_vertices.TryGetInt32(out Int32 vert_view))
-                                    {
-
-                                        if (buffers[vert_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[vert_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                        {
-
-
-                                            Meshes[i].VT = new VT();
-                                            ctx.VTs.Add(Meshes[i].VT!);
-
-                                            ctx.SaveChanges();
-
-                                            Meshes[i].VT_ID = Meshes[i].VT!.ID;
-
-                                            for (int j = offset; j < (offset + length); j += (3 * sizeof(float)))
-                                            {
-
-                                                float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
-
-                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
-
-                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j + (2 * sizeof(float))));
-
-
-                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
-                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
-                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
-                                            }
-
-
-
-                                        }
-
-
-
-                                    }
-
-                                }
-
-                                if (attributes.TryGetProperty("NORMAL", out JsonElement a_normals) && a_normals.TryGetInt32(out Int32 nrm_access))
-                                {
-
-                                    if (accessors[nrm_access].TryGetProperty("bufferView", out JsonElement b_normals) && b_normals.TryGetInt32(out Int32 nrm_view))
-                                    {
-
-                                        if (buffers[nrm_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[nrm_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
-                                        {
-
-
-                                            Meshes[i].NRM = new NRM();
-                                            ctx.NRMs.Add(Meshes[i].NRM!);
-
-                                            ctx.SaveChanges();
-
-                                            Meshes[i].NRM_ID = Meshes[i].NRM!.ID;
-
-                                            for (int j = offset; j < (offset + length); j += (3 * sizeof(float)))
-                                            {
-
-                                                float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
-
-                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
-
-                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j + (2 * sizeof(float))));
-
-
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
-                                            }
-
-
-
-                                        }
-
-
-
-                                    }
-
-                                }
 
                                 if (attributes.TryGetProperty("TEXCOORD_0", out JsonElement a_uvs) && a_uvs.TryGetInt32(out Int32 uv_access))
                                 {
@@ -626,6 +565,8 @@ namespace backend.Converters
 
                                 }
 
+                                int tmpbn = 0;
+
 
                                 if (attributes.TryGetProperty("JOINTS_0", out JsonElement a_joints) && a_joints.TryGetInt32(out Int32 jnt_access))
                                 {
@@ -651,7 +592,7 @@ namespace backend.Converters
                                             {
                                                 Meshes[i].BN_ID = Bones![Joint_Index_Array[mesh_j[0]]].ID;
 
-
+                                                tmpbn=(int)mesh_j[0];
                                             }
 
                                         }
@@ -662,6 +603,117 @@ namespace backend.Converters
 
                                 }
 
+
+
+                                if (attributes.TryGetProperty("POSITION", out JsonElement a_vertices) && a_vertices.TryGetInt32(out Int32 vert_access))
+                                {
+
+                                    if (accessors[vert_access].TryGetProperty("bufferView", out JsonElement b_vertices) && b_vertices.TryGetInt32(out Int32 vert_view))
+                                    {
+
+                                        if (buffers[vert_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[vert_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                        {
+
+
+                                            Meshes[i].VT = new VT();
+                                            ctx.VTs.Add(Meshes[i].VT!);
+
+                                            ctx.SaveChanges();
+
+                                            Meshes[i].VT_ID = Meshes[i].VT!.ID;
+
+                                            for (int j = offset; j < (offset + length); j += (3 * sizeof(float)))
+                                            {
+
+                                                float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
+
+                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
+
+                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j + (2 * sizeof(float))));
+
+
+                                                if (Matrices != null)
+                                                {
+                                                    Vector4 temp = Vector4.Transform(new Vector4(x,y,z,1.0f),Matrices[tmpbn]);
+
+                                                    x = temp.X;
+                                                    y=temp.Y;
+                                                    z=temp.Z;
+                                                }
+
+
+
+
+                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
+                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
+                                                Meshes[i].VT!.Vertices.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
+                                            }
+
+
+
+                                        }
+
+
+
+                                    }
+
+                                }
+
+                                if (attributes.TryGetProperty("NORMAL", out JsonElement a_normals) && a_normals.TryGetInt32(out Int32 nrm_access))
+                                {
+
+                                    if (accessors[nrm_access].TryGetProperty("bufferView", out JsonElement b_normals) && b_normals.TryGetInt32(out Int32 nrm_view))
+                                    {
+
+                                        if (buffers[nrm_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[nrm_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
+                                        {
+
+
+                                            Meshes[i].NRM = new NRM();
+                                            ctx.NRMs.Add(Meshes[i].NRM!);
+
+                                            ctx.SaveChanges();
+
+                                            Meshes[i].NRM_ID = Meshes[i].NRM!.ID;
+
+                                            for (int j = offset; j < (offset + length); j += (3 * sizeof(float)))
+                                            {
+
+                                                float x = BitConverter.ToSingle(this.Model!.BLOB!, j);
+
+                                                float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
+
+                                                float z = BitConverter.ToSingle(this.Model!.BLOB!, (j + (2 * sizeof(float))));
+
+
+
+                                                if (Matrices != null)
+                                                {
+                                                    Vector4 temp = Vector4.Transform(new Vector4(x, y, z, 1.0f), Matrices[tmpbn]);
+
+                                                    x = temp.X;
+                                                    y = temp.Y;
+                                                    z = temp.Z;
+
+                                                }
+
+
+
+
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
+                                            }
+
+
+
+                                        }
+
+
+
+                                    }
+
+                                }
 
 
 

@@ -1,8 +1,8 @@
 import { get_bit_mask, get_bits_per_index,get_pcm_value } from "../../utils/bitfield_helper";
 import { flip_tex_state } from "../../assets/global_assets";
 import { get_float, normalize_uv, time_float } from "../../utils/fixed_point";
-
-
+import { mat4 } from "gl-matrix";
+import { get_Mat } from "../../utils/transform";
 
 export class Texture{
 
@@ -226,6 +226,9 @@ export class Track{
     public r_Frames:number[];
     public s_Frames:number[];
 
+    public t_Index?:number;
+    public r_Index?:number;
+    public s_Index?:number;
     
     constructor(i:number, b:number, t:number[],r:number[],s:number[],tt:number[],rt:number[],st:number[]) {
         
@@ -248,10 +251,14 @@ export class Animation{
     public id:number;
     public tracks:Track[];
 
+    public duration?:number;
+
     constructor(i:number, t:Track[]) {
         
         this.id=i;
         this.tracks=t;
+
+        this.duration=0;
                 
     }
 
@@ -262,12 +269,15 @@ export class Bone{
     public parent_ID?:number;
     public initialTransform:number[];
 
+    public currentTRS?:mat4;
+
     constructor(i:number, t:number[],p?:number) {
         this.id=i;
         this.parent_ID=p;
         this.initialTransform=t;
-        
+        this.currentTRS=get_Mat(t);
     }
+
 }
 
 
@@ -277,7 +287,7 @@ export class SkeletalRig{
     public id:number;
     public bones:Bone[];
     public animations:Animation[];
-    public FPS:number | null;
+    public fps:number | null;
     public root:number;
     
     constructor(i:number,b:Bone[],a:Animation[],f:number|null,r:number) {
@@ -285,7 +295,7 @@ export class SkeletalRig{
         this.id=i;
         this.bones=b;
         this.animations=a;
-        this.FPS=f;
+        this.fps=f;
         this.root=r;
 
     }
@@ -331,6 +341,7 @@ export class Asset{
             for(let b of f.bones){
                 
                 b.initialTransform= b.initialTransform.map(i=>get_float(i,this.precisionBits));
+                b.currentTRS=get_Mat(b.initialTransform);
 
             }
 
@@ -341,13 +352,40 @@ export class Asset{
 
                     t.translations= t.translations.map(tr=>get_float(tr,this.precisionBits));
                     t.rotations= t.rotations.map(ro=>get_float(ro,this.precisionBits));
-                    t.scales= t.scales.map(sc=>get_float(sc,this.precisionBits));
+                    t.scales= t.scales.map(sc=>get_float(sc,this.precisionBits));                   
 
-                    time_float(t.t_Frames,f.FPS!);
-                    time_float(t.r_Frames,f.FPS!);
-                    time_float(t.s_Frames,f.FPS!);
+                    time_float(t.t_Frames,f.fps!);
+                    time_float(t.r_Frames,f.fps!);
+                    time_float(t.s_Frames,f.fps!);
                 }
 
+                a.duration=0;
+                for(let t of a.tracks){
+
+                    for(let i =0; i <t.t_Frames.length; i++){
+                        if(t.t_Frames[i]>a.duration){
+                            a.duration=t.t_Frames[i];
+                        }
+                    }
+
+                    for(let i =0; i <t.r_Frames.length; i++){
+                        if(t.r_Frames[i]>a.duration){
+                            a.duration=t.r_Frames[i];
+                        }
+                    }
+
+
+                    for(let i =0; i <t.s_Frames.length; i++){
+                        if(t.s_Frames[i]>a.duration){
+                            a.duration=t.s_Frames[i];
+                        }
+                    }
+
+                    t.t_Index=0;
+                    t.r_Index=0;
+                    t.s_Index=0;
+
+                }
 
 
             }

@@ -8,15 +8,25 @@
 
 <div class="params">
 
+    <label>Animation select:</label>
+    <div class="select">
+        <select title="animation" id="anim" [(ngModel)]="anim" (ngModelChange)="update($event)">
+            <option [ngValue]="null">-NONE-</option>
+            <option *ngFor="let a of ast_ref.fkr?.animations" [ngValue]="ast_ref.fkr?.animations?.indexOf(a)">Animation {{ast_ref.fkr?.animations?.indexOf(a)}}</option>
+
+        </select>        
+    </div>
+
+
+    <label>WL audio preview:</label>
     <div class="audio">
         <app-audio-player #wl_output [standard_format]="false"></app-audio-player>
     </div>
 
-</div>
-
-<div class="timeline_holder">
-
+  
 
 </div>
+
+
 
 </body>

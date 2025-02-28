@@ -39,7 +39,7 @@ export class WlFormComponent {
      this.audioPlayer.audio.nativeElement.src=wav_preview_url;
      this.audioPlayer.audio.nativeElement.load();
     });
-
+    
   
     this.form.get('t_numeric')?.valueChanges.subscribe(value=>{
       if(value<4 || value===null){

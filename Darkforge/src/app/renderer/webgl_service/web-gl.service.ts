@@ -1,10 +1,13 @@
 import { HttpRequest } from '@angular/common/http';
-import { HostListener, Injectable, numberAttribute } from '@angular/core';
+import { HostListener, Injectable, numberAttribute ,OnInit, OnDestroy} from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { glMatrix, mat4, vec3, quat} from 'gl-matrix';
 import { withNoHttpTransferCache } from '@angular/platform-browser';
-import { flip_tex_state, tex,tex_update ,ast, ast_update, flip_ast_state} from '../../../assets/global_assets';
+import { flip_tex_state, tex,tex_update ,ast, ast_update, flip_ast_state, current_anim$} from '../../../assets/global_assets';
+import { SkeletalRig } from '../formats';
+import { get_Mat } from '../../../utils/transform';
+import { Subscription } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -22,17 +25,38 @@ export class WebGLService {
   private WMatLoc :any;
   private VMatLoc :any;
   private PMatLoc :any;
+  private TMatLoc :any;
   private wMat  : any;
   private vMat  : any;
   private pMat  : any;
+
+   private animSubscription!: Subscription;
+    public anim:number|null=null;
+
 
   private out_tex :any;
 
 
   constructor(private http :HttpClient) { 
-   
+    this.animSubscription=current_anim$.subscribe($value=>{
+      this.anim=$value;
+    });
+
   }
  
+  multiply_bone_matrices(f:SkeletalRig, j:number, m:mat4){
+
+    let bone = f.bones.find(b=>b.id==j);    
+    mat4.multiply(bone?.currentTRS!,m,bone?.currentTRS!);
+
+    let children = f.bones.filter(b=>b.parent_ID==bone?.id);
+
+    for(let c of children){
+      this.multiply_bone_matrices(f,c.id,bone?.currentTRS!);
+    }
+
+  }
+
 
 
   @HostListener('window:resize',['$event'])
@@ -76,6 +100,7 @@ export class WebGLService {
        this.WMatLoc =this.gl.getUniformLocation(this.GLProgram!,'worldMat');
        this.VMatLoc =this.gl.getUniformLocation(this.GLProgram!,'viewMat');
        this.PMatLoc =this.gl.getUniformLocation(this.GLProgram!,'projMat');
+       this.TMatLoc =this.gl.getUniformLocation(this.GLProgram!,'transMat');
 
        this.wMat = new Float32Array(16);
        this.vMat = new Float32Array(16);
@@ -118,6 +143,7 @@ export class WebGLService {
       this.gl.uniformMatrix4fv(this.WMatLoc,false,this.wMat);
       this.gl.uniformMatrix4fv(this.VMatLoc,false,this.vMat);
       this.gl.uniformMatrix4fv(this.PMatLoc,false,this.pMat);
+      this.gl.uniformMatrix4fv(this.TMatLoc,false,mat4.create());
         
       let  vq = quat.create();
       let hq = quat.create();
@@ -139,10 +165,42 @@ export class WebGLService {
 
       if(ast_update==false){
 
+
+        if(ast.fkr!=null){
+
+          if(this.anim!=null){
+              
+            for(let b of ast.fkr.bones){
+
+              b.currentTRS=mat4.create();
+
+            }
+
+          }
+
+          else{
+            
+            for(let b of ast.fkr.bones){
+
+              b.currentTRS=get_Mat(b.initialTransform);
+  
+            }
+
+          }        
+        
+
+         this.multiply_bone_matrices(ast.fkr,ast.fkr.root,mat4.create());
+
+        }
+
+
         for(let i = 0; i < ast.mdl?.meshes.length!;i++){
 
-       
-          
+          if(ast.mdl?.meshes[i].bN_ID!=null){
+            this.gl.uniformMatrix4fv(this.TMatLoc,false,ast.fkr?.bones.find(b=>b.id==ast.mdl?.meshes[i].bN_ID!)!.currentTRS!);                     
+          }
+
+         
           
           const vBuffer = this.gl.createBuffer();
           this.gl.bindBuffer(this.gl.ARRAY_BUFFER, vBuffer);
@@ -297,7 +355,13 @@ export class WebGLService {
     else{}
   }
 
-  
+
+
+  ngOnDestroy(){
+
+    this.animSubscription.unsubscribe();
+
+  }
 
 }
 

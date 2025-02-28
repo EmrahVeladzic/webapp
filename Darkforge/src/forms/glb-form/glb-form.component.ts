@@ -5,7 +5,7 @@ import { NumericComponent } from "../../utils/controls/numeric/numeric.component
 import { base_url, model_actions } from '../../app/app.routes';
 import { AssetJson, ModelJson } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
-import { flip_ast_state,ast } from '../../assets/global_assets';
+import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 
 
 @Component({
@@ -69,9 +69,9 @@ post_model($event : Event):void{
   
     if($response.status===200){
 
-      let raw = $response.body as any;
+      update_anim(null);
 
-      console.log(raw);
+      let raw = $response.body as any;
       
       flip_ast_state();  
       ast.reset( raw.asset.id,
@@ -79,8 +79,7 @@ post_model($event : Event):void{
       raw.asset.mdl ?? null,
       raw.asset.fkr ?? null);
 
-      console.log(ast);
-
+     
       flip_ast_state();
     
     }

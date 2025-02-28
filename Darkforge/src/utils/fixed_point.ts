@@ -22,8 +22,7 @@ export function normalize_uv(Input: number[], width:number, height:number):void{
 
 
 export function time_float(Input:number[], FPS:number):void{
-
-
+    
     for(let i = 0; i< Input.length; i++){
         Input[i]/=FPS;
 

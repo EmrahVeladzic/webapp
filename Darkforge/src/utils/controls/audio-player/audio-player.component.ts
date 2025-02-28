@@ -43,8 +43,9 @@ export class AudioPlayerComponent {
       this.audio.nativeElement.loop=true;
     }
  
-   
-   
+    else{
+      this.set_audio();
+    }
   }
 
   public set_audio():void{
@@ -84,6 +85,8 @@ export class AudioPlayerComponent {
       channel_data.push([]);
     }
 
+    
+
     for (let i = 0; i < sfx.Data.length; i++) {
      
       channel_data[i%sfx.ChannelCount].push(sfx.Data[i]);
@@ -91,6 +94,7 @@ export class AudioPlayerComponent {
     
       
     }
+   
 
     for(let i = 0; i < sfx.ChannelCount; i++){
 
