@@ -72,7 +72,7 @@ post_model($event : Event):void{
       update_anim(null);
 
       let raw = $response.body as any;
-      
+
       flip_ast_state();  
       ast.reset( raw.asset.id,
       raw.asset.precisionBits,

@@ -36,9 +36,9 @@ namespace backend.Converters
 
        
 
-        public AST_DATA(ModelJson input)
+        public AST_DATA(ModelJson input, DarkforgeDBContext ctx)
         {
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
+            
 
             this.Input = input;
 
@@ -732,7 +732,7 @@ namespace backend.Converters
 
                 ctx.SaveChanges();
 
-                ctx.Dispose();
+              
 
                 this.Asset = new AssetJson();
 

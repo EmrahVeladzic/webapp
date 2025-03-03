@@ -22,7 +22,6 @@ import { DashboardComponent } from "../forms/dashboard/dashboard.component";
 })
 export class AppComponent {
   title = 'Darkforge';
-  public Menu : string = "NONE";
   public transfer:FileTransferService;
   
   @ViewChild('file_input') input? : ElementRef<HTMLInputElement>;
@@ -49,15 +48,12 @@ export class AppComponent {
     if(selected!=null){
       if(selected.name.endsWith('.bmp')){      
         this.fileService.process_bmp(selected);
-        this.Menu='rpf';
       }
       else if(selected.name.endsWith('.wav')){              
-        this.fileService.process_wav(selected);
-        this.Menu='wl';
+        this.fileService.process_wav(selected);        
       }
       else if(selected.name.endsWith('.glb')){              
-        this.fileService.process_glb(selected,selected.name);
-        this.Menu='ast';
+        this.fileService.process_glb(selected,selected.name);        
       }
 
       else{

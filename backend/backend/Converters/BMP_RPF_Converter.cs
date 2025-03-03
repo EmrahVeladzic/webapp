@@ -434,9 +434,9 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
-        public IMG_DATA(ImageJson input)
+        public IMG_DATA(ImageJson input, DarkforgeDBContext ctx)
         {
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
+            
 
             this.Input = input;
 
@@ -585,8 +585,6 @@ namespace backend.Converters
             ctx.SaveChanges();
 
             
-
-            ctx.Dispose();
 
             this.Texture = new TextureJson();
 

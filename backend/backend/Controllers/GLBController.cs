@@ -53,9 +53,11 @@ namespace backend.Controllers
 
             }
 
-            ctx.Dispose();
+            
 
-            AST_DATA Ast = new AST_DATA(input); 
+            AST_DATA Ast = new AST_DATA(input,ctx);
+
+            ctx.Dispose();
 
             return StatusCode(200,Ast.Asset);
         }

@@ -56,10 +56,10 @@ namespace backend.Controllers
             }
 
 
+            
+            SFX_DATA Sfx = new SFX_DATA(input,ctx);
+
             ctx.Dispose();
-
-            SFX_DATA Sfx = new SFX_DATA(input);
-
 
 
             return StatusCode(200,Sfx.Audio);

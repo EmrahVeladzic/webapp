@@ -53,13 +53,12 @@ namespace backend.Controllers
 
                 }
             }
-
           
-            ctx.Dispose();           
+                    
 
-            IMG_DATA Img = new IMG_DATA(input);
+            IMG_DATA Img = new IMG_DATA(input,ctx);
 
-
+            ctx.Dispose();
 
             return StatusCode(200,Img.Texture);
         }

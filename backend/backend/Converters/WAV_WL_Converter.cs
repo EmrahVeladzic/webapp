@@ -86,9 +86,9 @@ namespace backend.Converters
         }
 
 
-        public SFX_DATA(SoundJson input)
+        public SFX_DATA(SoundJson input, DarkforgeDBContext ctx)
         {
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
+            
 
             this.Input = input;
 
@@ -167,7 +167,7 @@ namespace backend.Converters
 
             ctx.SaveChanges();
 
-            ctx.Dispose();
+           
 
             this.Audio.AudioData = new List<byte>(this.Output!.Serialized!);
           

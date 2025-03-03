@@ -84,7 +84,7 @@ export class WlFormComponent {
 
     let thresholdB = this.form.get('t_numeric')?.value;
  
-    let channelC = this.transfer.accessBinaryFile(22,2);
+    let channelC = this.transfer.accessBinaryFile(22,2) as number;
 
     let looping = this.form.get('loop')?.value;
 
