@@ -2,7 +2,7 @@ import { Component ,Input} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
-import { base_url, model_actions } from '../../app/app.routes';
+import { base_url, model_actions } from '../../app/http';
 import { AssetJson, ModelJson } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';

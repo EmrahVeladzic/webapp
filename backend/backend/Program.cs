@@ -33,6 +33,7 @@ builder.Services.AddDbContext<DarkforgeDBContext>(options =>
 
 });
 
+builder.Services.AddHostedService<CleanupService>();
 
 var app = builder.Build();
 

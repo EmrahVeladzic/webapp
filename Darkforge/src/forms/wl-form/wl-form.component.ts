@@ -7,7 +7,7 @@ import { AudioPlayerComponent } from "../../utils/controls/audio-player/audio-pl
 import { wav_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
 import { Subscription } from 'rxjs';
 import { AudioJson, SoundJson } from '../../models/models';
-import { base_url,sound_actions } from '../../app/app.routes';
+import { base_url,sound_actions } from '../../app/http';
 import { sfx } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 

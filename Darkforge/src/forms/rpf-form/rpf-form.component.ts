@@ -3,7 +3,7 @@ import { FileTransferService } from '../../app/file_transfer/file_service/file-t
 import { ImageJson,TextureJson } from '../../models/models';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { base_url, image_actions } from '../../app/app.routes';
+import { base_url, image_actions } from '../../app/http';
 import { tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';

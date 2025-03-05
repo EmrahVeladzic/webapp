@@ -1,8 +1,11 @@
 import { Routes } from '@angular/router';
+import { LoginComponent } from './login/login.component';
+import { MainInterfaceComponent } from './main-interface/main-interface.component';
 
-export const routes: Routes = [];
+export const routes: Routes = [
+    {path: '', redirectTo:'login',pathMatch:'full'},
+    {path:'login',component:LoginComponent},
+    {path:'user/:id',component:MainInterfaceComponent}
 
-export const base_url :string = "https://localhost:7032/api";
-export const image_actions  :string = "BMP";
-export const sound_actions  :string = "WAV";
-export const model_actions  :string = "GLB";
+];
+

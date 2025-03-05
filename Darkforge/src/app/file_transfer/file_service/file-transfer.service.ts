@@ -1,8 +1,8 @@
 import { Injectable, Input, numberAttribute } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
-import { base_url,image_actions } from '../../app.routes';
+import { base_url,image_actions } from '../../http';
 import { Subject } from 'rxjs';
-import { alert_loclized } from '../../../utils/alerts';
+import { alert_localized } from '../../../utils/alerts';
 import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
@@ -139,21 +139,21 @@ export class FileTransferService {
         }
 
         else{
-          alert_loclized(this.translate,"alerts.bpp");
+          alert_localized(this.translate,"alerts.bpp");
           return false;
         }
 
 
       }
       else{
-        alert_loclized(this.translate,"alerts.dimensions");
+        alert_localized(this.translate,"alerts.dimensions");
         return false;
       }
 
     }
 
     else{
-      alert_loclized(this.translate,"alerts.not-bmp");
+      alert_localized(this.translate,"alerts.not-bmp");
       return false;
     }
     
@@ -172,14 +172,14 @@ export class FileTransferService {
 
       }
       else{
-        alert_loclized(this.translate,"alerts.sample-rate");
+        alert_localized(this.translate,"alerts.sample-rate");
         return false;
       }
 
 
     }
     else{
-      alert_loclized(this.translate,"alerts.not-wav");
+      alert_localized(this.translate,"alerts.not-wav");
       return false;
     }
 
@@ -213,7 +213,7 @@ export class FileTransferService {
 
                 if(m.primitives[0].attributes.JOINTS_0==undefined){
 
-                  alert_loclized(this.translate,"alerts.bones");
+                  alert_localized(this.translate,"alerts.bones");
                   return false;
 
                 }
@@ -229,26 +229,26 @@ export class FileTransferService {
 
           }
           else{
-            alert_loclized(this.translate,"alerts.no-meshes");
+            alert_localized(this.translate,"alerts.no-meshes");
             return false;
           }         
          
         }
 
         else{
-          alert_loclized(this.translate,"alerts.no-blob");
+          alert_localized(this.translate,"alerts.no-blob");
         return false;
         }
         
       }
       else{
-        alert_loclized(this.translate,"alerts.no-metadata");
+        alert_localized(this.translate,"alerts.no-metadata");
         return false;
       }
 
     }
     else{
-      alert_loclized(this.translate,"alerts.not-glb");
+      alert_localized(this.translate,"alerts.not-glb");
       return false;
     }
 
