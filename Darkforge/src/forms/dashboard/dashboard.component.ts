@@ -6,12 +6,12 @@ import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { update_anim, ast, current_anim$} from '../../assets/global_assets';
 import { Asset } from '../../app/renderer/formats';
-
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [AudioPlayerComponent, FormsModule,CommonModule],
+  imports: [AudioPlayerComponent, FormsModule,CommonModule,TranslatePipe],
   templateUrl: './dashboard.component.html',
   styleUrl: './dashboard.component.css'
 })
@@ -24,7 +24,7 @@ export class DashboardComponent {
   public ast_ref:Asset;
 
 
-  constructor() {
+  constructor(public translate:TranslateService) {
     this.ast_ref=ast;
     
   }

@@ -1,0 +1,62 @@
+{
+    "button":{
+        "post":"Pošalji",
+        "export":"Izvezi",
+        "play":"Reproduciraj/Prekini"
+    },
+    "link":{
+        "manage":"Upravljaj datotekama",
+        "about":"O aplikaciji",
+        "prefs":"Preferencije"
+    },
+    "label":{
+    "anim-sel":"Odabir animacije:",
+    "audio-prev":"Pregled WL audiozapisa:",
+    "precision":"Preciznost:",
+    "fps":"Ciljani FPS:",
+    "target-w":"Širina ciljane teksture:",
+    "target-h":"Visina ciljane teksture:",
+    "clut":"Veličina CLUT tabele:",
+    "rpf-method":"Metoda kompresije:",
+    "alpha":"Koristi alpha kanal:",
+    "p-bfr":"Veličina zaštitnog buffera:",
+    "loop":"Petlja:",
+    "differential":"Bitovi diferencijalnog praga:"
+    },
+    "option":{
+    "anim-none":"-PRAZNO-",
+    "anim-present":"Animacija",
+
+    "prec-truncation":"Zaokruživanje",
+    "prec-low":"Niska",
+    "prec-med":"Srednja",
+    "prec-std":"Standardna",
+    "prec-hi":"Visoka",
+
+    "fps-full":"Pun",
+    "fps-half":"Polovičan",
+
+    "proximity":"Metoda blizine",
+    "popularity":"Metoda popularnosti"
+
+    },
+    "numbers":{
+    "decimal":"."
+},
+
+"alerts":{
+   "about":"Autorska prava - Emrah Veladžić, Tarik Frljak, 2025.",
+   "not-bmp":"Datoteka nije ispravna BMP slika.",
+   "not-wav":"Datoteka nije ispravan WAV audiozapis.",
+   "not-glb":"Datoteka nije ispravan GLB model.",
+   "dimensions":"Dimenzije slike moraju biti djeljive s 8, i ne smiju prelaziti 256x256. Možda ima još problema.",
+   "bpp":"Slika mora da ima tačno 24 bita po pikselu.",
+   "sample-rate":"Audiozapis mora da ima tačno 16 bita po uzorku.",
+   "no-metadata":"Metapodatci nedostaju. Model nije čitljiv. Možda ima još problema.",
+   "no-blob":"BLOB nedostaje. Model nije čitljiv. Možda ima još problema.",
+   "no-meshes":"Modelu nedostaju figure.  Možda ima još problema.",
+   "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura."
+
+}
+
+}

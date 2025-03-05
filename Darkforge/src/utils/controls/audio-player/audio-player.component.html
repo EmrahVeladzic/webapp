@@ -9,7 +9,7 @@
     <audio #audio controls></audio>
 
     <div class="controls">        
-        <button #play type="button" (click)="this.playButtonEvent($event)">Play/Stop</button>        
+        <button #play type="button" (click)="this.playButtonEvent($event)">{{'button.play'|translate}}</button>        
         <div class="volume">
             <app-slider #volume [vertical]="false" [default]="25"></app-slider>
         </div>

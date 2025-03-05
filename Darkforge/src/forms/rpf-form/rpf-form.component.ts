@@ -9,11 +9,12 @@ import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
 import { Subscription } from 'rxjs';
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 
 @Component({
   selector: 'app-rpf-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SliderComponent,NumericComponent],
+  imports: [ReactiveFormsModule, CommonModule, SliderComponent,NumericComponent, TranslatePipe],
   templateUrl: './rpf-form.component.html',
   styleUrl: './rpf-form.component.css'
 })
@@ -29,7 +30,7 @@ export class RpfFormComponent implements OnInit{
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
   @ViewChild('b_s',{static:false})b_s!:SliderComponent;
 
-  constructor(){
+  constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
       clut: new FormControl(16,[Validators.min(2),Validators.max(256),Validators.required]),

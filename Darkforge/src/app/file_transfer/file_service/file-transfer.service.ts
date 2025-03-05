@@ -2,7 +2,8 @@ import { Injectable, Input, numberAttribute } from '@angular/core';
 import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
 import { base_url,image_actions } from '../../app.routes';
 import { Subject } from 'rxjs';
-
+import { alert_loclized } from '../../../utils/alerts';
+import { TranslateService } from '@ngx-translate/core';
 
 @Injectable({
   providedIn: 'root'
@@ -29,7 +30,7 @@ export class FileTransferService {
     public glbTaskSource = new Subject<void>();
     public glbTaskCompleted$ = this.glbTaskSource.asObservable();
 
-  constructor(public http:HttpClient) {
+  constructor(public http:HttpClient, public translate:TranslateService) {
     this.reader = new FileReader();
     this.file_text ="";
   
@@ -58,19 +59,20 @@ export class FileTransferService {
 
       else{       
 
-        if(bytes>4){
+        if(bytes!=1&&bytes!=2&&bytes!=4){
 
-          return arrayBufferVal.substring(offset, offset + bytes).replace(/\0/g, "");
+          return arrayBufferVal.substring(offset, offset + bytes).replace(/\0/g, "") as string;
 
         }
         
         else{
 
-          let bfr = new ArrayBuffer(bytes+(4%bytes));
+          let bfr = new ArrayBuffer(bytes);
           let slice = new Uint8Array(bfr);
   
-          for(let i = offset; i < (offset+bytes+(4%bytes)); i++){
+          for(let i = offset; i < (offset+bytes); i++){
             slice[(i-offset)]=arrayBufferVal.charCodeAt(i);
+
           }
   
           let dataView = new DataView(bfr);
@@ -94,19 +96,6 @@ export class FileTransferService {
                 out = dataView.getUint16(0,littleEndian) as number;
               }
             break;
-            case 3:
-              if(sign){
-                out = dataView.getInt32(0,littleEndian)&0x00FFFFFF as number;          
-                
-                if(out>>23===1){
-                  out |= 0xFF000000;
-                }
-
-              }
-              else{
-                out = dataView.getUint32(0,littleEndian)&0x00FFFFFF as number;
-              }
-            break;
             case 4:
               if(sign){
                 out = dataView.getInt32(0,littleEndian) as number;
@@ -114,8 +103,7 @@ export class FileTransferService {
               else{
                 out = dataView.getUint32(0,littleEndian) as number;
               }
-            break;
-            
+            break;            
             default:
               
             break;
@@ -151,21 +139,21 @@ export class FileTransferService {
         }
 
         else{
-          alert("Image needs to have exactly 24 bits per pixel.");
+          alert_loclized(this.translate,"alerts.bpp");
           return false;
         }
 
 
       }
       else{
-        alert("Image dimensions need to be divisible by 8 and no more than 256x256. There may be other errors.");
+        alert_loclized(this.translate,"alerts.dimensions");
         return false;
       }
 
     }
 
     else{
-      alert("File appears to not be a BMP-format image.")
+      alert_loclized(this.translate,"alerts.not-bmp");
       return false;
     }
     
@@ -184,14 +172,14 @@ export class FileTransferService {
 
       }
       else{
-        alert("Audio needs to have exactly 16 bits per sample.");
+        alert_loclized(this.translate,"alerts.sample-rate");
         return false;
       }
 
 
     }
     else{
-      alert("File appears to not be a WAV-format audio.")
+      alert_loclized(this.translate,"alerts.not-wav");
       return false;
     }
 
@@ -211,7 +199,7 @@ export class FileTransferService {
 
         let json = this.accessBinaryFile(20,j_l) as string;       
 
-        let b = this.accessBinaryFile((24+j_l),3) as number;
+        let b = this.accessBinaryFile((24+j_l),4) as number;
 
         if(b!=null && b === 5130562){
 
@@ -225,7 +213,7 @@ export class FileTransferService {
 
                 if(m.primitives[0].attributes.JOINTS_0==undefined){
 
-                  alert("All meshes require to have at least 1 associated joint.")
+                  alert_loclized(this.translate,"alerts.bones");
                   return false;
 
                 }
@@ -241,26 +229,26 @@ export class FileTransferService {
 
           }
           else{
-            alert("Model is missing meshes.")
+            alert_loclized(this.translate,"alerts.no-meshes");
             return false;
           }         
          
         }
 
         else{
-          alert("BLOB is missing. Model is not parseable.");
+          alert_loclized(this.translate,"alerts.no-blob");
         return false;
         }
         
       }
       else{
-        alert("Metadata is missing. Model is not parseable.");
+        alert_loclized(this.translate,"alerts.no-metadata");
         return false;
       }
 
     }
     else{
-      alert("File appears to not be a GLB-format model.")
+      alert_loclized(this.translate,"alerts.not-glb");
       return false;
     }
 

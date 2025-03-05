@@ -1,0 +1,62 @@
+{
+"button":{
+    "post":"Post",
+    "export":"Export",
+    "play":"Play/Stop"
+},
+"link":{
+    "manage":"Manage files",
+    "about":"About",
+    "prefs":"Preferences"
+},
+"label":{
+    "anim-sel":"Animation select:",
+    "audio-prev":"WL audio preview:",
+    "precision":"Fixed-point precision:",
+    "fps":"Target FPS:",
+    "target-w":"Target texture width:",
+    "target-h":"Target texture height:",
+    "clut":"CLUT size:",
+    "rpf-method":"Compression method:",
+    "alpha":"Use alpha:",
+    "p-bfr":"Protected Buffer size:",
+    "loop":"Loop:",
+    "differential":"Differential threshold bits:"
+
+},
+"option":{
+    "anim-none":"-NONE-",
+    "anim-present":"Animation",
+    "prec-truncation":"Truncation",
+    "prec-low":"Low",
+    "prec-med":"Medium",
+    "prec-std":"Standard",
+    "prec-hi":"High",
+    "fps-full":"Full",
+    "fps-half":"Half",
+    "proximity":"Proximity method",
+    "popularity":"popularity method"
+
+
+},
+"numbers":{
+    "decimal":"."
+},
+
+"alerts":{
+   "about":"Copyright - Emrah Veladžić, Tarik Frljak, 2025.",
+   "not-bmp":"File appears to not be a BMP-format image.",
+   "not-wav":"File appears to not be a WAV-format audio.",
+   "not-glb":"File appears to not be a GLB-format model.",
+   "dimensions":"Image dimensions need to be divisible by 8 and no more than 256x256. There may be other errors.",
+   "bpp":"Image needs to have exactly 24 bits per pixel.",
+   "sample-rate":"Audio needs to have exactly 16 bits per sample.",
+   "no-metadata":"Metadata is missing. Model is not parseable. There may be other errors.",
+   "no-blob":"BLOB is missing. Model is not parseable. There may be other errors.",
+   "no-meshes":"Model is missing meshes. There may be other errors.",
+   "bones":"All meshes require to have an associated joint if a skeletal rig is used."
+
+
+}
+
+}

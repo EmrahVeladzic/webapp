@@ -7,7 +7,7 @@ import { style } from '@angular/animations';
 import { RpfFormComponent } from "../../forms/rpf-form/rpf-form.component";
 import { WlFormComponent } from "../../forms/wl-form/wl-form.component";
 import { GlbFormComponent } from "../../forms/glb-form/glb-form.component";
-
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 
 
 @Component({
@@ -30,7 +30,7 @@ changeFileType(type:string){
 }
 
 
-constructor() {
+constructor(public translate: TranslateService) {
   this.endpoint="";
 
 }

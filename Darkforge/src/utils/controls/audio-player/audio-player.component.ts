@@ -4,11 +4,13 @@ import {Subscription } from 'rxjs';
 import { Audio } from '../../../app/renderer/formats';
 import { sfx } from '../../../assets/global_assets';
 import { PropertyWrite } from '@angular/compiler';
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-audio-player',
   standalone: true,
-  imports: [SliderComponent],
+  imports: [SliderComponent, TranslatePipe],
   templateUrl: './audio-player.component.html',
   styleUrl: './audio-player.component.css'
 })
@@ -27,6 +29,10 @@ export class AudioPlayerComponent {
   @Input() standard_format : boolean = true;
 
   private buffer?: AudioBuffer;
+
+  constructor(public translate : TranslateService){
+
+  }
 
   ngAfterViewInit(){
 

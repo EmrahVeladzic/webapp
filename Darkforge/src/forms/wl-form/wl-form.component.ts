@@ -9,11 +9,13 @@ import { Subscription } from 'rxjs';
 import { AudioJson, SoundJson } from '../../models/models';
 import { base_url,sound_actions } from '../../app/app.routes';
 import { sfx } from '../../assets/global_assets';
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+
 
 @Component({
   selector: 'app-wl-form',
   standalone: true,
-  imports: [ReactiveFormsModule, SliderComponent, NumericComponent, AudioPlayerComponent],
+  imports: [ReactiveFormsModule, SliderComponent, NumericComponent, AudioPlayerComponent, TranslatePipe],
   templateUrl: './wl-form.component.html',
   styleUrl: './wl-form.component.css'
 })
@@ -23,7 +25,7 @@ export class WlFormComponent {
   private taskCompletedSubscription!: Subscription;
   form:FormGroup;
 
-  constructor(){
+  constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
       t_numeric : new FormControl(10,[Validators.min(4),Validators.max(12),Validators.required]),

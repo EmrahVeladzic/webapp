@@ -14,21 +14,21 @@
 
                 <div class="select_holder">
 
-                <label for="Precision">Fixed-point precision:</label>
+                <label for="Precision">{{'label.precision'|translate}}</label>
                 <select id="Precision" formControlName="precision">
-                    <option value='0'>Truncation - .0</option>
-                    <option value='4'>Low - .4</option>
-                    <option value='8'>Medium - .8</option>
-                    <option value='12'>Standard - .12</option>
-                    <option value='16'>High - .16</option>
+                    <option value='0'>{{'option.prec-truncate'|translate}} - {{'numbers.decimal'|translate}}0</option>
+                    <option value='4'>{{'option.prec-low'|translate}} -  {{'numbers.decimal'|translate}}4</option>
+                    <option value='8'>{{'option.prec-med'|translate}} -  {{'numbers.decimal'|translate}}8</option>
+                    <option value='12'>{{'option.prec-std'|translate}} -  {{'numbers.decimal'|translate}}12</option>
+                    <option value='16'>{{'option.prec-hi'|translate}} -  {{'numbers.decimal'|translate}}16</option>
                 </select>
 
-                <label for="FPS">Target FPS:</label>
+                <label for="FPS">{{'label.fps'|translate}}</label>
                 <select id="FPS" formControlName="fps">
-                    <option value='60'>Full - NTSC</option>
-                    <option value='30'>Half - NTSC</option>
-                    <option value='50'>Full - PAL</option>
-                    <option value='25'>Half - PAL</option>
+                    <option value='60'>{{'option.fps-full'|translate}} - NTSC (60)</option>
+                    <option value='30'>{{'option.fps-half'|translate}} - NTSC (30)</option>
+                    <option value='50'>{{'option.fps-full'|translate}} - PAL (50)</option>
+                    <option value='25'>{{'option.fps-half'|translate}} - PAL (25)</option>
                 </select>
 
             </div>
@@ -36,12 +36,12 @@
             <div class="numeric_holder">
 
 
-                <label >Target texture width:</label>
+                <label >{{'label.target-w'|translate}}</label>
                 <div class="dimensions">
                     <app-numeric  id="X" [max]="256" [min]="2" [default]="128" [step]="2" formControlName="tex_x"></app-numeric>
                 </div>
             
-                <label >Target texture height:</label>
+                <label >{{'label.target-h'|translate}}</label>
                 <div class="dimensions">
                     <app-numeric id="Y" [max]="256" [min]="2" [default]="128" [step]="2"  formControlName="tex_y"></app-numeric>
                 </div>
@@ -54,7 +54,7 @@
     </form>
 
     <div class="post">
-        <button type="button" (click)="this.post_model($event)" >Post</button>
+        <button type="button" (click)="this.post_model($event)" >{{'button.post'|translate}}</button>
     </div>
 
 </body>

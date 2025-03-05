@@ -6,12 +6,13 @@ import { base_url, model_actions } from '../../app/app.routes';
 import { AssetJson, ModelJson } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 
 
 @Component({
   selector: 'app-glb-form',
   standalone: true,
-  imports: [ReactiveFormsModule, NumericComponent],
+  imports: [ReactiveFormsModule, NumericComponent, TranslatePipe],
   templateUrl: './glb-form.component.html',
   styleUrl: './glb-form.component.css'
 })
@@ -19,7 +20,7 @@ export class GlbFormComponent {
  @Input() transfer!: FileTransferService;
  form :FormGroup;
 
-constructor(){
+constructor(public translate: TranslateService){
  
   this.form=new FormGroup({
     precision:new FormControl('12'),
