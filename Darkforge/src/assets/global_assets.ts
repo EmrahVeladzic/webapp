@@ -15,7 +15,7 @@ function set_global_time(time:number){
 }
 
 
-let tex:Texture = new Texture([1,65535],[6],2,2);
+let tex:Texture = new Texture([8457,65535],[6],2,2);
 
 let tex_update:boolean = true;
 
