@@ -23,6 +23,7 @@ constructor(private router:Router, private http:HttpClient){
 
 login(){ 
 
+  /*
   this.http.get(base_url+user_actions,{observe:"response"}).subscribe($response=>{
 
     if($response.status===200){
@@ -35,7 +36,7 @@ login(){
     }
     
   });
-  
+  */
 
   this.router.navigate([`/user/${1}`]);
     
