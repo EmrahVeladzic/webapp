@@ -22,8 +22,8 @@ export class Texture{
 
         this.CLUT=clut;
         this.Indices=pixels;
-        this.Width=width;
-        this.Height=height;
+        this.Width=width+1;
+        this.Height=height+1;
 
         let bpi = get_bits_per_index(this.CLUT.length);
         let data_length_mult = (8/bpi);
@@ -318,7 +318,7 @@ export class Asset{
         if(m!=null){
 
             m.width++;
-            m.height++;
+            m.height++
 
             for(let msh of m.meshes){
 
@@ -328,7 +328,7 @@ export class Asset{
                 if(msh.nrm!=null){
                     msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,this.precisionBits));  
                 }                                             
-                if(msh.uv!=null){
+                if(msh.uv!=null){                  
                     normalize_uv(msh.uv.textureCoordinates,m.width,m.height);
                 }        
 

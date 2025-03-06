@@ -154,39 +154,41 @@ export class WebGLService {
   setup(){
 
     if(this.gl){
-    this.GLProgram = this.gl.createProgram();   
-    
+    this.GLProgram = this.gl.createProgram();     
    
 
-    if(this.GLProgram){
+      if(this.GLProgram){
 
-      if(this.vertexShad){
-        this.gl.attachShader(this.GLProgram,this.vertexShad);
+      
+        if(this.vertexShad){
+          this.gl.attachShader(this.GLProgram,this.vertexShad);
+        }
+      
+       
+        if(this.fragmentShad){
+          this.gl.attachShader(this.GLProgram,this.fragmentShad);
+        }                
+
+        this.gl.linkProgram(this.GLProgram);
+      
+        
+
+        this.WMatLoc =this.gl.getUniformLocation(this.GLProgram!,'worldMat');
+        this.VMatLoc =this.gl.getUniformLocation(this.GLProgram!,'viewMat');
+        this.PMatLoc =this.gl.getUniformLocation(this.GLProgram!,'projMat');
+        this.TMatLoc =this.gl.getUniformLocation(this.GLProgram!,'transMat');
+
+        this.wMat = new Float32Array(16);
+        this.vMat = new Float32Array(16);
+        this.pMat = new Float32Array(16);
+    
+      
+        this.render();
+  
+
       }
-    
-      if(this.fragmentShad){
-        this.gl.attachShader(this.GLProgram,this.fragmentShad);
-      }                
-
-      this.gl.linkProgram(this.GLProgram);
-    }
-   
-
-
-       this.WMatLoc =this.gl.getUniformLocation(this.GLProgram!,'worldMat');
-       this.VMatLoc =this.gl.getUniformLocation(this.GLProgram!,'viewMat');
-       this.PMatLoc =this.gl.getUniformLocation(this.GLProgram!,'projMat');
-       this.TMatLoc =this.gl.getUniformLocation(this.GLProgram!,'transMat');
-
-       this.wMat = new Float32Array(16);
-       this.vMat = new Float32Array(16);
-       this.pMat = new Float32Array(16);
    
     
-       while(!this.gl);
-     
-
-      this.render();
       
 
     }
@@ -220,7 +222,6 @@ export class WebGLService {
       if(tex_update==true){
         this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);
         flip_tex_state();
-
       }
 
   
@@ -395,9 +396,11 @@ export class WebGLService {
   }
 
   
+
  
   initialise(canvas : HTMLCanvasElement){
     this.gl=canvas.getContext("webgl2",{antialias:true});
+    
     if(this.gl){
       this.gl.canvas.width=window.innerWidth;
       this.gl.canvas.height=window.innerHeight;
@@ -428,19 +431,25 @@ export class WebGLService {
         next: (content: string) => {
           this.vertCode = content;
           this.compile_vertex();
-        },
-        error: (error) => {
-          console.error('Error loading shader:', error);
-        }
-      });
-
-      this.http.get(`assets/shaders/fragment.glsl`, { responseType: 'text' })
-      .subscribe({
-        next: (content: string) => {
-          this.fragCode = content;
-          this.compile_fragment();
          
-          this.setup();
+
+            this.http.get(`assets/shaders/fragment.glsl`, { responseType: 'text' })
+            .subscribe({
+              next: (content: string) => {
+                this.fragCode = content;
+                this.compile_fragment();
+              
+               
+
+                this.setup();
+              },
+              error: (error) => {
+              console.error('Error loading shader:', error);
+            }
+
+          });
+
+
         },
         error: (error) => {
           console.error('Error loading shader:', error);

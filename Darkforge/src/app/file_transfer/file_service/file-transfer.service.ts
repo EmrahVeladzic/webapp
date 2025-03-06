@@ -128,7 +128,7 @@ export class FileTransferService {
       let w = this.accessBinaryFile(18,4) as number;
       let h = this.accessBinaryFile(22,4) as number;
 
-      if(w!=null && h!=null && w%8===0 && h%8===0 && w<=256 && h<=256){
+      if(w!=null && h!=null && w%16===0 && h%16===0 && w<=256 && h<=256){
 
       
         let b = this.accessBinaryFile(28,2) as number;

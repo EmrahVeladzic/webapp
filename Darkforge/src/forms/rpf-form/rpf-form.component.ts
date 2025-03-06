@@ -248,7 +248,7 @@ export class RpfFormComponent implements OnInit{
 
         let TextureResponse = $response.body as TextureJson;
       
-        tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));      
+        tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width),(TextureResponse.height));      
   
 
       }

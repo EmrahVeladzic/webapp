@@ -44,7 +44,7 @@
       "not-bmp": "Die Datei scheint kein BMP-Bildformat zu sein.",
       "not-wav": "Die Datei scheint kein WAV-Audioformat zu sein.",
       "not-glb": "Die Datei scheint kein GLB-Modellformat zu sein.",
-      "dimensions": "Bildabmessungen müssen durch 8 teilbar sein und dürfen maximal 256x256 betragen. Es könnten weitere Fehler vorliegen.",
+      "dimensions": "Bildabmessungen müssen durch 16 teilbar sein und dürfen maximal 256x256 betragen. Es könnten weitere Fehler vorliegen.",
       "bpp": "Das Bild muss genau 24 Bits pro Pixel haben.",
       "sample-rate": "Die Audiodatei muss genau 16 Bits pro Sample haben.",
       "no-metadata": "Metadaten fehlen. Das Modell kann nicht geparst werden. Es könnten weitere Fehler vorliegen.",

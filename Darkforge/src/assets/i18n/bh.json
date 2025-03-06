@@ -49,7 +49,7 @@
    "not-bmp":"Datoteka nije ispravna BMP slika.",
    "not-wav":"Datoteka nije ispravan WAV audiozapis.",
    "not-glb":"Datoteka nije ispravan GLB model.",
-   "dimensions":"Dimenzije slike moraju biti djeljive s 8, i ne smiju prelaziti 256x256. Možda ima još problema.",
+   "dimensions":"Dimenzije slike moraju biti djeljive s 16, i ne smiju prelaziti 256x256. Možda ima još problema.",
    "bpp":"Slika mora da ima tačno 24 bita po pikselu.",
    "sample-rate":"Audiozapis mora da ima tačno 16 bita po uzorku.",
    "no-metadata":"Metapodatci nedostaju. Model nije čitljiv. Možda ima još problema.",

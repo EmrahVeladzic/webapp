@@ -549,8 +549,10 @@ namespace backend.Converters
                                                 UInt16 h = (UInt16)((Int32)(this.Input.TexHeight) + 1);
 
 
-                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round(x * (float)w)) % w));
-                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round(y * (float)h)) % h));
+
+
+                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round((x/((float)w/(float)(w-1))) * (float)w)) % w));
+                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round((y/((float)h/(float)(h-1))) * (float)h)) % h));
 
 
                                             }

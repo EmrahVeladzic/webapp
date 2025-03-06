@@ -12,10 +12,13 @@ return(value/(1<<precision));
 export function normalize_uv(Input: number[], width:number, height:number):void{
 
     for(let i = 0; i < Input.length; i+=2){
+       
+        Input[i]*=(width/(width-1));
+        Input[i+1]*=(height/(height-1));
 
         Input[i]/=width;
         Input[i+1]/=height;
-
+       
     }
 
 }
