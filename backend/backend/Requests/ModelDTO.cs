@@ -1,6 +1,6 @@
 ﻿namespace backend.Requests
 {
-    public class ModelJson
+    public class ModelDTO
     {
 
         //Complete GLB data (headers + BIN + GLTF).

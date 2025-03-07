@@ -1,5 +1,6 @@
 ﻿using backend.Converters;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Identity.Client;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
@@ -7,7 +8,7 @@ using System.Runtime.InteropServices;
 namespace backend.Models
 {
     [Table("RPF", Schema ="Models")]
-    public class RPF:BaseEntity
+    public class RPF:BaseEntity,ITopLevelModel
     {
         
         //The top-level image format. The foreign keys are converted to element offsets.
@@ -54,5 +55,47 @@ namespace backend.Models
             this.PGA?.Serialize(IMG);            
         }
 
+        public override void Deserialize()
+        {
+            this.PLT?.Deserialize();
+            this.PGA?.Deserialize();
+        }
+
+        public override void Clear()
+        {
+            this.PGA?.Clear();
+            this.PLT?.Clear();
+
+            this.PLT = null;
+            this.PGA = null;
+        }
+
+        public byte[] ToArrayBuffer()
+        {
+            List<byte> temp = new List<byte>();
+
+            temp.Add(82);
+            temp.Add(CLUT);
+            temp.Add(Width);
+            temp.Add(Height);
+
+            if (PLT != null)
+            {
+                foreach(Pixel15 p in PLT.Data!)
+                {
+                    p.Serialize(temp);
+                }
+            }
+
+            if (PGA != null)
+            {
+                temp.AddRange(PGA.Serialized!);
+            }
+
+
+            byte[] data = temp.ToArray();
+            temp.Clear();
+            return data;
+        }
     }
 }

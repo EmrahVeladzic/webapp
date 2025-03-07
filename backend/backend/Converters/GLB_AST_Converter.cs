@@ -14,7 +14,7 @@ namespace backend.Converters
 {
     public class AST_DATA
     {
-        private ModelJson Input { get; set; }
+        private ModelDTO Input { get; set; }
 
         public AST? Output { get; set; }
 
@@ -27,7 +27,7 @@ namespace backend.Converters
         public List<Matrix4x4>? Matrices { get; set; }
         public Int32[]? Joint_Index_Array { get; set; }
 
-        public AssetJson? Asset { get; set; }
+        
 
         public byte GetFrame(byte FPS, float time)
         {
@@ -36,7 +36,7 @@ namespace backend.Converters
 
        
 
-        public AST_DATA(ModelJson input, DarkforgeDBContext ctx)
+        public AST_DATA(ModelDTO input, DarkforgeDBContext ctx)
         {
             
 
@@ -420,6 +420,10 @@ namespace backend.Converters
 
                                     }
 
+                                    track.T_Count = (byte)track.T_Frames.Count();
+                                    track.R_Count = (byte)track.R_Frames.Count();
+                                    track.S_Count = (byte)track.S_Frames.Count();
+
                                     anim.Tracks.Add(track);
 
                                     ctx.TKs.Add(track);
@@ -551,8 +555,8 @@ namespace backend.Converters
 
 
 
-                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round((x/((float)w/(float)(w-1))) * (float)w)) % w));
-                                                Meshes[i].UV!.TextureCoordinates.Add((byte)((UInt16)(Math.Round((y/((float)h/(float)(h-1))) * (float)h)) % h));
+                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((x/((float)w/(float)(w-1))) * (float)w)) % w));
+                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((y/((float)h/(float)(h-1))) * (float)h)) % h));
 
 
                                             }
@@ -732,22 +736,23 @@ namespace backend.Converters
                 this.Output.Serialize();
 
 
-                ctx.SaveChanges();
-
-              
-
-                this.Asset = new AssetJson();
-
-                this.Asset.Asset = this.Output;
-                this.Asset.AST_ID = this.Output.ID;
-
-               
-                if (this.Asset.Asset.FKR_ID != null)
+                if (this.Output.FKR_ID != null)
                 {
 
-                    this.Asset.Asset.FKR!.Root = this.Bones!.Where(b => b.Parent_ID == null).Select(b => b.ID).FirstOrDefault();
+                    this.Output.FKR!.Root = this.Bones!.Where(b => b.Parent_ID == null).Select(b => b.ID).FirstOrDefault();
                 }
 
+
+                ctx.SaveChanges();
+
+
+                this.Matrices?.Clear();
+                this.Meshes?.Clear();
+                this.Bones?.Clear();
+
+                this.Joint_Index_Array = null;
+                this.Model.Destructor();
+            
 
 
             }

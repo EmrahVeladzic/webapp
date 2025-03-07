@@ -28,7 +28,7 @@ namespace backend.Converters
         public Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
 
-        private ImageJson? Input { get; set; }
+        private ImageDTO? Input { get; set; }
 
         private byte ProtectedBufferIndex {get;set;}
 
@@ -40,14 +40,14 @@ namespace backend.Converters
 
         public BMP? Image {  get; set; }
 
-        private RPF? Output { get; set; }
+        public RPF? Output { get; set; }
 
         private UInt32 UniqueCount { get; set; }
         private UInt32 MaxUniqueCount { get; set; }
             
         public byte Shift_Value { get; set; }
 
-        public TextureJson? Texture { get; set; }
+  
 
         Vector3 GetHue(Pixel15 input)
         {
@@ -434,7 +434,7 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
-        public IMG_DATA(ImageJson input, DarkforgeDBContext ctx)
+        public IMG_DATA(ImageDTO input, DarkforgeDBContext ctx)
         {
             
 
@@ -443,7 +443,7 @@ namespace backend.Converters
 
             this.Image = ctx.BMPs.Where(b => b.Hash == this.Input.ImageHash).First();
 
-            this.Image.Setup(this.Image!.Serialized!, this.Image!.Hash!);
+           
 
             if (this.Input.Alpha != null)
             {
@@ -584,20 +584,15 @@ namespace backend.Converters
             ctx.RPFs.Add(this.Output);
             ctx.SaveChanges();
 
-            
 
-            this.Texture = new TextureJson();
+       
 
-            this.Texture!.Colours = this.Output.CLUT;
-            this.Texture!.Width = this.Output.Width;
-            this.Texture.Height = this.Output.Height;
+            this.Image?.Destructor();
 
-            this.Texture.RPF_ID = this.Output.ID;
-           
-          
+            this.Occurence_Table?.Clear();
+            this.Swap_Table?.Clear();
+            this.ProtectedBuffer?.Clear();
 
-            this.Texture.CLUT = this.Output.PLT.Data.Select(pxl => pxl.Data).ToList();
-            this.Texture.Pixels = this.Output.PGA.ToSerialize;
 
            
 

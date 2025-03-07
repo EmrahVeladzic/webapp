@@ -93,5 +93,9 @@ namespace backend.Models
            PrimitiveSerialization.SerializePrimitive(Data, output);
         }
 
+        public void Deserialize(byte[] data,int offset)
+        {
+           this.Data = BitConverter.ToUInt16(data, offset);
+        }
     }
 }

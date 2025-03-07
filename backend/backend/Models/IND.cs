@@ -27,5 +27,22 @@ namespace backend.Models
 
             this.Serialized = this.ToSerialize.ToArray();
         }
+
+        public override void Deserialize()
+        {
+            for (Int32 i = 0; i < this.Serialized!.Length; i += 2)
+            {
+                UInt16 temp = BitConverter.ToUInt16(this.Serialized!, i);
+                this.Indices.Add(temp);
+            }
+            this.Serialized = null;
+        }
+
+        public override void Clear()
+        {
+            this.Indices?.Clear();
+            this.ToSerialize?.Clear();
+            this.Serialized= null;
+        }
     }
 }

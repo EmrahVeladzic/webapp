@@ -49,6 +49,19 @@ namespace backend.Models
 
             this.Serialized = this.ToSerialize.ToArray();
         }
+
+        public  override void Deserialize()
+        {
+            this.ToSerialize=this.Serialized!.ToList();
+            this.Serialized = null;
+        }
+
+        public override void Clear()
+        {
+            this.ToSerialize?.Clear();
+            this.Serialized = null;
+        }
+
     }
 
 

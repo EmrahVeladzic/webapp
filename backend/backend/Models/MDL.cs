@@ -27,5 +27,24 @@ namespace backend.Models
                 m.Serialize();
             }
         }
+
+        public override void Deserialize()
+        {
+            foreach (MSH m in Meshes)
+            {
+                m.Deserialize();
+            }
+
+        }
+
+        public override void Clear()
+        {
+            foreach (MSH m in Meshes)
+            {
+                m.Clear();
+            }
+
+            Meshes.Clear();
+        }
     }
 }

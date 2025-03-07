@@ -1,8 +1,8 @@
 import { Asset } from "../app/renderer/formats";
 import { hash_data } from "../utils/hash_maker";
-export class ImageJson{
+export class ImageDTO{
    
-    public imageData : string;
+    public imageData : string |null;
     public imageHash : string;
     public cluT_Size : number;
     public alpha :  number[]|null;
@@ -21,16 +21,16 @@ export class ImageJson{
 
     }
     
-    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number): Promise<ImageJson> {
+    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageJson(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash);
     }
 
 }
 
-export class SoundJson{
+export class SoundDTO{
    
-    public soundData : string;
+    public soundData : string |null;
     public soundHash : string;
     public thresholdBits : number;
     public channelCount : number;
@@ -44,16 +44,16 @@ export class SoundJson{
         this.looping = loop;
     }
     
-    static async create(data:string, threshold : number, channels : number, loop:boolean): Promise<SoundJson> {
+    static async create(data:string, threshold : number, channels : number, loop:boolean): Promise<SoundDTO> {
         const soundHash = await hash_data(data);
-        return new SoundJson(data, threshold, channels, loop, soundHash);
+        return new SoundDTO(data, threshold, channels, loop, soundHash);
     }
 
 }
 
-export class ModelJson{
+export class ModelDTO{
 
-    public modelData : string;
+    public modelData : string |null;
     public modelHash : string;
     public precisionBits :number;
     public targetFPS : number;
@@ -71,15 +71,15 @@ export class ModelJson{
         
     }
 
-    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelJson> {
+    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelDTO> {
         const modelHash = await hash_data(data);
-        return new ModelJson(data, precision,fps,width,height, modelHash);
+        return new ModelDTO(data, precision,fps,width,height, modelHash);
     }
 
 }
 
 
-export class TextureJson{
+export class TextureDTO{
 
 
 public colours:number;
@@ -105,7 +105,7 @@ public pixels:number[];
 }
 
 
-export class AudioJson{
+export class AudioDTO{
 
     public sampleRate : number;
     public thresholdBits : number;
@@ -130,7 +130,7 @@ export class AudioJson{
 
 
 
- export class AssetJson{
+ export class AssetDTO{
 
     public asset:Asset;
     public asT_ID:number;

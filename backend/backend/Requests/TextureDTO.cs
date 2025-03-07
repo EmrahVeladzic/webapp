@@ -1,6 +1,6 @@
 ﻿namespace backend.Requests
 {
-    public class TextureJson
+    public class TextureDTO
     {     
        
         //CLUT size per frame. +1, as 0 is not valid. 

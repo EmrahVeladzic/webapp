@@ -3,10 +3,11 @@ import { FileTransferService } from '../../app/file_transfer/file_service/file-t
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 import { base_url, model_actions } from '../../app/http';
-import { AssetJson, ModelJson } from '../../models/models';
+import { AssetDTO, ModelDTO } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+import { HttpParams } from '@angular/common/http';
 
 
 @Component({
@@ -40,7 +41,7 @@ constructor(public translate: TranslateService){
 }
 
 
- async create_model_json() : Promise<ModelJson>{   
+ async create_model_json() : Promise<ModelDTO>{   
 
     
   let precision_bits = this.form.get('precision')?.value;
@@ -51,7 +52,7 @@ constructor(public translate: TranslateService){
 
   let tex_height = this.form.get('tex_y')?.value;
 
-  const $instance = await ModelJson.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
+  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
 
   return $instance;
 
@@ -61,28 +62,63 @@ post_model($event : Event):void{
 
   (this.create_model_json()).then($result=>{
 
+    let $optimized = {...$result};
+    $optimized.modelData=null;
 
 
    let post_url = `${base_url}/${model_actions}`;
 
 
-   this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+   this.transfer.http.post(post_url,$optimized,{observe:"response"}).subscribe($response=>{
   
     if($response.status===200){
 
-      update_anim(null);
-
-      let raw = $response.body as any;
-
-      flip_ast_state();  
-      ast.reset( raw.asset.id,
-      raw.asset.precisionBits,
-      raw.asset.mdl ?? null,
-      raw.asset.fkr ?? null);
-
      
-      flip_ast_state();
+
+      this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{  
+
+        update_anim(null);
+
+        let raw = $response.body as any;    
+  
+        flip_ast_state();  
+        ast.reset( raw.asset.id,
+        raw.asset.precisionBits,
+        raw.asset.mdl ?? null,
+        raw.asset.fkr ?? null);
     
+       
+        flip_ast_state();
+
+
+      });
+    }
+
+    else if($response.status===204){
+
+      this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+  
+        this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{  
+    
+          update_anim(null);
+  
+          let raw = $response.body as any;
+      
+          flip_ast_state();  
+          ast.reset( raw.asset.id,
+          raw.asset.precisionBits,
+          raw.asset.mdl ?? null,
+          raw.asset.fkr ?? null);
+      
+         
+          flip_ast_state();
+  
+  
+        });     
+        
+         
+       });
+
     }
      
    });

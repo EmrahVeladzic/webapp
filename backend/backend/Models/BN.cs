@@ -32,12 +32,29 @@ namespace backend.Models
 
             for (int i = 0; i < 10; i++)
             {
-
+                PrimitiveSerialization.SerializePrimitive(InitialTransform[i], this.ToSerialize);
             }
 
             this.Serialized=this.ToSerialize.ToArray();
 
         }
 
+
+        public override void Deserialize()
+        {
+            for (int i = 0; i < this.Serialized!.Length; i += 4)
+            {
+                this.InitialTransform.Add(BitConverter.ToInt32(this.Serialized!, i));
+            }
+
+            this.Serialized=null;
+        }
+
+        public override void Clear()
+        {
+            this.InitialTransform!.Clear();
+            this.ToSerialize!.Clear();
+            this.Serialized = null;
+        }
     }
 }

@@ -1,6 +1,6 @@
 import { Component ,Input, OnInit, ViewChild, OnDestroy, ElementRef} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
-import { ImageJson,TextureJson } from '../../models/models';
+import { ImageDTO,TextureDTO } from '../../models/models';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { base_url, image_actions } from '../../app/http';
@@ -10,6 +10,7 @@ import { NumericComponent } from '../../utils/controls/numeric/numeric.component
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
 import { Subscription } from 'rxjs';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+import { HttpParams } from '@angular/common/http';
 
 @Component({
   selector: 'app-rpf-form',
@@ -209,7 +210,7 @@ export class RpfFormComponent implements OnInit{
   } 
    
    
-  async create_image_json() : Promise<ImageJson>{   
+  async create_image_json() : Promise<ImageDTO>{   
 
     
 
@@ -225,7 +226,7 @@ export class RpfFormComponent implements OnInit{
 
     let CHK = this.form.get('use_alpha')?.value;
 
-    const $instance = await ImageJson.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
+    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
 
     return $instance;
 
@@ -237,19 +238,41 @@ export class RpfFormComponent implements OnInit{
 
    (this.create_image_json()).then($result=>{
 
-
+    let $optimized = {...$result};
+    $optimized.imageData=null;
 
     let post_url = `${base_url}/${image_actions}`;
 
 
-    this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+    this.transfer.http.post(post_url,$optimized,{observe:"response"}).subscribe($response=>{
    
       if($response.status===200){
 
-        let TextureResponse = $response.body as TextureJson;
+        this.transfer.http.get(post_url,{observe:"response", params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{   
+
+        let TextureResponse = $response.body as TextureDTO;
+       
       
         tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width),(TextureResponse.height));      
   
+        });
+      }
+
+      else if($response.status===204){
+
+        this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+   
+          this.transfer.http.get(post_url,{observe:"response", params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{   
+
+            let TextureResponse = $response.body as TextureDTO;
+
+            
+          
+            tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width),(TextureResponse.height));      
+      
+          });
+          
+        });
 
       }
 

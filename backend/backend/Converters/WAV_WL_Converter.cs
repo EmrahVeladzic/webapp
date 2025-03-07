@@ -8,13 +8,12 @@ namespace backend.Converters
 {
     public class SFX_DATA
     {
-        public AudioJson? Audio {  get; set; }
 
         public WL? Output { get; set; }
 
         public WAV? Sound { get; set; }
 
-        private SoundJson? Input { get; set; }
+        private SoundDTO? Input { get; set; }
 
         public byte GetShift(Int16[] input)
         {
@@ -86,7 +85,7 @@ namespace backend.Converters
         }
 
 
-        public SFX_DATA(SoundJson input, DarkforgeDBContext ctx)
+        public SFX_DATA(SoundDTO input, DarkforgeDBContext ctx)
         {
             
 
@@ -94,7 +93,7 @@ namespace backend.Converters
 
             this.Sound = ctx.WAVs.Where(w => w.Hash == this.Input.SoundHash).First();
 
-            this.Sound.Setup(this.Sound!.Serialized!,this.Sound!.Hash!);
+           
 
             Int16 Threshold = (Int16)(1 << this.Input.ThresholdBits);
 
@@ -157,7 +156,6 @@ namespace backend.Converters
             }
 
 
-            this.Audio = new AudioJson();
 
 
             this.Output.Serialize();
@@ -167,23 +165,8 @@ namespace backend.Converters
 
             ctx.SaveChanges();
 
-           
 
-            this.Audio.AudioData = new List<byte>(this.Output!.Serialized!);
-          
-
-            this.Audio.SampleRate = this.Output!.SampleRate;
-
-            this.Audio.ThresholdBits = this.Output!.ThresholdBits;
-
-            this.Audio.ChannelCount = this.Output!.ChannelCount;
-
-            this.Audio.BlockCountPerChannel = (UInt32)this.Output.BlockCountPerChannel;
-
-            this.Audio.WL_ID = this.Output!.ID;
-
-            
-
+            this.Sound.Destructor();
         }
 
     }

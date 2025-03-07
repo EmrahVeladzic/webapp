@@ -54,5 +54,27 @@ namespace backend.Models
             this.UV?.Serialize();
             this.NRM?.Serialize();
         }
+
+        public override void Deserialize()
+        {
+            this.VT?.Deserialize();
+            this.IND?.Deserialize();
+            this.UV?.Deserialize();
+            this.NRM?.Deserialize();
+
+        }
+
+        public override void Clear()
+        {
+            this.VT?.Clear();
+            this.IND?.Clear();
+            this.UV?.Clear();
+            this.NRM?.Clear();
+
+            this.VT = null;
+            this.IND = null;
+            this.NRM = null;
+            this.UV = null;
+        }
     }
 }

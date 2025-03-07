@@ -36,6 +36,28 @@ namespace backend.Models
 
         }
 
+        public override void Deserialize()
+        {
+            for(int i =0; i<this.Serialized!.Length; i += 2)
+            {
+                Pixel15 temp = new Pixel15();
+
+                temp.Deserialize(this.Serialized!, i);
+
+                this.Data!.Add(temp);
+
+            }
+
+            this.Serialized = null;
+        }
+
+        public override void Clear()
+        {
+            this.Data!.Clear();
+            this.ToSerialize?.Clear();
+            this.Serialized = null;
+        }
+
     }
 
   

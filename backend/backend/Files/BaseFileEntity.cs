@@ -11,5 +11,14 @@ namespace backend.Files
 
         [Column("EntityData")]
         public byte[]? Serialized { get; set; }
+
+        public virtual void Setup(byte[] Input, string hash)
+        {
+
+        }
+
+        public virtual void Destructor() {
+            this.Serialized = null;
+        }
     }
 }

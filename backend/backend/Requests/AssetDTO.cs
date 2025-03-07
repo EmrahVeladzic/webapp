@@ -2,7 +2,7 @@
 
 namespace backend.Requests
 {
-    public class AssetJson
+    public class AssetDTO
     {
         //Processed asset.
         public AST? Asset { get; set; }

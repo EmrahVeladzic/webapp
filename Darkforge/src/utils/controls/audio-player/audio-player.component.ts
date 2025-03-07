@@ -74,13 +74,13 @@ export class AudioPlayerComponent {
 
       this.volumeSubscription=this.volume.valueChanges$.subscribe($value=>{      
         
-        this.gain!.gain.value = $value/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits)));
+        this.gain!.gain.value = ($value/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits))))/10;
     
       });
 
     }
 
-    this.gain!.gain.value = this.volume.getValue()/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits)));
+    this.gain!.gain.value = (this.volume.getValue()/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits))))/10;
  
 
     this.buffer = this.audioContext!.createBuffer(sfx.ChannelCount,(sfx.BlocksPerChannel*28),sfx.SampleRate)

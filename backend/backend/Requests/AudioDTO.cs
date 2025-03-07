@@ -2,7 +2,7 @@
 
 namespace backend.Requests
 {
-    public class AudioJson
+    public class AudioDTO
     {
        
         public UInt16 SampleRate { get; set; }

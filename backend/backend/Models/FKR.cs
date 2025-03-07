@@ -36,5 +36,33 @@ namespace backend.Models
                 a.Serialize();
             }
         }
+
+        public override void Deserialize()
+        {
+            foreach(BN b in Bones)
+            {
+                b.Deserialize();
+            }
+            foreach(ANM a in Animations)
+            { 
+                a.Deserialize();
+            }
+
+        }
+
+        public override void Clear()
+        {
+            foreach(BN b in Bones)
+            {
+                b.Clear();
+            }
+            this.Bones.Clear();
+            foreach(ANM a in Animations)
+            {
+                a.Clear();
+            }
+            this.Animations.Clear();
+
+        }
     }
 }

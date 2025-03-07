@@ -26,5 +26,22 @@ namespace backend.Models
                 t.Serialize();
             }
         }
+
+        public override void Deserialize()
+        {
+            foreach(TK t in Tracks)
+            {
+                t.Deserialize();
+            }
+        }
+
+        public override void Clear()
+        {
+            foreach(TK t in this.Tracks)
+            {
+                t.Deserialize();
+            }
+            this.Tracks.Clear();
+        }
     }
 }

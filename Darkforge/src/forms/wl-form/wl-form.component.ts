@@ -6,10 +6,11 @@ import { NumericComponent } from "../../utils/controls/numeric/numeric.component
 import { AudioPlayerComponent } from "../../utils/controls/audio-player/audio-player.component";
 import { wav_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
 import { Subscription } from 'rxjs';
-import { AudioJson, SoundJson } from '../../models/models';
+import { AudioDTO, SoundDTO } from '../../models/models';
 import { base_url,sound_actions } from '../../app/http';
 import { sfx } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+import { HttpParams } from '@angular/common/http';
 
 
 @Component({
@@ -82,7 +83,7 @@ export class WlFormComponent {
   }
 
     
-  async create_sound_json() : Promise<SoundJson>{   
+  async create_sound_json() : Promise<SoundDTO>{   
 
     let thresholdB = this.form.get('t_numeric')?.value;
  
@@ -90,7 +91,7 @@ export class WlFormComponent {
 
     let looping = this.form.get('loop')?.value;
 
-    const $instance = await SoundJson.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping);
+    const $instance = await SoundDTO.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping);
 
     return $instance;
 
@@ -100,20 +101,53 @@ export class WlFormComponent {
 
     (this.create_sound_json()).then($result=>{
 
-
+      let $optimized = {...$result};
+      $optimized.soundData=null;
 
       let post_url = `${base_url}/${sound_actions}`;
   
   
-      this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+      this.transfer.http.post(post_url,$optimized,{observe:"response"}).subscribe($response=>{
   
         if($response.status===200){
-          
-          let AudioResponse = $response.body as AudioJson;
-        
-           sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
+
+          this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{
+            
+            
+            let AudioResponse = $response.body as AudioDTO;
+                    
+
+            sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
       
-           this.transfer.wlTaskSource.next();
+            this.transfer.wlTaskSource.next();
+
+          });
+
+        }
+
+        else if($response.status===204){
+
+
+          this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+  
+            if($response.status===200){
+    
+              this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{
+      
+              
+                let AudioResponse = $response.body as AudioDTO;
+              
+                sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
+          
+                this.transfer.wlTaskSource.next();
+    
+              });
+    
+            }
+
+          });
+
+
         }
   
       });

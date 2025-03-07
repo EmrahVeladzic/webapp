@@ -22,5 +22,10 @@ namespace backend.Models
         public virtual void Deserialize()
         {
         }
+
+        public virtual void Clear()
+        {
+
+        }
     }
 }

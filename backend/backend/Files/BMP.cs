@@ -67,9 +67,13 @@ namespace backend.Files
 
         }
 
+        public override void Destructor()
+        {
+            base.Destructor();
+            this.Data!.Clear();
+        }
 
-
-        public void Setup(byte[] Input, string hash)
+        public override void Setup(byte[] Input, string hash)
         {
 
             Hash = hash;

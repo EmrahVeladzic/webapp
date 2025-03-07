@@ -1,6 +1,6 @@
 ﻿namespace backend.Requests
 {
-    public class ImageJson
+    public class ImageDTO
     {
         //Complete BMP data (incl. Header). Obtain texture dimensions from here.
         

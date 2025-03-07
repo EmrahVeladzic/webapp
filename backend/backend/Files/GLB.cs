@@ -54,8 +54,15 @@ namespace backend.Files
 
         }
 
+        public override void Destructor()
+        {
+            base.Destructor();
+            this.Metadata = null;
+            this.BLOB = null;
+            this.Metadata_String = null;
+        }
 
-        public void Setup(byte[] Input, string hash)
+        public override void Setup(byte[] Input, string hash)
         {
 
             Hash = hash;
