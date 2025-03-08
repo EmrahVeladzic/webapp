@@ -17,15 +17,21 @@ namespace backend.Controllers
     {
 
         [HttpPost]
-        public IActionResult Post(ImageDTO input)
+        public async Task<IActionResult> Post([FromBody]ImageDTO input)
         {
+
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId) || userId != input.Creator_ID)
+            {
+                return StatusCode(401);
+            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
-                BMP? temp = ctx.BMPs.Where(b => b.Hash == input.ImageHash).FirstOrDefault();
+                BMP? temp = await ctx.BMPs.Where(b => b.Hash == input.ImageHash).FirstOrDefaultAsync();
 
                 if (temp == null)
                 {
@@ -52,9 +58,9 @@ namespace backend.Controllers
 
                         temp!.Setup(Data, input!.ImageHash!);
 
-                        ctx.BMPs.Add(temp);
+                        await ctx.BMPs.AddAsync(temp);
 
-                        ctx.SaveChanges();
+                        await ctx.SaveChangesAsync();
 
                     }
                 }
@@ -64,7 +70,9 @@ namespace backend.Controllers
                     temp.Setup(temp.Serialized!, temp.Hash!);
                 }
 
-                IMG_DATA Img = new IMG_DATA(input, ctx);
+                IMG_DATA Img = new IMG_DATA(input);
+
+                await Img.Convert(ctx);
 
 
 
@@ -86,13 +94,20 @@ namespace backend.Controllers
 
 
         [HttpGet]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get([FromQuery]int id)
         {
+
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+            {
+                return StatusCode(401);
+            }
+
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                RPF rpf = ctx.RPFs.Include(r=>r.PLT).Include(r=>r.PGA).FirstOrDefault(r=>r.ID==id)!;
+                RPF? rpf = await ctx.RPFs.Include(r=>r.PLT).Include(r=>r.PGA).FirstOrDefaultAsync(r=>r.ID==id)!;
 
                 
 
@@ -120,12 +135,18 @@ namespace backend.Controllers
         }
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete([FromQuery]int id)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+            {
+                return StatusCode(401);
+            }
+
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext()){
 
-                RPF rpf = ctx.RPFs.Include(r => r.PLT).Include(r => r.PGA).FirstOrDefault(r => r.ID == id)!;
+                RPF? rpf = await ctx.RPFs.Include(r => r.PLT).Include(r => r.PGA).FirstOrDefaultAsync(r => r.ID == id)!;
 
 
                 if (rpf == null)
@@ -139,7 +160,7 @@ namespace backend.Controllers
                     ctx.PGAs.Remove(rpf.PGA!);
                     ctx.PLTs.Remove(rpf.PLT!);
 
-                    ctx.SaveChanges();
+                    await ctx.SaveChangesAsync();
 
                     
 

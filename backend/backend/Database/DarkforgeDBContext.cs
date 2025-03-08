@@ -1,5 +1,6 @@
 ﻿using backend.Files;
 using backend.Models;
+using backend.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -64,7 +65,8 @@ namespace backend.Database
         public DbSet<NRM> NRMs { get; set; }
 
 
-
+        public DbSet<UserAccount> Users { get; set; }
+        public DbSet<UserPreferences> UserPreferences { get; set; }
        
     }
 }

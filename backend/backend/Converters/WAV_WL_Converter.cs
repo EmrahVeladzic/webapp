@@ -2,11 +2,12 @@
 using backend.Files;
 using backend.Models;
 using backend.Requests;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace backend.Converters
 {
-    public class SFX_DATA
+    public class SFX_DATA :BaseConverter
     {
 
         public WL? Output { get; set; }
@@ -85,17 +86,21 @@ namespace backend.Converters
         }
 
 
-        public SFX_DATA(SoundDTO input, DarkforgeDBContext ctx)
+        public SFX_DATA(SoundDTO input)
         {
-            
+
 
             this.Input = input;
 
-            this.Sound = ctx.WAVs.Where(w => w.Hash == this.Input.SoundHash).First();
+        }
+
+        public override async Task Convert(DarkforgeDBContext ctx) { 
+
+            this.Sound = await ctx.WAVs.Where(w => w.Hash == this.Input!.SoundHash).FirstAsync();
 
            
 
-            Int16 Threshold = (Int16)(1 << this.Input.ThresholdBits);
+            Int16 Threshold = (Int16)(1 << this.Input!.ThresholdBits);
 
 
             for (int i = 0; i < this.Sound!.Data!.Count; i++)
@@ -161,9 +166,9 @@ namespace backend.Converters
             this.Output.Serialize();
 
 
-            ctx.WLs.Add(this.Output);            
+            await ctx.WLs.AddAsync(this.Output);            
 
-            ctx.SaveChanges();
+            await ctx.SaveChangesAsync();
 
 
             this.Sound.Destructor();

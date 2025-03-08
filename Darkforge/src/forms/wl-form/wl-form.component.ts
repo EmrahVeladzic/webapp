@@ -5,12 +5,16 @@ import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 import { AudioPlayerComponent } from "../../utils/controls/audio-player/audio-player.component";
 import { wav_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError, of } from 'rxjs';
 import { AudioDTO, SoundDTO } from '../../models/models';
 import { base_url,sound_actions } from '../../app/http';
 import { sfx } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
+import { alert_localized } from '../../utils/alerts';
+import { force_reload } from '../../app/http';
+import { user_prefs } from '../../assets/user_prefs';
+import { get_headers } from '../../utils/httpheaders';
 
 
 @Component({
@@ -91,7 +95,7 @@ export class WlFormComponent {
 
     let looping = this.form.get('loop')?.value;
 
-    const $instance = await SoundDTO.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping);
+    const $instance = await SoundDTO.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping,user_prefs.userId);
 
     return $instance;
 
@@ -104,16 +108,49 @@ export class WlFormComponent {
       let $optimized = {...$result};
       $optimized.soundData=null;
 
-      let post_url = `${base_url}/${sound_actions}`;
+      let full_url = `${base_url}${sound_actions}`;
   
   
-      this.transfer.http.post(post_url,$optimized,{observe:"response"}).subscribe($response=>{
+      this.transfer.http.post(full_url,$optimized,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
+
+
+        if($response.status>=400){
+
+          if($response.status===401){
+            alert_localized(this.translate,'alerts.timeout');
+          }
+          else{
+            alert_localized(this.translate,'server_error');
+          }
+          
+          force_reload();
+        }
+  
+
+        else{
+
   
         if($response.status===200){
 
-          this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{
+          this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
             
             
+            if($response.status>=400){
+
+              if($response.status===401){
+                alert_localized(this.translate,'alerts.timeout');
+              }
+              else{
+                alert_localized(this.translate,'server_error');
+              }
+              
+              force_reload();
+            }
+      
+
+
+          else{
+                      
             let AudioResponse = $response.body as AudioDTO;
                     
 
@@ -121,35 +158,70 @@ export class WlFormComponent {
       
             this.transfer.wlTaskSource.next();
 
-          });
+          }});
+
+        
 
         }
 
         else if($response.status===204){
 
+          this.transfer.http.post(full_url,$result,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
 
-          this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+            
+            if($response.status>=400){
+
+              if($response.status===401){
+                alert_localized(this.translate,'alerts.timeout');
+              }
+              else{
+                alert_localized(this.translate,'server_error');
+              }
+              
+              force_reload();
+            }
+      
+
+
+          else{
   
             if($response.status===200){
     
-              this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{
+              this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
       
-              
+                if($response.status>=400){
+
+                  if($response.status===401){
+                    alert_localized(this.translate,'alerts.timeout');
+                  }
+                  else{
+                    alert_localized(this.translate,'server_error');
+                  }
+                  
+                  force_reload();
+                }
+          
+
+                else{
+
                 let AudioResponse = $response.body as AudioDTO;
               
                 sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
           
                 this.transfer.wlTaskSource.next();
+
+                }
     
               });
     
             }
 
-          });
+          }});
 
 
         }
   
+      }
       });
     
   

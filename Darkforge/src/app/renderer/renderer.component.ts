@@ -24,6 +24,7 @@ ngOnInit(): void {
 }
 
 ngAfterViewInit(): void {
+  
   if(this.out){
     this.webgl.initialise(this.out.nativeElement);    
   }

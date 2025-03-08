@@ -35,7 +35,7 @@
     "fps-full":"Full",
     "fps-half":"Half",
     "proximity":"Proximity method",
-    "popularity":"popularity method"
+    "popularity":"Popularity method"
 
 
 },
@@ -44,17 +44,19 @@
 },
 
 "alerts":{
-   "about":"Copyright - Emrah Veladžić, Tarik Frljak, 2025.",
-   "not-bmp":"File appears to not be a BMP-format image.",
-   "not-wav":"File appears to not be a WAV-format audio.",
-   "not-glb":"File appears to not be a GLB-format model.",
-   "dimensions":"Image dimensions need to be divisible by 16 and no more than 256x256. There may be other errors.",
-   "bpp":"Image needs to have exactly 24 bits per pixel.",
-   "sample-rate":"Audio needs to have exactly 16 bits per sample.",
-   "no-metadata":"Metadata is missing. Model is not parseable. There may be other errors.",
-   "no-blob":"BLOB is missing. Model is not parseable. There may be other errors.",
-   "no-meshes":"Model is missing meshes. There may be other errors.",
-   "bones":"All meshes require to have an associated joint if a skeletal rig is used."
+    "about":"Copyright - Emrah Veladžić, Tarik Frljak, 2025.",
+    "timeout":"Your session has expired. Please log in again.",
+    "server_error":"Server is not reachable.",
+    "not-bmp":"File appears to not be a BMP-format image.",
+    "not-wav":"File appears to not be a WAV-format audio.",
+    "not-glb":"File appears to not be a GLB-format model.",
+    "dimensions":"Image dimensions need to be divisible by 16 and no more than 256x256. There may be other errors.",
+    "bpp":"Image needs to have exactly 24 bits per pixel.",
+    "sample-rate":"Audio needs to have exactly 16 bits per sample.",
+    "no-metadata":"Metadata is missing. Model is not parseable. There may be other errors.",
+    "no-blob":"BLOB is missing. Model is not parseable. There may be other errors.",
+    "no-meshes":"Model is missing meshes. There may be other errors.",
+    "bones":"All meshes require to have an associated joint if a skeletal rig is used."
 
 
 }

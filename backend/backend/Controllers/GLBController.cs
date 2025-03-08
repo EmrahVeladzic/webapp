@@ -17,12 +17,12 @@ namespace backend.Controllers
     {
 
         [HttpPost]
-        public IActionResult Post(ModelDTO input)
+        public async Task<IActionResult> Post([FromBody]ModelDTO input)
         {
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                GLB? temp = ctx.GLBs.Where(g => g.Hash == input.ModelHash).FirstOrDefault();
+                GLB? temp = await ctx.GLBs.Where(g => g.Hash == input.ModelHash).FirstOrDefaultAsync();
 
                 if (temp == null)
                 {
@@ -48,9 +48,9 @@ namespace backend.Controllers
 
                         temp!.Setup(Data, input!.ModelHash!);
 
-                        ctx.GLBs.Add(temp);
+                        await ctx.GLBs.AddAsync(temp);
 
-                        ctx.SaveChanges();
+                        await ctx.SaveChangesAsync();
 
                     }
 
@@ -63,8 +63,8 @@ namespace backend.Controllers
                 }
 
 
-                AST_DATA Ast = new AST_DATA(input, ctx);
-
+                AST_DATA Ast = new AST_DATA(input);
+                await Ast.Convert(ctx);
                
 
                 int Id = Ast.Output!.ID;
@@ -82,13 +82,13 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get([FromQuery]int id)
         {
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                AST ast = ctx.ASTs.Include(a=>a.MDL).Include(a=>a.FKR).FirstOrDefault(a=>a.ID==id)!;
+                AST? ast = await ctx.ASTs.Include(a=>a.MDL).Include(a=>a.FKR).FirstOrDefaultAsync(a=>a.ID==id)!;
                              
 
                 if (ast == null)
@@ -102,27 +102,27 @@ namespace backend.Controllers
                 {
                     if (ast.MDL != null)
                     {
-                        ast.MDL.Meshes = ctx.MSHs.Where(m => m.MDL_ID == ast.MDL_ID).ToList();
+                        ast.MDL.Meshes = await ctx.MSHs.Where(m => m.MDL_ID == ast.MDL_ID).ToListAsync();
 
                         foreach(MSH m in ast.MDL.Meshes)
                         {
-                            m.VT = ctx.VTs.Find(m.VT_ID);
-                            m.IND= ctx.INDs.Find(m.IND_ID);
-                            m.UV = ctx.UVs.Find(m.UV_ID);
-                            m.NRM = ctx.NRMs.Find(m.NRM_ID);
+                            m.VT = await ctx.VTs.FindAsync(m.VT_ID);
+                            m.IND= await ctx.INDs.FindAsync(m.IND_ID);
+                            m.UV = await ctx.UVs.FindAsync(m.UV_ID);
+                            m.NRM = await ctx.NRMs.FindAsync(m.NRM_ID);
                         }
 
                     }
                     if(ast.FKR != null)
                     {
 
-                        ast.FKR.Bones=ctx.BNs.Where(b=>b.FKR_ID== ast.FKR_ID).ToList();
+                        ast.FKR.Bones=await ctx.BNs.Where(b=>b.FKR_ID== ast.FKR_ID).ToListAsync();
 
-                        ast.FKR.Animations = ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).ToList();
+                        ast.FKR.Animations =await ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).ToListAsync();
 
                         foreach(ANM a in ast.FKR.Animations)
                         {
-                            a.Tracks = ctx.TKs.Where(t=>t.ANM_ID==a.ID).ToList();
+                            a.Tracks =await ctx.TKs.Where(t=>t.ANM_ID==a.ID).ToListAsync();
                         }
                     }
 
@@ -150,12 +150,12 @@ namespace backend.Controllers
 
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete([FromQuery]int id)
         {
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext()) { 
 
-                AST ast = ctx.ASTs.Find(id)!;
+                AST? ast = await ctx.ASTs.FindAsync(id)!;
 
                 if (ast == null)
                 {
@@ -215,7 +215,7 @@ namespace backend.Controllers
 
 
 
-                    ctx.SaveChanges();
+                    await ctx.SaveChangesAsync();
 
                     return StatusCode(200);
 

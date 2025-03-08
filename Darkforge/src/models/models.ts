@@ -8,9 +8,9 @@ export class ImageDTO{
     public alpha :  number[]|null;
     public mode :   boolean;
     public protectedBufferSize : number;
-
+    public creator_ID: number;
     
-    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean, protected_bfr_size : number ,hash:string) {
+    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean, protected_bfr_size : number ,hash:string, creator:number) {
         this.imageData=data;
         this.imageHash=hash;
        
@@ -18,12 +18,13 @@ export class ImageDTO{
        this.alpha = alpha_c;
        this.mode = c_mode;
        this.protectedBufferSize = protected_bfr_size;
+       this.creator_ID=creator;
 
     }
     
-    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number): Promise<ImageDTO> {
+    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number, creator:number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash,creator);
     }
 
 }
@@ -35,18 +36,20 @@ export class SoundDTO{
     public thresholdBits : number;
     public channelCount : number;
     public looping :boolean;
+    public creator_ID :number;
     
-    constructor(data:string, threshold : number, channels : number , loop:boolean, hash:string) {
+    constructor(data:string, threshold : number, channels : number , loop:boolean, hash:string, creator:number) {
         this.soundData=data;
         this.soundHash=hash;
         this.thresholdBits=threshold;
         this.channelCount=channels;
         this.looping = loop;
+        this.creator_ID=creator;
     }
     
-    static async create(data:string, threshold : number, channels : number, loop:boolean): Promise<SoundDTO> {
+    static async create(data:string, threshold : number, channels : number, loop:boolean, creator:number): Promise<SoundDTO> {
         const soundHash = await hash_data(data);
-        return new SoundDTO(data, threshold, channels, loop, soundHash);
+        return new SoundDTO(data, threshold, channels, loop, soundHash, creator);
     }
 
 }
@@ -59,8 +62,9 @@ export class ModelDTO{
     public targetFPS : number;
     public texWidth : number;
     public texHeight : number;
-    
-    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string) {
+    public creator_ID: number;
+
+    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string, creator:number) {
        
         this.modelData=data;
         this.precisionBits=precision;
@@ -68,12 +72,13 @@ export class ModelDTO{
         this.texWidth=width-1;
         this.texHeight=height-1;
         this.modelHash=hash;
+        this.creator_ID=creator;
         
     }
 
-    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelDTO> {
+    static async create(data:string, precision : number, fps:number,width:number,height:number, creator:number): Promise<ModelDTO> {
         const modelHash = await hash_data(data);
-        return new ModelDTO(data, precision,fps,width,height, modelHash);
+        return new ModelDTO(data, precision,fps,width,height, modelHash, creator);
     }
 
 }

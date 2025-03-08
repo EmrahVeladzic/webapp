@@ -41,6 +41,8 @@
     },
     "alerts": {
       "about": "Urheberrecht - Emrah Veladžić, Tarik Frljak, 2025.",
+      "timeout":"Ihre Sitzung ist abgelaufen. Bitte loggen Sie sich erneut ein.",
+      "server_error": "Server ist nicht erreichbar.",
       "not-bmp": "Die Datei scheint kein BMP-Bildformat zu sein.",
       "not-wav": "Die Datei scheint kein WAV-Audioformat zu sein.",
       "not-glb": "Die Datei scheint kein GLB-Modellformat zu sein.",

@@ -18,6 +18,10 @@
 
         public int RPF_ID { get; set; }
 
-      
+
+        public int Creator_ID { get; set; }
+
+        public bool Shared { get; set; }
+
     }
 }

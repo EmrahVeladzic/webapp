@@ -45,17 +45,19 @@
 },
 
 "alerts":{
-   "about":"Autorska prava - Emrah Veladžić, Tarik Frljak, 2025.",
-   "not-bmp":"Datoteka nije ispravna BMP slika.",
-   "not-wav":"Datoteka nije ispravan WAV audiozapis.",
-   "not-glb":"Datoteka nije ispravan GLB model.",
-   "dimensions":"Dimenzije slike moraju biti djeljive s 16, i ne smiju prelaziti 256x256. Možda ima još problema.",
-   "bpp":"Slika mora da ima tačno 24 bita po pikselu.",
-   "sample-rate":"Audiozapis mora da ima tačno 16 bita po uzorku.",
-   "no-metadata":"Metapodatci nedostaju. Model nije čitljiv. Možda ima još problema.",
-   "no-blob":"BLOB nedostaje. Model nije čitljiv. Možda ima još problema.",
-   "no-meshes":"Modelu nedostaju figure.  Možda ima još problema.",
-   "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura."
+    "about":"Autorska prava - Emrah Veladžić, Tarik Frljak, 2025.",
+    "timeout":"Vaša sesija je istekla. Molimo Vas da se ponovo prijavite.",
+    "server_error":"Server nije dostupan.",
+    "not-bmp":"Datoteka nije ispravna BMP slika.",
+    "not-wav":"Datoteka nije ispravan WAV audiozapis.",
+    "not-glb":"Datoteka nije ispravan GLB model.",
+    "dimensions":"Dimenzije slike moraju biti djeljive s 16, i ne smiju prelaziti 256x256. Možda ima još problema.",
+    "bpp":"Slika mora da ima tačno 24 bita po pikselu.",
+    "sample-rate":"Audiozapis mora da ima tačno 16 bita po uzorku.",
+    "no-metadata":"Metapodatci nedostaju. Model nije čitljiv. Možda ima još problema.",
+    "no-blob":"BLOB nedostaje. Model nije čitljiv. Možda ima još problema.",
+    "no-meshes":"Modelu nedostaju figure.  Možda ima još problema.",
+    "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura."
 
 }
 

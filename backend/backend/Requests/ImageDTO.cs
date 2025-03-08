@@ -21,11 +21,9 @@
         //Determines the size of the protected buffer to be used with the Proximity method. 
         public byte ProtectedBufferSize { get; set; }
 
+        public int Creator_ID { get; set; }
 
-        public override string ToString()
-        {
-            return $"\nData: {ImageData}\nHash: {ImageHash}\nCLUT size: {CLUT_Size}\nAlpha: {Alpha!=null}\nUse proximity: {Mode}\nProtected buffer size: {ProtectedBufferSize}";
-        }
+        
     }    
 
 }

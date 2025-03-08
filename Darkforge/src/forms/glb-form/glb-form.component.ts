@@ -8,7 +8,11 @@ import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
-
+import { catchError, of } from 'rxjs';
+import { force_reload } from '../../app/http';
+import { alert_localized } from '../../utils/alerts';
+import { user_prefs } from '../../assets/user_prefs';
+import { get_headers } from '../../utils/httpheaders';
 
 @Component({
   selector: 'app-glb-form',
@@ -52,7 +56,7 @@ constructor(public translate: TranslateService){
 
   let tex_height = this.form.get('tex_y')?.value;
 
-  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
+  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height,user_prefs.userId);
 
   return $instance;
 
@@ -66,16 +70,48 @@ post_model($event : Event):void{
     $optimized.modelData=null;
 
 
-   let post_url = `${base_url}/${model_actions}`;
+   let full_url = `${base_url}${model_actions}`;
 
 
-   this.transfer.http.post(post_url,$optimized,{observe:"response"}).subscribe($response=>{
+   this.transfer.http.post(full_url,$optimized,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
   
+    if($response.status>=400){
+
+      if($response.status===401){
+        alert_localized(this.translate,'alerts.timeout');
+      }
+      else{
+        alert_localized(this.translate,'server_error');
+      }
+      
+      force_reload();
+    }
+
+
+
+    else{
+
     if($response.status===200){
 
      
 
-      this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{  
+      this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{  
+
+        
+        if($response.status>=400){
+
+          if($response.status===401){
+            alert_localized(this.translate,'alerts.timeout');
+          }
+          else{
+            alert_localized(this.translate,'server_error');
+          }
+          
+          force_reload();
+        }
+  
+
+        else{
 
         update_anim(null);
 
@@ -90,16 +126,49 @@ post_model($event : Event):void{
        
         flip_ast_state();
 
+        }
 
       });
     }
 
     else if($response.status===204){
 
-      this.transfer.http.post(post_url,$result,{observe:"response"}).subscribe($response=>{
+      this.transfer.http.post(full_url,$result,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
   
-        this.transfer.http.get(post_url,{observe:"response",params:new HttpParams().set('id',$response.body as number)}).subscribe($response=>{  
+                
+        if($response.status>=400){
+
+          if($response.status===401){
+            alert_localized(this.translate,'alerts.timeout');
+          }
+          else{
+            alert_localized(this.translate,'server_error');
+          }
+          
+          force_reload();
+        }
+  
+
+        else{
+
+        this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{  
     
+          
+          if($response.status>=400){
+
+            if($response.status===401){
+              alert_localized(this.translate,'alerts.timeout');
+            }
+            else{
+              alert_localized(this.translate,'server_error');
+            }
+            
+            force_reload();
+          }
+    
+
+          else{
+
           update_anim(null);
   
           let raw = $response.body as any;
@@ -112,15 +181,20 @@ post_model($event : Event):void{
       
          
           flip_ast_state();
+
+          }
   
   
         });     
         
+        }
          
        });
 
+      
     }
-     
+  } 
+
    });
  
 

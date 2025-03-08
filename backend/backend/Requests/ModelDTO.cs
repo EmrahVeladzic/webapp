@@ -19,6 +19,7 @@
         public byte TexWidth { get; set; }
         public byte TexHeight { get; set; }
 
+        public int Creator_ID { get; set; }
 
     }
 }

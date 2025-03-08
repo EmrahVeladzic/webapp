@@ -399,6 +399,7 @@ export class WebGLService {
 
  
   initialise(canvas : HTMLCanvasElement){
+    
     this.gl=canvas.getContext("webgl2",{antialias:true});
     
     if(this.gl){
@@ -460,8 +461,6 @@ export class WebGLService {
     }
     else{}
   }
-
-
 
   ngOnDestroy(){
 

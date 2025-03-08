@@ -2,6 +2,7 @@
 using backend.Files;
 using backend.Models;
 using backend.Requests;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -23,7 +24,7 @@ namespace backend.Converters
     }
 
 
-    public class IMG_DATA
+    public class IMG_DATA :BaseConverter
     {
         public Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
@@ -434,18 +435,22 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
-        public IMG_DATA(ImageDTO input, DarkforgeDBContext ctx)
+        public IMG_DATA(ImageDTO input)
         {
-            
+
 
             this.Input = input;
 
+        }
 
-            this.Image = ctx.BMPs.Where(b => b.Hash == this.Input.ImageHash).First();
+        public override async Task Convert(DarkforgeDBContext ctx) { 
+
+
+            this.Image = await ctx.BMPs.Where(b => b.Hash == this.Input!.ImageHash).FirstAsync();
 
            
 
-            if (this.Input.Alpha != null)
+            if (this.Input!.Alpha != null)
             {
                 this.Alpha = new Pixel24((byte)this.Input.Alpha[0], (byte)this.Input.Alpha[1], (byte)this.Input.Alpha[2]);
 
@@ -573,16 +578,16 @@ namespace backend.Converters
 
               
 
-            ctx.PLTs.Add(this.Output.PLT);
-            ctx.PGAs.Add(this.Output.PGA);
-            ctx.SaveChanges();
+            await ctx.PLTs.AddAsync(this.Output.PLT);
+            await ctx.PGAs.AddAsync(this.Output.PGA);
+            await ctx.SaveChangesAsync();
 
             this.Output.PLT_ID = this.Output.PLT.ID;  
             this.Output.PGA_ID = this.Output.PGA.ID;
 
 
-            ctx.RPFs.Add(this.Output);
-            ctx.SaveChanges();
+            await ctx.RPFs.AddAsync(this.Output);
+            await ctx.SaveChangesAsync();
 
 
        

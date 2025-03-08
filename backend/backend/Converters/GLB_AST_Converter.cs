@@ -4,6 +4,7 @@ using backend.Models;
 using backend.Requests;
 using backend.Utils;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Numerics;
 using System.Reflection.Metadata;
@@ -12,13 +13,13 @@ using System.Text.Json;
 
 namespace backend.Converters
 {
-    public class AST_DATA
+    public class AST_DATA :BaseConverter
     {
         private ModelDTO Input { get; set; }
 
         public AST? Output { get; set; }
 
-        public GLB Model { get; set; }
+        public GLB? Model { get; set; }
 
         public List<BN>? Bones { get; set; }
 
@@ -34,21 +35,25 @@ namespace backend.Converters
             return (byte)((UInt64)(Math.Round(((float)(FPS - 1) * time))) % (UInt64)FPS);
         }
 
-       
 
-        public AST_DATA(ModelDTO input, DarkforgeDBContext ctx)
+
+        public AST_DATA(ModelDTO input)
         {
-            
+
 
             this.Input = input;
 
-            this.Model = ctx.GLBs.Where(g => g.Hash == input.ModelHash).First();
+        }
+
+        public override async Task Convert(DarkforgeDBContext ctx) { 
+
+            this.Model = await ctx.GLBs.Where(g => g.Hash == this.Input.ModelHash).FirstAsync();
 
             this.Model.Setup(this.Model!.Serialized!, this.Model!.Hash!);
 
             this.Output = new AST();
 
-            ctx.ASTs.Add(this.Output);
+            await ctx.ASTs.AddAsync(this.Output);
 
             this.Output.PrecisionBits = this.Input.PrecisionBits;
 
@@ -68,9 +73,9 @@ namespace backend.Converters
 
                         this.Output.FKR = new FKR();
 
-                        ctx.FKRs.Add(this.Output.FKR);
+                        await ctx.FKRs.AddAsync(this.Output.FKR);
 
-                        ctx.SaveChanges();
+                        await ctx.SaveChangesAsync();
 
                         this.Output.FKR_ID = this.Output.FKR.ID;
 
@@ -85,9 +90,9 @@ namespace backend.Converters
                             temp_bone.FKR_ID = this.Output.FKR.ID;
 
 
-                            ctx.BNs.Add(temp_bone);
+                            await ctx.BNs.AddAsync(temp_bone);
 
-                            ctx.SaveChanges();
+                            await ctx.SaveChangesAsync();
 
                             Bones.Add(temp_bone);
 
@@ -154,7 +159,7 @@ namespace backend.Converters
 
 
 
-                            ctx.SaveChanges();
+                           await ctx.SaveChangesAsync();
 
 
 
@@ -177,17 +182,17 @@ namespace backend.Converters
                                 for (int k = offset; k < offset + length; k += (16 * sizeof(float)))
                                 {
 
-                                    ReadOnlySpan<float> span = MemoryMarshal.Cast<byte, float>(Model.BLOB.AsSpan(k, 16 * sizeof(float)));
+                                    float[] floatArray = MemoryMarshal.Cast<byte, float>(Model.BLOB.AsSpan(k, 16 * sizeof(float))).ToArray();
 
-
-                                    Matrices.Add( new Matrix4x4(
-                                    span[0], span[1], span[2], span[3],
-                                    span[4], span[5], span[6], span[7],
-                                    span[8], span[9], span[10], span[11],
-                                    span[12], span[13], span[14], span[15]
+                                    
+                                    Matrices.Add(new Matrix4x4(
+                                        floatArray[0], floatArray[1], floatArray[2], floatArray[3],
+                                        floatArray[4], floatArray[5], floatArray[6], floatArray[7],
+                                        floatArray[8], floatArray[9], floatArray[10], floatArray[11],
+                                        floatArray[12], floatArray[13], floatArray[14], floatArray[15]
                                     ));
 
-                                   
+
                                 }
                             }
 
@@ -215,9 +220,9 @@ namespace backend.Converters
 
                             anim.FKR_ID = (int)this.Output.FKR_ID!;
 
-                            ctx.ANMs.Add(anim);
+                            await ctx.ANMs.AddAsync(anim);
 
-                            ctx.SaveChanges();
+                            await ctx.SaveChangesAsync();
 
                             this.Output.FKR!.Animations.Add(anim);
 
@@ -426,9 +431,9 @@ namespace backend.Converters
 
                                     anim.Tracks.Add(track);
 
-                                    ctx.TKs.Add(track);
+                                    await ctx.TKs.AddAsync(track);
 
-                                    ctx.SaveChanges();
+                                    await ctx.SaveChangesAsync();
 
 
 
@@ -447,9 +452,9 @@ namespace backend.Converters
                 {
 
                     this.Output.MDL = new MDL();
-                    ctx.MDLs.Add(this.Output.MDL);
+                    await ctx.MDLs.AddAsync(this.Output.MDL);
 
-                    ctx.SaveChanges();
+                    await ctx.SaveChangesAsync();
 
                     this.Output.MDL_ID = this.Output.MDL.ID;
 
@@ -461,9 +466,9 @@ namespace backend.Converters
 
                         mesh.MDL_ID = this.Output.MDL.ID;
 
-                        ctx.MSHs.Add(mesh);
+                        await ctx.MSHs.AddAsync(mesh);
 
-                        ctx.SaveChanges();
+                        await ctx.SaveChangesAsync();
 
                         Meshes.Add(mesh);
 
@@ -489,9 +494,9 @@ namespace backend.Converters
 
 
                                         Meshes[i].IND = new IND();
-                                        ctx.INDs.Add(Meshes[i].IND!);
+                                        await ctx.INDs.AddAsync(Meshes[i].IND!);
 
-                                        ctx.SaveChanges();
+                                        await ctx.SaveChangesAsync();
 
                                         Meshes[i].IND_ID = Meshes[i].IND!.ID;
 
@@ -533,11 +538,11 @@ namespace backend.Converters
                                             Meshes[i].UV = new UV();
 
 
-                                            ctx.UVs.Add(Meshes[i].UV!);
+                                           await ctx.UVs.AddAsync(Meshes[i].UV!);
 
 
 
-                                            ctx.SaveChanges();
+                                            await ctx.SaveChangesAsync();
 
                                             Meshes[i].UV_ID = Meshes[i].UV!.ID;
 
@@ -676,9 +681,9 @@ namespace backend.Converters
 
 
                                             Meshes[i].NRM = new NRM();
-                                            ctx.NRMs.Add(Meshes[i].NRM!);
+                                            await ctx.NRMs.AddAsync(Meshes[i].NRM!);
 
-                                            ctx.SaveChanges();
+                                            await ctx.SaveChangesAsync();
 
                                             Meshes[i].NRM_ID = Meshes[i].NRM!.ID;
 
@@ -743,7 +748,7 @@ namespace backend.Converters
                 }
 
 
-                ctx.SaveChanges();
+                await ctx.SaveChangesAsync();
 
 
                 this.Matrices?.Clear();

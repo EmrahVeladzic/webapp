@@ -5,6 +5,7 @@ using backend.Models;
 using backend.Requests;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace backend.Controllers
@@ -16,14 +17,19 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public IActionResult Post(SoundDTO input)
+        public async Task<IActionResult> Post([FromBody]SoundDTO input)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId) || userId != input.Creator_ID)
+            {
+                return StatusCode(401);
+            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                WAV? temp = ctx.WAVs.Where(b => b.Hash == input.SoundHash).FirstOrDefault();
+                WAV? temp = await ctx.WAVs.Where(b => b.Hash == input.SoundHash).FirstOrDefaultAsync();
 
                 if (temp == null)
                 {
@@ -52,9 +58,9 @@ namespace backend.Controllers
 
                         temp!.Setup(Data, input!.SoundHash!);
 
-                        ctx.WAVs.Add(temp);
+                        await ctx.WAVs.AddAsync(temp);
 
-                        ctx.SaveChanges();
+                        await ctx.SaveChangesAsync();
 
                     }
                 }
@@ -64,7 +70,8 @@ namespace backend.Controllers
                     temp.Setup(temp.Serialized!, temp.Hash!);
                 }
 
-                SFX_DATA Sfx = new SFX_DATA(input, ctx);
+                SFX_DATA Sfx = new SFX_DATA(input);
+                await Sfx.Convert(ctx);
 
 
 
@@ -83,15 +90,20 @@ namespace backend.Controllers
 
 
         [HttpGet]
-        public IActionResult Get(int id)
+        public async Task<IActionResult> Get([FromQuery]int id)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+            {
+                return StatusCode(401);
+            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
-                WL wl = ctx.WLs.Find(id)!;
+                WL? wl = await ctx.WLs.FindAsync(id)!;
 
 
                 if (wl == null)
@@ -133,15 +145,20 @@ namespace backend.Controllers
 
 
         [HttpDelete]
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete([FromQuery]int id)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null)
+            {
+                return StatusCode(401);
+            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
-                WL wl = ctx.WLs.Find(id)!;
+                WL? wl = await ctx.WLs.FindAsync(id)!;
 
 
 
@@ -155,7 +172,7 @@ namespace backend.Controllers
                 {
                     ctx.WLs.Remove(wl);
 
-                    ctx.SaveChanges();
+                    await ctx.SaveChangesAsync();
 
 
                     return StatusCode(200);
