@@ -1,6 +1,7 @@
 {
 "button":{
     "post":"Post",
+    "delete":"Delete",
     "export":"Export",
     "play":"Play/Stop"
 },

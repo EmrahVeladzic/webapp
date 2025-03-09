@@ -30,6 +30,10 @@ export class RpfFormComponent implements OnInit{
   private ctx? : CanvasRenderingContext2D;
   private preview? : HTMLImageElement;
   private taskCompletedSubscription!: Subscription;
+
+  public btn_enabled:boolean=true;
+  public post_delete:boolean=true;
+  public btn_translation: string = 'button.post';
  
   @ViewChild('r_s',{static:false})r_s!:SliderComponent;
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
@@ -80,6 +84,8 @@ export class RpfFormComponent implements OnInit{
 
   ngOnInit(){
     this.taskCompletedSubscription = this.transfer.bmpTaskCompleted$.subscribe(() => {
+      this.post_delete=true;
+      this.btn_translation='button.post';   
       this.draw_preview();
     });
 
@@ -236,125 +242,51 @@ export class RpfFormComponent implements OnInit{
 
   }
 
+  async choice($event :Event):Promise<void>{
 
+    if(this.post_delete===true){
+      this.btn_enabled = false;
+      await this.post();      
+      this.post_delete=false;
+      this.btn_translation='button.delete';
+      this.btn_enabled = true;
+      
+    }
+    else{
+      this.btn_enabled = false;
+      await this.delete();
+      this.post_delete=true;
+      this.btn_translation='button.post';     
+      this.btn_enabled = true;   
+    }
+  
+  }
 
-  post_image($event : Event):void{
+  
+  async delete():Promise<void>{
 
-   (this.create_image_json()).then($result=>{
+  }
+
+  async post():Promise<void>{
+
+    const $result :ImageDTO= await this.create_image_json();
 
     let $optimized = {...$result};
     $optimized.imageData=null;
 
     let full_url = `${base_url}${image_actions}`;
 
+    const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
 
-    this.transfer.http.post(full_url,$optimized,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-   
-      if($response.status>=400){
+    if($id!=null){
 
-        if($response.status===401){
-          alert_localized(this.translate,'alerts.timeout');
-        }
-        else{
-          alert_localized(this.translate,'alerts.server_error');
-        }
-        
-        force_reload();
-      }
+      const $response : TextureDTO = await this.transfer.generic_get($id,full_url) as TextureDTO;
 
-      else{
+      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height);
 
-      if($response.status===200){
+    }    
 
-        
-        this.transfer.http.get(full_url,{headers:get_headers(),observe:"response", params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{   
-
-          if($response.status>=400){
-
-            if($response.status===401){
-              alert_localized(this.translate,'alerts.timeout');
-            }
-            else{
-              alert_localized(this.translate,'alerts.server_error');
-            }
-            
-            force_reload();
-          }
     
-          else{
-
-          let TextureResponse = $response.body as TextureDTO;
-        
-        
-          tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width),(TextureResponse.height));   
-        
-          }
-  
-        });
-
-      
-      }
-
-      else if($response.status===204){
-
-        this.transfer.http.post(full_url,$result,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-          if($response.status>=400){
-
-            if($response.status===401){
-              alert_localized(this.translate,'alerts.timeout');
-            }
-            else{
-              alert_localized(this.translate,'alerts.server_error');
-            }
-            
-            force_reload();
-          }
-    
-
-          else{
-
-          this.transfer.http.get(full_url,{headers:get_headers(),observe:"response", params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{   
-
-            if($response.status>=400){
-
-              if($response.status===401){
-                alert_localized(this.translate,'alerts.timeout');
-              }
-              else{
-                alert_localized(this.translate,'alerts.server_error');
-              }
-              
-              force_reload();
-            }
-      
-
-           else{
-
-
-            let TextureResponse = $response.body as TextureDTO;
-
-            
-          
-            tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width),(TextureResponse.height));      
-           }
-      
-          });
-          
-
-          }
-        });
-
-      }
-    }
-      
-    });
-  
-
-
-
-    });
-
-
 
   }
 

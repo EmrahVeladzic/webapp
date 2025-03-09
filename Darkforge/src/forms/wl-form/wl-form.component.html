@@ -39,8 +39,8 @@
 
    </form>
 
-   <div class="post">
-      <button type="button" (click)="this.post_audio($event)">{{'button.post'|translate}}</button>
+   <div class="btn">
+      <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
   </div>
       
 

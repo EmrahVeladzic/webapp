@@ -21,12 +21,14 @@ private beginZ: number=0;
 
 ngOnInit(): void {
  
+
 }
 
-ngAfterViewInit(): void {
-  
-  if(this.out){
-    this.webgl.initialise(this.out.nativeElement);    
+
+
+ngAfterViewInit(): void {  
+  if (this.out && this.out.nativeElement) {
+    this.webgl.initialise(this.out.nativeElement);
   }
 }
 

@@ -57,12 +57,12 @@ form{
     height: 12.5%;
 }
 
-.post{
+.btn{
     height: 15%;
     display: flex;
     flex-direction: column;
 }
-.post button{
+.btn button{
     width: 50%;
     margin-left: 25%;
     margin-right: 25%;  

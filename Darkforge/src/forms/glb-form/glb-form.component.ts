@@ -1,4 +1,4 @@
-import { Component ,Input} from '@angular/core';
+import { Component ,Input, OnInit, OnDestroy} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
@@ -8,7 +8,7 @@ import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
-import { catchError, of } from 'rxjs';
+import { Subscription,catchError, of } from 'rxjs';
 import { force_reload } from '../../app/http';
 import { alert_localized } from '../../utils/alerts';
 import { user_prefs } from '../../assets/user_prefs';
@@ -24,6 +24,10 @@ import { get_headers } from '../../utils/httpheaders';
 export class GlbFormComponent {
  @Input() transfer!: FileTransferService;
  form :FormGroup;
+  private taskCompletedSubscription!: Subscription;
+ public btn_enabled:boolean=true;
+ public post_delete:boolean=true;
+ public btn_translation: string = 'button.post';
 
 constructor(public translate: TranslateService){
  
@@ -38,12 +42,20 @@ constructor(public translate: TranslateService){
 
 
 
-
-
-
-
 }
 
+ngOnDestroy() {
+  this.taskCompletedSubscription.unsubscribe();
+}
+
+ngOnInit(){
+
+  this.taskCompletedSubscription = this.transfer.glbTaskCompleted$.subscribe(() => {
+    this.post_delete=true;
+    this.btn_translation='button.post';   
+  });
+
+}
 
  async create_model_json() : Promise<ModelDTO>{   
 
@@ -62,149 +74,61 @@ constructor(public translate: TranslateService){
 
   }
 
-post_model($event : Event):void{
 
-  (this.create_model_json()).then($result=>{
+  async choice($event :Event):Promise<void>{
+
+    if(this.post_delete===true){
+      this.btn_enabled = false;
+      await this.post();      
+      this.post_delete=false;
+      this.btn_translation='button.delete';
+      this.btn_enabled = true;
+      
+    }
+    else{
+      this.btn_enabled = false;
+      await this.delete();
+      this.post_delete=true;
+      this.btn_translation='button.post';     
+      this.btn_enabled = true;   
+    }
+  
+  }
+
+  
+  async delete():Promise<void>{
+
+  }
+
+  async post():Promise<void>{
+
+    const $result :ModelDTO= await this.create_model_json();
 
     let $optimized = {...$result};
     $optimized.modelData=null;
 
+    let full_url = `${base_url}${model_actions}`;
 
-   let full_url = `${base_url}${model_actions}`;
+    const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
 
+    if($id!=null){
 
-   this.transfer.http.post(full_url,$optimized,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-  
-    if($response.status>=400){
+      const $response : AssetDTO = await this.transfer.generic_get($id,full_url) as AssetDTO;
 
-      if($response.status===401){
-        alert_localized(this.translate,'alerts.timeout');
-      }
-      else{
-        alert_localized(this.translate,'alerts.server_error');
-      }
-      
-      force_reload();
-    }
+      update_anim(null);
+      flip_ast_state();
 
+      ast.reset($response.asT_ID,$response.asset.precisionBits,$response.asset.mdl??null,$response.asset.fkr??null)
 
+      flip_ast_state();
+    }    
 
-    else{
-
-    if($response.status===200){
-
-     
-
-      this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{  
-
-        
-        if($response.status>=400){
-
-          if($response.status===401){
-            alert_localized(this.translate,'alerts.timeout');
-          }
-          else{
-            alert_localized(this.translate,'alerts.server_error');
-          }
-          
-          force_reload();
-        }
-  
-
-        else{
-
-        update_anim(null);
-
-        let raw = $response.body as any;    
-  
-        flip_ast_state();  
-        ast.reset( raw.asset.id,
-        raw.asset.precisionBits,
-        raw.asset.mdl ?? null,
-        raw.asset.fkr ?? null);
-    
-       
-        flip_ast_state();
-
-        }
-
-      });
-    }
-
-    else if($response.status===204){
-
-      this.transfer.http.post(full_url,$result,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-  
-                
-        if($response.status>=400){
-
-          if($response.status===401){
-            alert_localized(this.translate,'alerts.timeout');
-          }
-          else{
-            alert_localized(this.translate,'alerts.server_error');
-          }
-          
-          force_reload();
-        }
-  
-
-        else{
-
-        this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{  
-    
-          
-          if($response.status>=400){
-
-            if($response.status===401){
-              alert_localized(this.translate,'alerts.timeout');
-            }
-            else{
-              alert_localized(this.translate,'alerts.server_error');
-            }
-            
-            force_reload();
-          }
     
 
-          else{
-
-          update_anim(null);
-  
-          let raw = $response.body as any;
-      
-          flip_ast_state();  
-          ast.reset( raw.asset.id,
-          raw.asset.precisionBits,
-          raw.asset.mdl ?? null,
-          raw.asset.fkr ?? null);
-      
-         
-          flip_ast_state();
-
-          }
-  
-  
-        });     
-        
-        }
-         
-       });
-
-      
-    }
-  } 
-
-   });
- 
-
-
-
-   });
-
-
-
- }
+  }
 
 
 }
+ 
+
+

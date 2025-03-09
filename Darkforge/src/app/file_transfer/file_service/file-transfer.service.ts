@@ -1,10 +1,12 @@
-import { Injectable, Input, numberAttribute } from '@angular/core';
-import { HttpClient,HttpHeaders, HttpResponse } from '@angular/common/http';
+import { Injectable, Input, numberAttribute} from '@angular/core';
+import { HttpClient,HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { base_url,image_actions } from '../../http';
-import { Subject } from 'rxjs';
+import { Subject, catchError ,lastValueFrom,of } from 'rxjs';
 import { alert_localized } from '../../../utils/alerts';
+import { force_reload } from '../../http';
 import { TranslateService } from '@ngx-translate/core';
-import { default_asset, default_audio, default_texture, flip_ast_state, flip_tex_state, update_anim } from '../../../assets/global_assets';
+import { ast, default_asset, default_audio, default_texture, flip_ast_state, flip_tex_state, sfx, tex, update_anim } from '../../../assets/global_assets';
+import { get_headers } from '../../../utils/httpheaders';
 
 @Injectable({
   providedIn: 'root'
@@ -34,7 +36,9 @@ export class FileTransferService {
   constructor(public http:HttpClient, public translate:TranslateService) {
     this.reader = new FileReader();
     this.file_text ="";
-  
+
+    this.reset();
+
    }
 
 
@@ -323,10 +327,13 @@ export class FileTransferService {
 
   }
 
-  public reset():void{
-
+  public reset_tex():void{
     default_texture();
 
+    flip_tex_state();
+  }
+
+  public reset_ast():void{
     update_anim(null);
 
     flip_ast_state();
@@ -335,13 +342,121 @@ export class FileTransferService {
 
     flip_ast_state();
 
+  }
+
+  public reset_sfx():void{
+
     default_audio();
 
     this.wlTaskSource.next();
+  }
+
+  public reset():void{
+
+    this.reset_tex();
+    this.reset_ast();
+    this.reset_sfx();   
+
+  }
+
+ 
+
+
+  public async generic_post(optimized:any,normal:any,url:string):Promise<number|null>{
+
+    try {
+      let $response = await lastValueFrom(
+        this.http.post(url, optimized, { headers: get_headers(), observe: 'response' })
+      );
+  
+      if ($response.status === 200) {
+        return $response.body as number;
+      }  
+
+      else{
+     
+      $response = await lastValueFrom(
+        this.http.post(url, normal, { headers: get_headers(), observe: 'response' })
+      );
+  
+      return $response.body as number;
+
+    }
+  
+    } catch (error: any) {
+      if (error.status === 401) {
+        alert_localized(this.translate, 'alerts.timeout');
+      } else {
+        alert_localized(this.translate, 'alerts.server_error');
+      }
+      force_reload();
+      return null;
+    }
+
+  }
+
+  
+  public async generic_get(id:number,url:string):Promise<any>{
+
+    try {
+      let $response = await lastValueFrom(
+        this.http.get(url,{ headers: get_headers(),params:new HttpParams().set('id',id), observe: 'response' })
+      );
+  
+      if ($response.status === 200) {
+        return $response.body as any;
+      }  
+
+      else{
+     
+        return null;
+      }
+  
+     
+
+    } 
+  
+    catch (error: any) {
+      if (error.status === 401) {
+        alert_localized(this.translate, 'alerts.timeout');
+      } else {
+        alert_localized(this.translate, 'alerts.server_error');
+      }
+      force_reload();
+      return null;
+    }
+
+  }
+
+
+  public async generic_delete(id:number,url:string):Promise<void>{
+
+    try {
+      let $response = await lastValueFrom(
+        this.http.delete(url,{ headers: get_headers(),params:new HttpParams().set('id',id), observe: 'response' })
+      );
+  
+      return; 
+     
+
+    } 
+  
+    catch (error: any) {
+      if (error.status === 401) {
+        alert_localized(this.translate, 'alerts.timeout');
+      } else {
+        alert_localized(this.translate, 'alerts.server_error');
+      }
+      force_reload();
+      return;
+    }
 
   }
 
 
 }
+
+
+
 export let bmp_preview_url :string;
 export let wav_preview_url :string;

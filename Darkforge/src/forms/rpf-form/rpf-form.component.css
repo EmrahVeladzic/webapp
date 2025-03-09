@@ -22,7 +22,6 @@ form{
     
     width: 100%;
     font-size: 2vh;
-    
 }
 
 .rgb_holder{
@@ -115,12 +114,12 @@ form{
     margin-left: 10%;
     margin-right: 10%;
 }
-.post{
+.btn{
     height: 15%;
     display: flex;
     flex-direction: column;
 }
-.post button{
+.btn button{
     width: 50%;
     margin-left: 25%;
     margin-right: 25%;  

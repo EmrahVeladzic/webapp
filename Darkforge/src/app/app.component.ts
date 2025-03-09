@@ -13,7 +13,6 @@ import { RouterModule } from '@angular/router';
   imports: [CommonModule, ReactiveFormsModule,RouterOutlet, RouterModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.css',
-  providers:[FileTransferService, WebGLService]
   
 })
 export class AppComponent {
@@ -26,8 +25,9 @@ export class AppComponent {
 
   ngOnInit(){ 
     
-    if (window.location.pathname !== '/') {
-      this.router.navigateByUrl('/');
+    if (window.location.pathname !== '/login') {
+      this.router.navigateByUrl('/login');
+      
     }
   }
  

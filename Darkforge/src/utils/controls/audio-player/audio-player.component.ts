@@ -204,7 +204,10 @@ export class AudioPlayerComponent {
   }
 
   ngOnDestroy(){
+    this.source?.stop();
     this.volumeSubscription.unsubscribe();
+    this.source?.disconnect();
+    this.gain?.disconnect();
   }
 
 

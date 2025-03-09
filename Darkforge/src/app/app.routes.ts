@@ -5,7 +5,7 @@ import { MainInterfaceComponent } from './main-interface/main-interface.componen
 export const routes: Routes = [
     {path: '', redirectTo:'login',pathMatch:'full'},
     {path:'login',component:LoginComponent},
-    {path:'user/:id',component:MainInterfaceComponent}
+    {path:'user/:id',component:MainInterfaceComponent, runGuardsAndResolvers: 'always'}
 
 ];
 

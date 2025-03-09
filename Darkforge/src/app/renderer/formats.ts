@@ -6,20 +6,22 @@ import { get_Mat } from "../../utils/transform";
 
 export class Texture{
 
+    public id!:number;
     public CLUT!:number[];
     public Indices!:number[];
     public Width! : number;
     public Height!: number;
     public Data! : Uint16Array;
 
-    constructor(clut:number[],pixels:number[],width:number,height:number){
+    constructor(i:number,clut:number[],pixels:number[],width:number,height:number){
 
-        this.reset(clut,pixels,width,height);
+        this.reset(i,clut,pixels,width,height);
         
     }
 
-    public reset(clut:number[],pixels:number[],width:number,height:number):void{
+    public reset(i:number,clut:number[],pixels:number[],width:number,height:number):void{
 
+        this.id=i;
         this.CLUT=clut;
         this.Indices=pixels;
         this.Width=width+1;
@@ -48,13 +50,13 @@ export class Texture{
         this.CLUT=[];
         this.Indices=[];
 
-        flip_tex_state();
     }
 
 }
 
 export class Audio{
 
+    public id!:number;
     public BlockData!: number[];
     public Data!:Float32Array;
     public SampleRate! :number;
@@ -64,15 +66,15 @@ export class Audio{
     public ThresholdBits!:number;
     public Samples! : number[];
 
-    constructor(data:number[],sample_rate:number,channels:number,blocks:number,threshold:number){
+    constructor(i:number,data:number[],sample_rate:number,channels:number,blocks:number,threshold:number){
 
-        this.reset(data,sample_rate,channels,blocks,threshold);
+        this.reset(i,data,sample_rate,channels,blocks,threshold);
 
     }
 
 
-    public reset(data:number[],sample_rate:number,channels:number,blocks:number,threshold:number):void{
-
+    public reset(i:number,data:number[],sample_rate:number,channels:number,blocks:number,threshold:number):void{
+        this.id=i;
         this.BlockData=data;
         this.SampleRate=sample_rate;
         this.ChannelCount=channels;

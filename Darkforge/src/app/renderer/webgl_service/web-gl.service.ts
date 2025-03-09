@@ -9,6 +9,7 @@ import { SkeletalRig } from '../formats';
 import { get_Mat, get_Quat, get_Vec } from '../../../utils/transform';
 import { Subscription } from 'rxjs';
 import { get_interpolation_value } from '../../../utils/interpolation';
+import { force_reload } from '../../http';
 
 @Injectable({
   providedIn: 'root'
@@ -30,6 +31,7 @@ export class WebGLService {
   private wMat  : any;
   private vMat  : any;
   private pMat  : any;
+  private animationFrameId: number | null = null;
   static defaultFrameDuration : number = (1000/60);
 
    private animSubscription!: Subscription;
@@ -46,6 +48,17 @@ export class WebGLService {
 
     
   }
+
+  checkWebGLError() {
+    const error = this.gl?.getError();
+    if (error !== this.gl?.NO_ERROR || this.gl===null) {
+      
+      force_reload();
+      window.location.href = '/';
+     
+    }
+  }
+
  
   interpolate_bone_transforms(f:SkeletalRig,_time:number, bn_id:number):void{
 
@@ -153,6 +166,8 @@ export class WebGLService {
 
   setup(){
 
+    this.checkWebGLError();
+
     if(this.gl){
     this.GLProgram = this.gl.createProgram();     
    
@@ -193,10 +208,13 @@ export class WebGLService {
 
     }
 
+   
 
   }
 
   render(){
+
+  
 
     if(this.gl){   
       
@@ -337,7 +355,7 @@ export class WebGLService {
 
     }   
         
-      requestAnimationFrame(this.render.bind(this));
+      this.animationFrameId= requestAnimationFrame(this.render.bind(this));
 
     }
 
@@ -400,6 +418,8 @@ export class WebGLService {
  
   initialise(canvas : HTMLCanvasElement){
     
+    if(!this.gl){   
+
     this.gl=canvas.getContext("webgl2",{antialias:true});
     
     if(this.gl){
@@ -430,17 +450,24 @@ export class WebGLService {
       this.http.get(`assets/shaders/vertex.glsl`, { responseType: 'text' })
       .subscribe({
         next: (content: string) => {
+
+          
+
           this.vertCode = content;
           this.compile_vertex();
          
 
+
             this.http.get(`assets/shaders/fragment.glsl`, { responseType: 'text' })
             .subscribe({
               next: (content: string) => {
+
+               
+
                 this.fragCode = content;
                 this.compile_fragment();
               
-               
+                this.checkWebGLError();
 
                 this.setup();
               },
@@ -459,12 +486,19 @@ export class WebGLService {
    
      
     }
-    else{}
+    else{ this.checkWebGLError();}
+
+  }
+
+
   }
 
   ngOnDestroy(){
 
     this.animSubscription.unsubscribe();
+    if(this.animationFrameId!=null){
+      cancelAnimationFrame(this.animationFrameId);
+    }
 
   }
 

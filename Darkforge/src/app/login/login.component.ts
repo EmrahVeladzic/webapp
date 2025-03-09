@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component,OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormsModule } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
@@ -23,6 +23,14 @@ public password:string='';
 constructor(private router:Router, private http:HttpClient){
 
 }
+
+ngOnInit(){
+
+  this.router.navigate(['/'], { replaceUrl: true });
+  window.history.pushState(null, '', window.location.href);
+
+}
+
 
 login(){ 
 

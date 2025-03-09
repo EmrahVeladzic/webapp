@@ -30,6 +30,10 @@ export class WlFormComponent {
   private taskCompletedSubscription!: Subscription;
   form:FormGroup;
 
+  public btn_enabled:boolean=true;
+  public post_delete:boolean=true;
+  public btn_translation: string = 'button.post';
+
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
@@ -43,6 +47,8 @@ export class WlFormComponent {
 
   ngOnInit(){
     this.taskCompletedSubscription = this.transfer.wavTaskCompleted$.subscribe(() => {
+      this.post_delete=true;
+      this.btn_translation='button.post';   
      this.audioPlayer.audio.nativeElement.src=wav_preview_url;
      this.audioPlayer.audio.nativeElement.load();
     });
@@ -101,136 +107,55 @@ export class WlFormComponent {
 
   }
 
-  post_audio($event :Event):void{
+ 
+  async choice($event :Event):Promise<void>{
 
-    (this.create_sound_json()).then($result=>{
-
-      let $optimized = {...$result};
-      $optimized.soundData=null;
-
-      let full_url = `${base_url}${sound_actions}`;
-  
-  
-      this.transfer.http.post(full_url,$optimized,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-
-
-        if($response.status>=400){
-
-          if($response.status===401){
-            alert_localized(this.translate,'alerts.timeout');
-          }
-          else{
-            alert_localized(this.translate,'alerts.server_error');
-          }
-          
-          force_reload();
-        }
-  
-
-        else{
-
-  
-        if($response.status===200){
-
-          this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-            
-            
-            if($response.status>=400){
-
-              if($response.status===401){
-                alert_localized(this.translate,'alerts.timeout');
-              }
-              else{
-                alert_localized(this.translate,'alerts.server_error');
-              }
-              
-              force_reload();
-            }
+    if(this.post_delete===true){
+      this.btn_enabled = false;
+      await this.post();      
+      this.post_delete=false;
+      this.btn_translation='button.delete';
+      this.btn_enabled = true;
       
-
-
-          else{
-                      
-            let AudioResponse = $response.body as AudioDTO;
-                    
-
-            sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
-      
-            this.transfer.wlTaskSource.next();
-
-          }});
-
-        
-
-        }
-
-        else if($response.status===204){
-
-          this.transfer.http.post(full_url,$result,{headers:get_headers(),observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-
-            
-            if($response.status>=400){
-
-              if($response.status===401){
-                alert_localized(this.translate,'alerts.timeout');
-              }
-              else{
-                alert_localized(this.translate,'alerts.server_error');
-              }
-              
-              force_reload();
-            }
-      
-
-
-          else{
+    }
+    else{
+      this.btn_enabled = false;
+      await this.delete();
+      this.post_delete=true;
+      this.btn_translation='button.post';     
+      this.btn_enabled = true;   
+    }
   
-            if($response.status===200){
-    
-              this.transfer.http.get(full_url,{headers:get_headers(),observe:"response",params:new HttpParams().set('id',$response.body as number)}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
-      
-                if($response.status>=400){
+  }
 
-                  if($response.status===401){
-                    alert_localized(this.translate,'alerts.timeout');
-                  }
-                  else{
-                    alert_localized(this.translate,'alerts.server_error');
-                  }
-                  
-                  force_reload();
-                }
-          
-
-                else{
-
-                let AudioResponse = $response.body as AudioDTO;
-              
-                sfx.reset(AudioResponse.audioData,AudioResponse.sampleRate,AudioResponse.channelCount,AudioResponse.blockCountPerChannel,AudioResponse.thresholdBits);
-          
-                this.transfer.wlTaskSource.next();
-
-                }
-    
-              });
-    
-            }
-
-          }});
-
-
-        }
   
-      }
-      });
-    
-  
-  
-  
-      });
-
+  async delete():Promise<void>{
 
   }
 
+  async post():Promise<void>{
+
+    const $result :SoundDTO= await this.create_sound_json();
+
+    let $optimized = {...$result};
+    $optimized.soundData=null;
+
+    let full_url = `${base_url}${sound_actions}`;
+
+    const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
+
+    if($id!=null){
+
+      const $response : AudioDTO = await this.transfer.generic_get($id,full_url) as AudioDTO;
+
+      sfx.reset($response.wl_ID,$response.audioData,$response.sampleRate,$response.channelCount,$response.blockCountPerChannel,$response.thresholdBits);
+
+      this.transfer.wlTaskSource.next();
+
+    }    
+
+    
+
+  }
 
 }
