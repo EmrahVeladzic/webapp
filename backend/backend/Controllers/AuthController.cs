@@ -83,6 +83,14 @@ namespace backend.Controllers
                 await ctx.Users.AddAsync(user);
                 await ctx.SaveChangesAsync();
 
+                List<string> AllowedLangs = new List<string> {"en","de","bh"};
+
+                if (!AllowedLangs.Contains(request.Language!))
+                {
+                    request.Language = "en";
+                }
+
+
                 UserPreferences prefs = new UserPreferences(user.ID, request.Language!,request.SharedAssets);
 
                 await ctx.UserPreferences.AddAsync(prefs);

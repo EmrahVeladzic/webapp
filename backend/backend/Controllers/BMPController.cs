@@ -188,6 +188,12 @@ namespace backend.Controllers
             using (DarkforgeDBContext ctx = new DarkforgeDBContext()){
 
                 RPF? rpf = await ctx.RPFs.Include(r => r.PLT).Include(r => r.PGA).FirstOrDefaultAsync(r => r.ID == id)!;
+
+                if (rpf == null)
+                {
+                    return StatusCode(204);
+                }
+
                 ActiveRPF? metadata = await ctx.ActiveRPFs.FindAsync(rpf?.ID);
                 UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
 
@@ -195,19 +201,17 @@ namespace backend.Controllers
                 int ownerID = owner_p!.UserId;
 
 
-                if (rpf == null || !(share||userId==ownerID))
+                if (!(share||userId==ownerID))
                 {                   
                     return StatusCode(204);
                 }
 
                 else
                 {
-                    ctx.RPFs.Remove(rpf);
-                    ctx.PGAs.Remove(rpf.PGA!);
-                    ctx.PLTs.Remove(rpf.PLT!);
+
+                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.RPF WHERE EntityID = {0}", rpf!.ID);
 
                     await ctx.SaveChangesAsync();
-
                     
 
                     return StatusCode(200);

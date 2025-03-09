@@ -212,6 +212,13 @@ namespace backend.Controllers
             using (DarkforgeDBContext ctx = new DarkforgeDBContext()) { 
 
                 AST? ast = await ctx.ASTs.FindAsync(id)!;
+
+                if (ast == null)
+                {
+                    return StatusCode(204);
+                }
+
+
                 ActiveAST? metadata = await ctx.ActiveASTs.FindAsync(ast?.ID);
                 UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
 
@@ -219,72 +226,17 @@ namespace backend.Controllers
                 int ownerID = owner_p!.UserId;
 
 
-                if (ast == null || !(share || ownerID == userId))
+                if (!(share || ownerID == userId))
                 {
 
-                    return StatusCode(204);
-                }
-
-
-                if (ast == null)
-                {
-                  
                     return StatusCode(204);
                 }
 
                 else
                 {
+                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.AST WHERE EntityID = {0}", ast!.ID);
 
-                    ctx.ASTs.Remove(ast);
-                    if (ast.MDL != null)
-                    {
-                        ctx.MDLs.Remove(ast.MDL);
-
-                        ctx.MSHs.RemoveRange(ast.MDL.Meshes);
-
-                        foreach (var m in ast.MDL.Meshes)
-                        {                           
-
-                            if (m.VT != null)
-                            {
-                                ctx.VTs.Remove(m.VT);
-                            }
-
-                            if (m.IND != null)
-                            {
-                                ctx.INDs.Remove(m.IND);
-                            }
-
-                            if (m.UV != null)
-                            {
-                                ctx.UVs.Remove(m.UV);
-                            }
-
-                            if (m.NRM != null)
-                            {
-                                ctx.NRMs.Remove(m.NRM);
-                            }
-                        }
-                    }
-                    if (ast.FKR != null)
-                    {
-                        ctx.FKRs.Remove(ast.FKR);
-
-                        ctx.BNs.RemoveRange(ast.FKR.Bones);
-                        ctx.ANMs.RemoveRange(ast.FKR.Animations);
-
-                        foreach (ANM a in ast.FKR.Animations)
-                        {                           
-
-                            ctx.TKs.RemoveRange(a.Tracks);
-                        }
-
-                    }
-
-
-
-
-                    await ctx.SaveChangesAsync();
+                    await ctx.SaveChangesAsync();                  
 
                     return StatusCode(200);
 

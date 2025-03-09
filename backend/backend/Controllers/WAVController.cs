@@ -186,25 +186,32 @@ namespace backend.Controllers
 
 
                 WL? wl = await ctx.WLs.FindAsync(id)!;
+
+                if (wl == null)
+                {
+                    return StatusCode(204);
+                }
+
                 ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
                 UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
 
                 bool share = owner_p!.ShareAssetOwnership;
-                int ownerID = owner_p!.UserId;
+                int ownerID = owner_p!.UserId;                
 
-
-                if (wl == null||!(share||ownerID==userId))
+                if (!(share||ownerID==userId))
                 {
-
                     return StatusCode(204);
-                }
-
+                }    
+                
                 else
                 {
-                    ctx.WLs.Remove(wl);
+
+                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.WL WHERE EntityID = {0}", wl!.ID);
 
                     await ctx.SaveChangesAsync();
+                   
 
+                   
 
                     return StatusCode(200);
                 }

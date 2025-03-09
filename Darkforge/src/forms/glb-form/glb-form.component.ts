@@ -98,16 +98,24 @@ ngOnInit(){
   
   async delete():Promise<void>{
 
+    const full_url = `${base_url}${model_actions}`;
+
+    await this.transfer.generic_delete(ast.id,full_url);
+    
+    this.transfer.reset_ast();
+
+
+
   }
 
   async post():Promise<void>{
 
     const $result :ModelDTO= await this.create_model_json();
 
-    let $optimized = {...$result};
+    const $optimized = {...$result};
     $optimized.modelData=null;
 
-    let full_url = `${base_url}${model_actions}`;
+    const full_url = `${base_url}${model_actions}`;
 
     const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
 

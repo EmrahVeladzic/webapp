@@ -4,7 +4,7 @@ import { ImageDTO,TextureDTO } from '../../models/models';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { base_url, image_actions } from '../../app/http';
-import { tex } from '../../assets/global_assets';
+import { flip_tex_state, tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
@@ -265,16 +265,23 @@ export class RpfFormComponent implements OnInit{
   
   async delete():Promise<void>{
 
+    const full_url = `${base_url}${image_actions}`;
+
+    await this.transfer.generic_delete(tex.id,full_url);
+    
+    this.transfer.reset_tex();
+
+
   }
 
   async post():Promise<void>{
 
     const $result :ImageDTO= await this.create_image_json();
 
-    let $optimized = {...$result};
+    const $optimized = {...$result};
     $optimized.imageData=null;
 
-    let full_url = `${base_url}${image_actions}`;
+    const full_url = `${base_url}${image_actions}`;
 
     const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
 
@@ -283,6 +290,8 @@ export class RpfFormComponent implements OnInit{
       const $response : TextureDTO = await this.transfer.generic_get($id,full_url) as TextureDTO;
 
       tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height);
+
+      flip_tex_state();
 
     }    
 

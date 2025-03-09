@@ -131,25 +131,31 @@ export class WlFormComponent {
   
   async delete():Promise<void>{
 
+    const full_url = `${base_url}${sound_actions}`;
+
+    await this.transfer.generic_delete(sfx.id,full_url);
+    
+    this.transfer.reset_sfx();
+
   }
 
   async post():Promise<void>{
 
     const $result :SoundDTO= await this.create_sound_json();
 
-    let $optimized = {...$result};
+    const $optimized = {...$result};
     $optimized.soundData=null;
 
-    let full_url = `${base_url}${sound_actions}`;
+    const full_url = `${base_url}${sound_actions}`;
 
     const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
 
     if($id!=null){
 
-      const $response : AudioDTO = await this.transfer.generic_get($id,full_url) as AudioDTO;
+      const $response : AudioDTO = await this.transfer.generic_get($id,full_url) as AudioDTO;    
 
-      sfx.reset($response.wl_ID,$response.audioData,$response.sampleRate,$response.channelCount,$response.blockCountPerChannel,$response.thresholdBits);
-
+      sfx.reset($response.wL_ID,$response.audioData,$response.sampleRate,$response.channelCount,$response.blockCountPerChannel,$response.thresholdBits);
+    
       this.transfer.wlTaskSource.next();
 
     }    

@@ -117,7 +117,7 @@ export class AudioDTO{
     public channelCount : number;
     public blockCountPerChannel :number;
     public audioData : number[];
-    public wl_ID : number;
+    public wL_ID : number;
     
     public canDelete:boolean;
 
@@ -127,7 +127,7 @@ export class AudioDTO{
         this.thresholdBits=threshold;
         this.channelCount=channels;
         this.blockCountPerChannel=blocks;
-        this.wl_ID=wl;
+        this.wL_ID=wl;
         this.audioData=data;
         this.canDelete=del;
 
