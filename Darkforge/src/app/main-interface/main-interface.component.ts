@@ -52,7 +52,7 @@ export class MainInterfaceComponent {
           alert_localized(this.translate,'alerts.timeout');
         }
         else{
-          alert_localized(this.translate,'server_error');
+          alert_localized(this.translate,'alerts.server_error');
         }
         
         force_reload();
@@ -86,6 +86,14 @@ export class MainInterfaceComponent {
  
   public about():void{
     alert_localized(this.translate,"alerts.about");
+  }
+
+  clear():void{
+    this.transfer.Menu="NONE";
+  }
+
+  rst():void{
+    this.transfer.reset();
   }
 
   upload_click():void{

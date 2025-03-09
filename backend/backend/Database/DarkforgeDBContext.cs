@@ -1,4 +1,5 @@
 ﻿using backend.Files;
+using backend.Logging;
 using backend.Models;
 using backend.Users;
 using Microsoft.EntityFrameworkCore;
@@ -67,6 +68,10 @@ namespace backend.Database
 
         public DbSet<UserAccount> Users { get; set; }
         public DbSet<UserPreferences> UserPreferences { get; set; }
-       
+
+        public DbSet<ActiveRPF> ActiveRPFs { get; set; }
+        public DbSet<ActiveWL> ActiveWLs { get; set; }
+        public DbSet<ActiveAST> ActiveASTs { get; set; }
+
     }
 }

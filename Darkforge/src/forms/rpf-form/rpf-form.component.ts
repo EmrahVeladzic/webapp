@@ -230,7 +230,7 @@ export class RpfFormComponent implements OnInit{
 
     let CHK = this.form.get('use_alpha')?.value;
 
-    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size), user_prefs.userId);
+    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
 
     return $instance;
 
@@ -256,7 +256,7 @@ export class RpfFormComponent implements OnInit{
           alert_localized(this.translate,'alerts.timeout');
         }
         else{
-          alert_localized(this.translate,'server_error');
+          alert_localized(this.translate,'alerts.server_error');
         }
         
         force_reload();
@@ -275,7 +275,7 @@ export class RpfFormComponent implements OnInit{
               alert_localized(this.translate,'alerts.timeout');
             }
             else{
-              alert_localized(this.translate,'server_error');
+              alert_localized(this.translate,'alerts.server_error');
             }
             
             force_reload();
@@ -304,7 +304,7 @@ export class RpfFormComponent implements OnInit{
               alert_localized(this.translate,'alerts.timeout');
             }
             else{
-              alert_localized(this.translate,'server_error');
+              alert_localized(this.translate,'alerts.server_error');
             }
             
             force_reload();
@@ -321,7 +321,7 @@ export class RpfFormComponent implements OnInit{
                 alert_localized(this.translate,'alerts.timeout');
               }
               else{
-                alert_localized(this.translate,'server_error');
+                alert_localized(this.translate,'alerts.server_error');
               }
               
               force_reload();

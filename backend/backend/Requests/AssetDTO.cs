@@ -7,10 +7,8 @@ namespace backend.Requests
         //Processed asset.
         public AST? Asset { get; set; }
 
-        public int AST_ID { get; set; }           
-       
-        public int Creator_ID { get; set; }
+        public int AST_ID { get; set; }
 
-        public bool Shared { get; set; }
+        public bool CanDelete { get; set; }
     }
 }

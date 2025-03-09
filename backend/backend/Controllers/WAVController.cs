@@ -1,8 +1,11 @@
 ﻿using backend.Converters;
 using backend.Database;
 using backend.Files;
+using backend.Logging;
 using backend.Models;
 using backend.Requests;
+using backend.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -10,6 +13,7 @@ using System.Text;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WAVController : ControllerBase
@@ -20,7 +24,7 @@ namespace backend.Controllers
         public async Task<IActionResult> Post([FromBody]SoundDTO input)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId) || userId != input.Creator_ID)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
@@ -28,6 +32,12 @@ namespace backend.Controllers
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
+
+                ActiveWL? Optimization = await ctx.ActiveWLs.Where(a => a.FileID == input.SoundHash).Where(a=>a.ChannelCount==input.ChannelCount && a.Looping==input.Looping&&a.ThresholdBits==input.ThresholdBits).FirstOrDefaultAsync();
+                if (Optimization != null)
+                {
+                    return StatusCode(200, Optimization.Id);
+                }
 
                 WAV? temp = await ctx.WAVs.Where(b => b.Hash == input.SoundHash).FirstOrDefaultAsync();
 
@@ -73,12 +83,23 @@ namespace backend.Controllers
                 SFX_DATA Sfx = new SFX_DATA(input);
                 await Sfx.Convert(ctx);
 
-
+                ActiveWL Log = new ActiveWL();
 
                 int Id = Sfx.Output!.ID;
 
-                Sfx.Output.Clear();
+                Log.OwnerID = userId;
+                Log.Id = Id;
+                Log.FileID = input.SoundHash;
+                Log.ChannelCount=Sfx.Output!.ChannelCount;
+                Log.ThresholdBits=input.ThresholdBits;
+                Log.Looping=input.Looping;
 
+                await ctx.ActiveWLs.AddAsync(Log);
+
+                await ctx.SaveChangesAsync();
+
+                Sfx.Output.Clear();
+                Sfx.Sound?.Destructor();
 
                 input.SoundData = null;
                 input.SoundHash = null;
@@ -93,17 +114,22 @@ namespace backend.Controllers
         public async Task<IActionResult> Get([FromQuery]int id)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
-
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
                 WL? wl = await ctx.WLs.FindAsync(id)!;
+                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
+
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;
+
 
 
                 if (wl == null)
@@ -134,6 +160,8 @@ namespace backend.Controllers
 
                     audio.ChannelCount = wl.ChannelCount;
 
+                    audio.CanDelete = share || (userId == ownerID);
+
                     return StatusCode(200, audio);
                 }
 
@@ -148,21 +176,24 @@ namespace backend.Controllers
         public async Task<IActionResult> Delete([FromQuery]int id)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
-
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
                 WL? wl = await ctx.WLs.FindAsync(id)!;
+                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
+
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;
 
 
-
-                if (wl == null)
+                if (wl == null||!(share||ownerID==userId))
                 {
 
                     return StatusCode(204);

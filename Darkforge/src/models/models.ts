@@ -8,9 +8,9 @@ export class ImageDTO{
     public alpha :  number[]|null;
     public mode :   boolean;
     public protectedBufferSize : number;
-    public creator_ID: number;
     
-    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean, protected_bfr_size : number ,hash:string, creator:number) {
+    
+    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean, protected_bfr_size : number ,hash:string) {
         this.imageData=data;
         this.imageHash=hash;
        
@@ -18,13 +18,13 @@ export class ImageDTO{
        this.alpha = alpha_c;
        this.mode = c_mode;
        this.protectedBufferSize = protected_bfr_size;
-       this.creator_ID=creator;
+      
 
     }
     
-    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number, creator:number): Promise<ImageDTO> {
+    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash,creator);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash);
     }
 
 }
@@ -36,20 +36,19 @@ export class SoundDTO{
     public thresholdBits : number;
     public channelCount : number;
     public looping :boolean;
-    public creator_ID :number;
+
     
-    constructor(data:string, threshold : number, channels : number , loop:boolean, hash:string, creator:number) {
+    constructor(data:string, threshold : number, channels : number , loop:boolean, hash:string) {
         this.soundData=data;
         this.soundHash=hash;
         this.thresholdBits=threshold;
         this.channelCount=channels;
         this.looping = loop;
-        this.creator_ID=creator;
     }
     
-    static async create(data:string, threshold : number, channels : number, loop:boolean, creator:number): Promise<SoundDTO> {
+    static async create(data:string, threshold : number, channels : number, loop:boolean): Promise<SoundDTO> {
         const soundHash = await hash_data(data);
-        return new SoundDTO(data, threshold, channels, loop, soundHash, creator);
+        return new SoundDTO(data, threshold, channels, loop, soundHash);
     }
 
 }
@@ -62,9 +61,8 @@ export class ModelDTO{
     public targetFPS : number;
     public texWidth : number;
     public texHeight : number;
-    public creator_ID: number;
 
-    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string, creator:number) {
+    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string) {
        
         this.modelData=data;
         this.precisionBits=precision;
@@ -72,13 +70,13 @@ export class ModelDTO{
         this.texWidth=width-1;
         this.texHeight=height-1;
         this.modelHash=hash;
-        this.creator_ID=creator;
+       
         
     }
 
-    static async create(data:string, precision : number, fps:number,width:number,height:number, creator:number): Promise<ModelDTO> {
+    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelDTO> {
         const modelHash = await hash_data(data);
-        return new ModelDTO(data, precision,fps,width,height, modelHash, creator);
+        return new ModelDTO(data, precision,fps,width,height, modelHash);
     }
 
 }
@@ -96,14 +94,16 @@ public rpF_ID:number;
 public clut:number[];
 public pixels:number[];
 
-    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[]){
+public canDelete:boolean;
+
+    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean){
         this.colours=col;
         this.width=w;
         this.height=h;
         this.rpF_ID=rpf;
         this.clut=clut;
         this.pixels=pxl;
-        
+        this.canDelete=del;
     }
 
 
@@ -119,15 +119,18 @@ export class AudioDTO{
     public audioData : number[];
     public wl_ID : number;
     
-    constructor(sR:number,threshold:number,channels:number,blocks:number,wl:number,data:number[]){
+    public canDelete:boolean;
+
+    constructor(sR:number,threshold:number,channels:number,blocks:number,wl:number,data:number[],del:boolean){
            
-      this.sampleRate=sR;
-      this.thresholdBits=threshold;
-      this.channelCount=channels;
-      this.blockCountPerChannel=blocks;
-      this.wl_ID=wl;
-      this.audioData=data;
-            
+        this.sampleRate=sR;
+        this.thresholdBits=threshold;
+        this.channelCount=channels;
+        this.blockCountPerChannel=blocks;
+        this.wl_ID=wl;
+        this.audioData=data;
+        this.canDelete=del;
+
     }
     
     
@@ -139,13 +142,13 @@ export class AudioDTO{
 
     public asset:Asset;
     public asT_ID:number;
-   
+    public canDelete:boolean;
 
-    constructor(a:Asset,a_id:number) {
+    constructor(a:Asset,a_id:number,del:boolean) {
         
         this.asset=a;
         this.asT_ID=a_id;
-        
+        this.canDelete=del;
     }
 
  }

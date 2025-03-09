@@ -28,7 +28,7 @@ public class CleanupService : BackgroundService
             }
 
 
-            await Task.Delay(TimeSpan.FromHours(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromHours(12), stoppingToken);
         }
 
  

@@ -4,6 +4,7 @@ import { base_url,image_actions } from '../../http';
 import { Subject } from 'rxjs';
 import { alert_localized } from '../../../utils/alerts';
 import { TranslateService } from '@ngx-translate/core';
+import { default_asset, default_audio, default_texture, flip_ast_state, flip_tex_state, update_anim } from '../../../assets/global_assets';
 
 @Injectable({
   providedIn: 'root'
@@ -322,6 +323,23 @@ export class FileTransferService {
 
   }
 
+  public reset():void{
+
+    default_texture();
+
+    update_anim(null);
+
+    flip_ast_state();
+
+    default_asset();   
+
+    flip_ast_state();
+
+    default_audio();
+
+    this.wlTaskSource.next();
+
+  }
 
 
 }

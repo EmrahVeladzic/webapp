@@ -95,7 +95,7 @@ export class WlFormComponent {
 
     let looping = this.form.get('loop')?.value;
 
-    const $instance = await SoundDTO.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping,user_prefs.userId);
+    const $instance = await SoundDTO.create(this.transfer.file_text!,thresholdB,(channelC==null)?1:channelC, looping);
 
     return $instance;
 
@@ -120,7 +120,7 @@ export class WlFormComponent {
             alert_localized(this.translate,'alerts.timeout');
           }
           else{
-            alert_localized(this.translate,'server_error');
+            alert_localized(this.translate,'alerts.server_error');
           }
           
           force_reload();
@@ -141,7 +141,7 @@ export class WlFormComponent {
                 alert_localized(this.translate,'alerts.timeout');
               }
               else{
-                alert_localized(this.translate,'server_error');
+                alert_localized(this.translate,'alerts.server_error');
               }
               
               force_reload();
@@ -175,7 +175,7 @@ export class WlFormComponent {
                 alert_localized(this.translate,'alerts.timeout');
               }
               else{
-                alert_localized(this.translate,'server_error');
+                alert_localized(this.translate,'alerts.server_error');
               }
               
               force_reload();
@@ -195,7 +195,7 @@ export class WlFormComponent {
                     alert_localized(this.translate,'alerts.timeout');
                   }
                   else{
-                    alert_localized(this.translate,'server_error');
+                    alert_localized(this.translate,'alerts.server_error');
                   }
                   
                   force_reload();

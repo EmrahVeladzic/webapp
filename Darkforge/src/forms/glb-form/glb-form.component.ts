@@ -56,7 +56,7 @@ constructor(public translate: TranslateService){
 
   let tex_height = this.form.get('tex_y')?.value;
 
-  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height,user_prefs.userId);
+  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
 
   return $instance;
 
@@ -81,7 +81,7 @@ post_model($event : Event):void{
         alert_localized(this.translate,'alerts.timeout');
       }
       else{
-        alert_localized(this.translate,'server_error');
+        alert_localized(this.translate,'alerts.server_error');
       }
       
       force_reload();
@@ -104,7 +104,7 @@ post_model($event : Event):void{
             alert_localized(this.translate,'alerts.timeout');
           }
           else{
-            alert_localized(this.translate,'server_error');
+            alert_localized(this.translate,'alerts.server_error');
           }
           
           force_reload();
@@ -142,7 +142,7 @@ post_model($event : Event):void{
             alert_localized(this.translate,'alerts.timeout');
           }
           else{
-            alert_localized(this.translate,'server_error');
+            alert_localized(this.translate,'alerts.server_error');
           }
           
           force_reload();
@@ -160,7 +160,7 @@ post_model($event : Event):void{
               alert_localized(this.translate,'alerts.timeout');
             }
             else{
-              alert_localized(this.translate,'server_error');
+              alert_localized(this.translate,'alerts.server_error');
             }
             
             force_reload();

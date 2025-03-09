@@ -12,6 +12,7 @@ using Microsoft.EntityFrameworkCore;
 using backend.Requests;
 
 
+
 namespace backend.Controllers
 {
     
@@ -82,7 +83,7 @@ namespace backend.Controllers
                 await ctx.Users.AddAsync(user);
                 await ctx.SaveChangesAsync();
 
-                UserPreferences prefs = new UserPreferences(user.ID, request.Language!,request.Lifespan,request.SharedAssets);
+                UserPreferences prefs = new UserPreferences(user.ID, request.Language!,request.SharedAssets);
 
                 await ctx.UserPreferences.AddAsync(prefs);
                 await ctx.SaveChangesAsync();

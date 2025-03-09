@@ -7,7 +7,9 @@
 "link":{
     "manage":"Manage files",
     "about":"About",
-    "prefs":"Preferences"
+    "prefs":"Preferences",
+    "clear":"Clear asset selection",
+    "reset":"Reset preview assets"
 },
 "label":{
     "anim-sel":"Animation select:",

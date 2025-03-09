@@ -18,6 +18,5 @@
         //If checked, audio will be looping, otherwise it will be a one-shot. 
         public bool Looping { get; set; }
 
-        public int Creator_ID { get; set; }
     }
 }

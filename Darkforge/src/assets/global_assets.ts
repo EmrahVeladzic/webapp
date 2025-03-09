@@ -61,4 +61,4 @@ let ast:Asset = new Asset(0,12,new Model(0,[new Mesh(0,new Vertex(0,[-4096,4096,
 new Index(0,[0,1,2,0,2,3,5,4,6,6,4,7,8,9,10,8,10,11,13,12,14,15,14,12,16,17,18,16,18,19,21,20,22,22,20,23]),null,
 new UV(0,[15,0,15,15,0,15,0,0 ,0,0,0,15,15,15,15,0 ,15,0,15,15,0,15,0,0 ,15,0,15,15,0,15,0,0 ,0,0,0,15,15,15,15,0 ,0,0,0,15,15,15,15,0 ]),null)],15,15),null);
 
-export {tex, tex_update,flip_tex_state, sfx,ast , ast_update,flip_ast_state, update_anim, current_anim$, global_time, set_global_time}
+export {tex, tex_update,flip_tex_state, sfx,ast , ast_update,flip_ast_state, update_anim, current_anim$, global_time, set_global_time, default_asset,default_audio,default_texture}

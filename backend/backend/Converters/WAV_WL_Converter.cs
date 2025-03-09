@@ -171,7 +171,7 @@ namespace backend.Converters
             await ctx.SaveChangesAsync();
 
 
-            this.Sound.Destructor();
+          
         }
 
     }

@@ -756,7 +756,7 @@ namespace backend.Converters
                 this.Bones?.Clear();
 
                 this.Joint_Index_Array = null;
-                this.Model.Destructor();
+               
             
 
 

@@ -26,6 +26,8 @@ namespace backend.Converters
 
     public class IMG_DATA :BaseConverter
     {
+
+        public bool AlphaUsed { get; set; }
         public Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
 
@@ -576,7 +578,18 @@ namespace backend.Converters
 
             this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
 
-              
+
+            this.AlphaUsed = false;
+            if (this.Alpha15 != null)
+            {
+                if (this.Occurence_Table.Where(o => o.Value?.Equals(this.Alpha15) == true).Count() > 0)
+                {
+                    this.AlphaUsed = true;
+                }
+            }
+            
+
+
 
             await ctx.PLTs.AddAsync(this.Output.PLT);
             await ctx.PGAs.AddAsync(this.Output.PGA);
@@ -588,11 +601,6 @@ namespace backend.Converters
 
             await ctx.RPFs.AddAsync(this.Output);
             await ctx.SaveChangesAsync();
-
-
-       
-
-            this.Image?.Destructor();
 
             this.Occurence_Table?.Clear();
             this.Swap_Table?.Clear();

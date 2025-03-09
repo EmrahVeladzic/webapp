@@ -1,8 +1,11 @@
 ﻿using backend.Converters;
 using backend.Database;
 using backend.Files;
+using backend.Logging;
 using backend.Models;
 using backend.Requests;
+using backend.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,6 +14,7 @@ using System.Text;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class BMPController : ControllerBase
@@ -21,7 +25,7 @@ namespace backend.Controllers
         {
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId) || userId != input.Creator_ID)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
@@ -29,6 +33,14 @@ namespace backend.Controllers
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
+
+
+                ActiveRPF? Optimization = await ctx.ActiveRPFs.Where(a=>a.FileID==input.ImageHash).Where(a=>a.CLUT==input.CLUT_Size && a.Method==input.Mode && a.ProtectedBufferSize==input.ProtectedBufferSize).Where(a=>(a.AlphaPresent==false && input.Alpha == null) || (input.Alpha!=null && input.Alpha[0]==a.Red && input.Alpha[1]==a.Green && input.Alpha[2]==a.Blue)).FirstOrDefaultAsync();
+
+                if (Optimization != null)
+                {
+                    return StatusCode(200, Optimization.Id);
+                }
 
 
                 BMP? temp = await ctx.BMPs.Where(b => b.Hash == input.ImageHash).FirstOrDefaultAsync();
@@ -74,18 +86,44 @@ namespace backend.Controllers
 
                 await Img.Convert(ctx);
 
-
+                ActiveRPF Log = new ActiveRPF();
 
                 int Id = Img.Output!.ID;
 
+                Log.Id = Id;
+                Log.FileID = input.ImageHash;
+                Log.OwnerID = userId;
+
+                Log.CLUT = input.CLUT_Size;
+                Log.ProtectedBufferSize = input.ProtectedBufferSize;
+                Log.Method=input.Mode;
+
+                
+                Log.Red = Img.Alpha?.Red;
+                Log.Green = Img.Alpha?.Green;
+                Log.Blue = Img.Alpha?.Blue;
+
+                Log.AlphaPresent = Img.AlphaUsed;
+
+                await ctx.ActiveRPFs.AddAsync(Log);
+                
+                await ctx.SaveChangesAsync();
+               
+               
+
                 Img.Output.Clear();
                 Img.Output = null;
-
+                Img.Image?.Destructor();
 
 
 
                 input.ImageData = null;
                 input.ImageHash = null;
+
+
+
+               
+
 
                 return StatusCode(200, Id);
 
@@ -98,18 +136,20 @@ namespace backend.Controllers
         {
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
-
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
                 RPF? rpf = await ctx.RPFs.Include(r=>r.PLT).Include(r=>r.PGA).FirstOrDefaultAsync(r=>r.ID==id)!;
+                ActiveRPF? metadata = await ctx.ActiveRPFs.FindAsync(rpf?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
 
-                
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;
 
                 if (rpf == null){
 
@@ -128,6 +168,8 @@ namespace backend.Controllers
                     texture.CLUT = rpf.PLT?.Data!.Select(d => d.Data).ToList();
                     texture.RPF_ID = rpf.ID;
 
+                    texture.CanDelete = (ownerID==userId)||share;
+
                     return StatusCode(200, texture);
                 }
 
@@ -138,18 +180,22 @@ namespace backend.Controllers
         public async Task<IActionResult> Delete([FromQuery]int id)
         {
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null)
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
             {
                 return StatusCode(401);
             }
 
-
             using (DarkforgeDBContext ctx = new DarkforgeDBContext()){
 
                 RPF? rpf = await ctx.RPFs.Include(r => r.PLT).Include(r => r.PGA).FirstOrDefaultAsync(r => r.ID == id)!;
+                ActiveRPF? metadata = await ctx.ActiveRPFs.FindAsync(rpf?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
+
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;
 
 
-                if (rpf == null)
+                if (rpf == null || !(share||userId==ownerID))
                 {                   
                     return StatusCode(204);
                 }

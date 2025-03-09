@@ -21,7 +21,7 @@
         //Determines the size of the protected buffer to be used with the Proximity method. 
         public byte ProtectedBufferSize { get; set; }
 
-        public int Creator_ID { get; set; }
+     
 
         
     }    
