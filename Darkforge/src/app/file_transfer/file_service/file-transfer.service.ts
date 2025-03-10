@@ -395,6 +395,27 @@ export class FileTransferService {
 
   }
 
+  public async generic_put(data:any,url:string):Promise<void>{
+
+    try {
+      let $response = await lastValueFrom(
+        this.http.put(url, data, { headers: get_headers(), observe: 'response' })
+      );
+  
+      return;
+  
+    } catch (error: any) {
+      if (error.status === 401) {
+        alert_localized(this.translate, 'alerts.timeout');
+      } else {
+        alert_localized(this.translate, 'alerts.server_error');
+      }
+      force_reload();
+      return;
+    }
+
+  }
+
   
   public async generic_get(id:number,url:string):Promise<any>{
 

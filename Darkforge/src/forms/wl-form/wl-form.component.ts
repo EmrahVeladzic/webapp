@@ -143,7 +143,7 @@ export class WlFormComponent {
 
     const $result :SoundDTO= await this.create_sound_json();
 
-    const $optimized = {...$result};
+    let $optimized = {...$result};
     $optimized.soundData=null;
 
     const full_url = `${base_url}${sound_actions}`;

@@ -36,8 +36,8 @@ namespace backend.Controllers
 
 
 
-        [HttpPatch]
-        public async Task<IActionResult> Patch([FromBody] UserPreferences prefs)
+        [HttpPut]
+        public async Task<IActionResult> Put([FromBody] UserPreferences prefs)
         {
 
             var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
@@ -53,11 +53,13 @@ namespace backend.Controllers
 
                 if (original != null)
                 {
-                   ctx.UserPreferences.Entry(original).CurrentValues.SetValues(prefs);
+                    ctx.UserPreferences.Entry(original).CurrentValues.SetValues(prefs);
 
-                   await ctx.SaveChangesAsync();
+                    
 
-                   return StatusCode(200);
+                    await ctx.SaveChangesAsync();
+
+                    return StatusCode(200);
 
 
                 }

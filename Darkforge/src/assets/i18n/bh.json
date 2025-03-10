@@ -1,13 +1,17 @@
 {
     "button":{
         "post":"Pošalji",
+        "patch":"Spremi promjene",
+        "delete":"Obriši",
         "export":"Izvezi",
         "play":"Reproduciraj/Prekini"
     },
     "link":{
         "manage":"Upravljaj datotekama",
         "about":"O aplikaciji",
-        "prefs":"Preferencije"
+        "prefs":"Preferencije",
+        "clear":"Poništi odabir asseta",
+        "reset":"Resetuj pretpregled"
     },
     "label":{
     "anim-sel":"Odabir animacije:",
@@ -21,29 +25,26 @@
     "alpha":"Koristi alpha kanal:",
     "p-bfr":"Veličina zaštitnog buffera:",
     "loop":"Petlja:",
-    "differential":"Bitovi diferencijalnog praga:"
+    "differential":"Bitovi diferencijalnog praga:",
+    "language":"Jezik:",
+    "share":"Dijeli vlasništvo asseta:"
     },
     "option":{
     "anim-none":"-PRAZNO-",
     "anim-present":"Animacija",
-
     "prec-truncation":"Zaokruživanje",
     "prec-low":"Niska",
     "prec-med":"Srednja",
     "prec-std":"Standardna",
     "prec-hi":"Visoka",
-
     "fps-full":"Pun",
     "fps-half":"Polovičan",
-
     "proximity":"Metoda blizine",
     "popularity":"Metoda popularnosti"
-
     },
     "numbers":{
     "decimal":"."
 },
-
 "alerts":{
     "about":"Autorska prava - Emrah Veladžić, Tarik Frljak, 2025.",
     "timeout":"Vaša sesija je istekla. Molimo Vas da se ponovo prijavite.",
@@ -58,7 +59,5 @@
     "no-blob":"BLOB nedostaje. Model nije čitljiv. Možda ima još problema.",
     "no-meshes":"Modelu nedostaju figure.  Možda ima još problema.",
     "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura."
-
 }
-
 }

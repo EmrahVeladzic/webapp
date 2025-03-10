@@ -7,12 +7,8 @@ import { AssetDTO, ModelDTO } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
-import { HttpParams } from '@angular/common/http';
 import { Subscription,catchError, of } from 'rxjs';
-import { force_reload } from '../../app/http';
-import { alert_localized } from '../../utils/alerts';
-import { user_prefs } from '../../assets/user_prefs';
-import { get_headers } from '../../utils/httpheaders';
+
 
 @Component({
   selector: 'app-glb-form',
@@ -112,7 +108,7 @@ ngOnInit(){
 
     const $result :ModelDTO= await this.create_model_json();
 
-    const $optimized = {...$result};
+    let $optimized = {...$result};
     $optimized.modelData=null;
 
     const full_url = `${base_url}${model_actions}`;

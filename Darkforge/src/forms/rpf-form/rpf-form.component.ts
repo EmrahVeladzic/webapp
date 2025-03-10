@@ -278,7 +278,7 @@ export class RpfFormComponent implements OnInit{
 
     const $result :ImageDTO= await this.create_image_json();
 
-    const $optimized = {...$result};
+    let $optimized = {...$result};
     $optimized.imageData=null;
 
     const full_url = `${base_url}${image_actions}`;

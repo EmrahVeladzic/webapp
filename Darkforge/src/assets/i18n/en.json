@@ -1,6 +1,7 @@
 {
 "button":{
     "post":"Post",
+    "patch":"Save changes",
     "delete":"Delete",
     "export":"Export",
     "play":"Play/Stop"
@@ -24,8 +25,9 @@
     "alpha":"Use alpha:",
     "p-bfr":"Protected Buffer size:",
     "loop":"Loop:",
-    "differential":"Differential threshold bits:"
-
+    "differential":"Differential threshold bits:",
+    "language":"Language:",
+    "share":"Share asset ownership:"
 },
 "option":{
     "anim-none":"-NONE-",
@@ -39,13 +41,10 @@
     "fps-half":"Half",
     "proximity":"Proximity method",
     "popularity":"Popularity method"
-
-
 },
 "numbers":{
     "decimal":"."
 },
-
 "alerts":{
     "about":"Copyright - Emrah Veladžić, Tarik Frljak, 2025.",
     "timeout":"Your session has expired. Please log in again.",
@@ -60,8 +59,5 @@
     "no-blob":"BLOB is missing. Model is not parseable. There may be other errors.",
     "no-meshes":"Model is missing meshes. There may be other errors.",
     "bones":"All meshes require to have an associated joint if a skeletal rig is used."
-
-
 }
-
 }

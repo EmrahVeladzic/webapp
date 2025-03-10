@@ -13,7 +13,7 @@ import { DashboardComponent } from '../../forms/dashboard/dashboard.component';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { base_url,pref_actions } from '../http';
 import { alert_localized } from '../../utils/alerts';
-import { set_prefs, user_prefs, UserPreferences } from '../../assets/user_prefs';
+import { emit_prefs_change, set_prefs, user_prefs, UserPreferences} from '../../assets/user_prefs';
 import { force_reload, http_timeout } from '../http';
 import { HttpParams } from '@angular/common/http';
 import { get_headers } from '../../utils/httpheaders';
@@ -58,15 +58,15 @@ export class MainInterfaceComponent {
         force_reload();
       }
 
-      else{
-
-      
+      else{      
 
       if($response.status===200){
       
         set_prefs($response.body as UserPreferences);
 
         this.translate.use(user_prefs.language);
+
+        emit_prefs_change();        
 
       }
 
@@ -86,6 +86,10 @@ export class MainInterfaceComponent {
  
   public about():void{
     alert_localized(this.translate,"alerts.about");
+  }
+
+  public prefs():void{
+    this.transfer.Menu="pref";
   }
 
   clear():void{

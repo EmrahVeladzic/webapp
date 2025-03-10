@@ -8,12 +8,12 @@ import { RpfFormComponent } from "../../forms/rpf-form/rpf-form.component";
 import { WlFormComponent } from "../../forms/wl-form/wl-form.component";
 import { GlbFormComponent } from "../../forms/glb-form/glb-form.component";
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
-
+import { PreferenceFormComponent } from '../../forms/preference-form/preference-form.component';
 
 @Component({
   selector: 'app-file-transfer',
   standalone: true,
-  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent, WlFormComponent, GlbFormComponent],
+  imports: [HttpClientModule, ReactiveFormsModule, RpfFormComponent, WlFormComponent, GlbFormComponent, PreferenceFormComponent],
   templateUrl: './file-transfer.component.html',
   styleUrl: './file-transfer.component.css',
 
