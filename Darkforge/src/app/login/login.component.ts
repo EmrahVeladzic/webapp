@@ -35,8 +35,7 @@ ngOnInit(){
 
 login(){ 
 
-    console.log(this.username,this.password);
-  
+     
   this.http.post<{ token: string }>(`${base_url}${user_actions}${log_in}`,{username:this.username,password:this.password},{observe:"response"}).pipe(catchError($error=>{return of($error)})).subscribe($response=>{
 
     if($response.status===200){
