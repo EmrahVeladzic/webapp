@@ -7,7 +7,7 @@ import { HostListener } from '@angular/core';
 import { FileTransferComponent } from '../file_transfer/file-transfer.component';
 import { FileTransferService } from '../file_transfer/file_service/file-transfer.service';
 import { WebGLService } from '../renderer/webgl_service/web-gl.service';
-import { ReactiveFormsModule } from '@angular/forms';
+import { ReactiveFormsModule} from '@angular/forms';
 import { Subject, Subscription, catchError, of } from 'rxjs';
 import { DashboardComponent } from '../../forms/dashboard/dashboard.component';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
