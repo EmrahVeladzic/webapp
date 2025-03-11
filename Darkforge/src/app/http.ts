@@ -4,6 +4,7 @@ export const sound_actions  :string = "/api/WAV";
 export const model_actions  :string = "/api/GLB";
 export const user_actions :string = "/api/Auth";
 export const pref_actions :string = "/api/Preferences";
+export const export_actions : string="/api/Export";
 
 export const log_in ="/LogIn"
 

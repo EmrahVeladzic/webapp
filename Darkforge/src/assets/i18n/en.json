@@ -58,6 +58,9 @@
     "no-metadata":"Metadata is missing. Model is not parseable. There may be other errors.",
     "no-blob":"BLOB is missing. Model is not parseable. There may be other errors.",
     "no-meshes":"Model is missing meshes. There may be other errors.",
-    "bones":"All meshes require to have an associated joint if a skeletal rig is used."
+    "bones":"All meshes require to have an associated joint if a skeletal rig is used.",
+    "export-done":"Your selection has been exported.",
+    "export-null":"Nothing to export."
+
 }
 }

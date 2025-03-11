@@ -213,9 +213,9 @@ namespace backend.Models
                         {
                             temp.Add(t.T_Count);
 
-                            TRS = new byte[t.T_Count];
+                            TRS = new byte[((int)t.T_Count * 13)];
 
-                            Array.Copy(t.Serialized!,0, TRS,0, ((int)t.T_Count * 4));
+                            Array.Copy(t.Serialized!,0, TRS,0, ((int)t.T_Count * 13));
 
                             temp.AddRange(TRS);
 
@@ -223,9 +223,9 @@ namespace backend.Models
 
                             temp.Add(t.R_Count);
 
-                            TRS = new byte[t.R_Count];
+                            TRS = new byte[((int)t.R_Count * 17)];
 
-                            Array.Copy(t.Serialized!, 0, TRS, 0, ((int)t.R_Count * 4));
+                            Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 17));
 
                             temp.AddRange(TRS);
 
@@ -233,9 +233,9 @@ namespace backend.Models
 
                             temp.Add(t.S_Count);
 
-                            TRS = new byte[t.S_Count];
+                            TRS = new byte[((int)t.S_Count * 13)];
 
-                            Array.Copy(t.Serialized!, 0, TRS, 0, ((int)t.S_Count * 3));
+                            Array.Copy(t.Serialized!, (((int)t.T_Count * 13)+ ((int)t.R_Count * 17)), TRS, 0, ((int)t.S_Count * 13));
 
                             temp.AddRange(TRS);
 

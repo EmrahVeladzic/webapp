@@ -37,7 +37,7 @@ namespace backend.Models
                 this.Normals.Add(temp);
             }
 
-            this.Serialized = null;
+           
         }
 
         public override void Clear()

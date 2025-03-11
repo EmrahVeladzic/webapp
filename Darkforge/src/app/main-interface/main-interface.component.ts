@@ -30,8 +30,9 @@ import { ActivatedRoute } from '@angular/router';
 export class MainInterfaceComponent {
 
   public transfer:FileTransferService;
-  
+  @ViewChild('export') export_button!: ElementRef<HTMLButtonElement>;
   @ViewChild('file_input') input? : ElementRef<HTMLInputElement>;
+  @ViewChild(FileTransferComponent) fileTransferComponent!: FileTransferComponent;
 
 
   constructor(public translate:TranslateService ,public fileService:FileTransferService, private el:ElementRef, private router:Router, private route :ActivatedRoute) {
@@ -39,6 +40,18 @@ export class MainInterfaceComponent {
     this.translate.addLangs(["en","bh","de"]);
     this.translate.setDefaultLang("en");
   }
+
+  async begin_export():Promise<void>{
+
+    this.export_button.nativeElement.disabled=true;
+
+
+    await this.fileTransferComponent.export_files();
+
+
+    this.export_button.nativeElement.disabled=false;
+  }
+  
 
   ngOnInit(){
 
@@ -116,10 +129,10 @@ export class MainInterfaceComponent {
 
     if(selected!=null){
       if(selected.name.endsWith('.bmp')){      
-        this.fileService.process_bmp(selected);
+        this.fileService.process_bmp(selected,selected.name);
       }
       else if(selected.name.endsWith('.wav')){              
-        this.fileService.process_wav(selected);        
+        this.fileService.process_wav(selected,selected.name);        
       }
       else if(selected.name.endsWith('.glb')){              
         this.fileService.process_glb(selected,selected.name);        

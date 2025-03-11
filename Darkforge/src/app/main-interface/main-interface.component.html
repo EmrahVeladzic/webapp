@@ -9,7 +9,7 @@
     <label for="file_upload">file_input</label>
 
     <div class="top_menu">
-        <button type="button"><b>{{'button.export' | translate}}</b></button>
+        <button #export (click)="begin_export()" type="button"><b>{{'button.export' | translate}}</b></button>
         <a (click)="upload_click()">{{'link.manage' | translate}}</a>
         <a (click)="clear()">{{'link.clear' | translate}}</a>
         <a (click)="rst()">{{'link.reset' | translate}}</a>

@@ -17,7 +17,12 @@ export class FileTransferService {
     private reader? :FileReader;
     public file_text? : string;
     private file_data:  any;
-    public mdl_name? :string="";
+
+
+    public image_name:string="";
+    public sound_name:string="";
+    public model_name:string="";
+
 
     private bmpTaskSource = new Subject<void>();
     public bmpTaskCompleted$ = this.bmpTaskSource.asObservable();
@@ -260,7 +265,7 @@ export class FileTransferService {
    
   }
 
-   async process_bmp(file: File): Promise<void> {
+   async process_bmp(file: File,name:string): Promise<void> {
    
     this.reader!.readAsDataURL(file);
 
@@ -273,7 +278,7 @@ export class FileTransferService {
       }
 
       if(this.validate_bmp()){     
-   
+        this.image_name=name;
         bmp_preview_url = URL.createObjectURL(file);     
         this.bmpTaskSource.next();
         this.Menu='rpf';
@@ -282,7 +287,7 @@ export class FileTransferService {
     };
   }
 
-  async process_wav(file : File): Promise<void>{
+  async process_wav(file : File, name:string): Promise<void>{
 
     this.reader!.readAsDataURL(file);
 
@@ -295,6 +300,7 @@ export class FileTransferService {
       }
 
       if(this.validate_wav()){
+        this.sound_name=name;
         wav_preview_url = URL.createObjectURL(file);     
         this.wavTaskSource.next();
         this.Menu='wl';
@@ -318,7 +324,7 @@ export class FileTransferService {
       }
 
       if(this.validate_glb()){
-      this.mdl_name=name;     
+      this.model_name=name;     
       this.glbTaskSource.next();
       this.Menu='ast';
       }
@@ -329,6 +335,7 @@ export class FileTransferService {
 
   public reset_tex():void{
     default_texture();
+    
 
     flip_tex_state();
   }
@@ -345,7 +352,6 @@ export class FileTransferService {
   }
 
   public reset_sfx():void{
-
     default_audio();
 
     this.wlTaskSource.next();
@@ -473,6 +479,44 @@ export class FileTransferService {
     }
 
   }
+
+
+
+  public async export_get(ast_id:number,rpf_id:number,wl_id:number,url:string):Promise<any>{
+
+    try {
+      let $response = await lastValueFrom(
+        this.http.get(url,{ headers: get_headers(),params:new HttpParams().set('ast_id',ast_id).set('rpf_id',rpf_id).set('wl_id',wl_id), observe: 'response' })
+      );
+  
+      if ($response.status === 200) {
+        return $response.body as any;
+      }  
+
+      else{
+     
+        return null;
+      }
+  
+     
+
+    } 
+  
+    catch (error: any) {
+      if (error.status === 401) {
+        alert_localized(this.translate, 'alerts.timeout');
+      } else {
+        alert_localized(this.translate, 'alerts.server_error');
+      }
+      force_reload();
+      return null;
+    }
+
+  }
+
+     
+  
+
 
 
 }

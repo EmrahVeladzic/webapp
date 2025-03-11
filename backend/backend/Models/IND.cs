@@ -35,7 +35,7 @@ namespace backend.Models
                 UInt16 temp = BitConverter.ToUInt16(this.Serialized!, i);
                 this.Indices.Add(temp);
             }
-            this.Serialized = null;
+           
         }
 
         public override void Clear()

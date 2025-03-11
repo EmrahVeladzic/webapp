@@ -58,6 +58,8 @@
     "no-metadata": "Metadaten fehlen. Das Modell ist nicht analysierbar. Es können weitere Fehler vorliegen.",
     "no-blob": "BLOB fehlt. Das Modell ist nicht analysierbar. Es können weitere Fehler vorliegen.",
     "no-meshes": "Das Modell enthält keine Meshes. Es können weitere Fehler vorliegen.",
-    "bones": "Alle Meshes müssen einem Gelenk zugeordnet sein, wenn ein Skelett-Rig verwendet wird."
+    "bones": "Alle Meshes müssen einem Gelenk zugeordnet sein, wenn ein Skelett-Rig verwendet wird.",
+    "export-done": "Ihre Auswahl wurde exportiert.",
+    "export-null": "Nichts zu exportieren."
   }
 }

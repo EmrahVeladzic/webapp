@@ -48,7 +48,6 @@ namespace backend.Models
 
             }
 
-            this.Serialized = null;
         }
 
         public override void Clear()

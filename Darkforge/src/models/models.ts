@@ -152,3 +152,11 @@ export class AudioDTO{
     }
 
  }
+
+ export class ExportDTO{
+
+    public ast!:string|null;
+    public rpf!:string|null;
+    public wl!:string|null;
+
+ }

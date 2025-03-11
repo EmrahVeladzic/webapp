@@ -47,7 +47,6 @@ namespace backend.Models
                 this.InitialTransform.Add(BitConverter.ToInt32(this.Serialized!, i));
             }
 
-            this.Serialized=null;
         }
 
         public override void Clear()

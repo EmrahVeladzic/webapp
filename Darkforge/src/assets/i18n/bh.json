@@ -58,6 +58,8 @@
     "no-metadata":"Metapodatci nedostaju. Model nije čitljiv. Možda ima još problema.",
     "no-blob":"BLOB nedostaje. Model nije čitljiv. Možda ima još problema.",
     "no-meshes":"Modelu nedostaju figure.  Možda ima još problema.",
-    "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura."
+    "bones":"Svaka figura mora biti asocirana s jednim zglobom ako se koristi armatura.",
+    "export-done": "Vaš odabir je izvezen.",
+    "export-null": "Ništa za izvoz."
 }
 }

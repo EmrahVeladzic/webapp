@@ -53,7 +53,7 @@ namespace backend.Models
         public  override void Deserialize()
         {
             this.ToSerialize=this.Serialized!.ToList();
-            this.Serialized = null;
+
         }
 
         public override void Clear()

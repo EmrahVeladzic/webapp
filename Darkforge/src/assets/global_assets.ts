@@ -47,6 +47,7 @@ function default_asset(){
 
 }
 
+
 let tex_update:boolean = false;
 
 function flip_tex_state():void{
@@ -62,7 +63,6 @@ function flip_ast_state():void{
 ast_update=!ast_update;
 
 }
-
 
 let sfx:Audio = new Audio(0,[48,6,2, 51,33,9,171,186,144,2,51,33,9,171,186,144,48,0,2, 51,33,9,171,186,144,2,51,33,9,171,186,144,48,3,2, 51,33,9,171,186,144,2,51,33,9,171,186,144],4000,1,1,8);
 

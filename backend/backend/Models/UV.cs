@@ -27,7 +27,6 @@ namespace backend.Models
         {
            this.TextureCoordinates=this.Serialized!.ToList();           
 
-           this.Serialized=null;
         }
 
         public override void Clear()
