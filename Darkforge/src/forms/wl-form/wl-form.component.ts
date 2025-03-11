@@ -37,8 +37,8 @@ export class WlFormComponent {
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
-      t_numeric : new FormControl(10,[Validators.min(4),Validators.max(12),Validators.required]),
-      t_slider : new FormControl(10,[Validators.min(4),Validators.max(12),Validators.required]),
+      t_numeric : new FormControl(12,[Validators.min(4),Validators.max(12),Validators.required]),
+      t_slider : new FormControl(12,[Validators.min(4),Validators.max(12),Validators.required]),
       loop : new FormControl(false)
 
     });
