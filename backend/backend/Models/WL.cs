@@ -69,8 +69,8 @@ namespace backend.Models
             List<byte> temp = new List<byte>();
 
             temp.Add(87);
-            temp.Add(ChannelCount);
-            temp.Add((byte)(ThresholdBits/2));
+            temp.Add(this.ChannelCount);
+            temp.Add(this.ThresholdBits);
             PrimitiveSerialization.SerializePrimitive((UInt32)this.BlockCountPerChannel,temp);
             PrimitiveSerialization.SerializePrimitive(this.SampleRate,temp);
             temp.AddRange(this.Serialized!);
