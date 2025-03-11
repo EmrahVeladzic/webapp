@@ -178,11 +178,7 @@ namespace backend.Controllers
 
                     ast.Deserialize();
 
-                    if (ast.FKR_ID != null)
-                    {
-                        ast.FKR!.Root = ast.FKR.Bones!.Where(b => b.Parent_ID == null).Select(b => b.ID).FirstOrDefault();
-                    }
-
+                    
 
                     AssetDTO asset = new AssetDTO();
 

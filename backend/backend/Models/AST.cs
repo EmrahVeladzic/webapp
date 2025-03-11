@@ -46,6 +46,14 @@ namespace backend.Models
         {
             this.MDL?.Deserialize();
             this.FKR?.Deserialize();
+
+
+            if (this.FKR_ID != null)
+            {
+                this.FKR!.Root = this.FKR.Bones!.Where(b => b.Parent_ID == null).Select(b => b.ID).FirstOrDefault();
+            }
+
+
         }
 
         public override void Clear()
@@ -98,24 +106,25 @@ namespace backend.Models
 
             temp.Add(this.PrecisionBits);
             temp.Add(0);
-            temp.Add(0);            
+            temp.Add(0);      
+            t_byte = 0;            
             if(this.MDL!=null)
             {
                 t_byte=this.MDL.Width??0;
             }
-            temp.Add(t_byte);
+            temp.Add(t_byte);       
             if (this.MDL != null)
             {
                 t_byte = this.MDL.Height ?? 0;
             }
-            temp.Add(t_byte);
+            temp.Add(t_byte);        
 
             t_byte = 0;
             if (this.MDL != null)
             {
                 t_byte = (byte)this.MDL.Meshes!.Count();
             }
-            temp.Add(t_byte);
+            temp.Add(t_byte);          
 
             if (this.MDL != null)
             {
@@ -136,6 +145,10 @@ namespace backend.Models
 
                         temp.AddRange(m.VT.Serialized!);
                     }
+                    else
+                    {
+                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+                    }
 
                     if (m.IND != null)
                     {
@@ -143,12 +156,20 @@ namespace backend.Models
 
                         temp.AddRange(m.IND.Serialized!);
                     }
+                    else
+                    {
+                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+                    }
 
                     if (m.UV != null)
                     {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)m.UV.ToSerialize!.Count, temp);
+                        PrimitiveSerialization.SerializePrimitive((UInt16)m.UV.TextureCoordinates!.Count, temp);
 
                         temp.AddRange(m.UV.Serialized!);
+                    }
+                    else
+                    {
+                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
                     }
 
                     if (m.NRM != null)
@@ -156,6 +177,10 @@ namespace backend.Models
                         PrimitiveSerialization.SerializePrimitive((UInt16)m.NRM.Normals.Count, temp);
 
                         temp.AddRange(m.NRM.Serialized!);
+                    }
+                    else
+                    {
+                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
                     }
 
                 }
@@ -189,61 +214,75 @@ namespace backend.Models
 
             temp.Add(t_byte );
 
-            foreach(BN bn in this.FKR!.Bones)
+            t_byte = 0;
+            if (this.FKR != null)
             {
-                temp.AddRange(bn.Serialized!);
+                t_byte = (byte)(this.FKR.FPS!);
+            }
+            temp.Add(t_byte);
 
-                t_byte=(byte)(this.FKR.Bones.Where(b=>b.Parent_ID==bn.ID).Count());
+            if (this.FKR != null)
+            {
 
-                for (int i = 0; i < this.FKR!.Bones.Count; i++)
+                foreach (BN bn in this.FKR!.Bones)
                 {
-                    if (this.FKR.Bones[i].Parent_ID == bn.ID)
+                    temp.AddRange(bn.Serialized!);
+
+                    t_byte = (byte)(this.FKR.Bones.Where(b => b.Parent_ID == bn.ID).Count());
+
+                    temp.Add(t_byte);
+
+                    for (int i = 0; i < this.FKR!.Bones.Count; i++)
                     {
-                        temp.Add((byte)i);
-                    }
-
-                }
-
-                if (this.FKR!.Animations != null)
-                {
-
-                    foreach (ANM a in this.FKR.Animations!)
-                    {
-                        foreach(TK t in a.Tracks)
+                        if (this.FKR.Bones[i].Parent_ID == bn.ID)
                         {
-                            temp.Add(t.T_Count);
-
-                            TRS = new byte[((int)t.T_Count * 13)];
-
-                            Array.Copy(t.Serialized!,0, TRS,0, ((int)t.T_Count * 13));
-
-                            temp.AddRange(TRS);
-
-                            TRS = null;
-
-                            temp.Add(t.R_Count);
-
-                            TRS = new byte[((int)t.R_Count * 17)];
-
-                            Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 17));
-
-                            temp.AddRange(TRS);
-
-                            TRS = null;
-
-                            temp.Add(t.S_Count);
-
-                            TRS = new byte[((int)t.S_Count * 13)];
-
-                            Array.Copy(t.Serialized!, (((int)t.T_Count * 13)+ ((int)t.R_Count * 17)), TRS, 0, ((int)t.S_Count * 13));
-
-                            temp.AddRange(TRS);
-
-                            TRS = null;
-
+                            temp.Add((byte)i);
                         }
+
                     }
 
+                    if (this.FKR!.Animations != null)
+                    {
+
+                        foreach (ANM a in this.FKR.Animations)
+                        {
+                            foreach (TK t in a.Tracks.Where(t => t.BN_ID == bn.ID))
+                            {
+                                temp.Add(t.T_Count);
+
+
+                                TRS = new byte[((int)t.T_Count * 13)];
+
+                                Array.Copy(t.Serialized!, 0, TRS, 0, ((int)t.T_Count * 13));
+
+                                temp.AddRange(TRS);
+
+                                TRS = null;
+
+                                temp.Add(t.R_Count);
+
+                                TRS = new byte[((int)t.R_Count * 17)];
+
+                                Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 17));
+
+                                temp.AddRange(TRS);
+
+                                TRS = null;
+
+                                temp.Add(t.S_Count);
+
+                                TRS = new byte[((int)t.S_Count * 13)];
+
+                                Array.Copy(t.Serialized!, (((int)t.T_Count * 13) + ((int)t.R_Count * 17)), TRS, 0, ((int)t.S_Count * 13));
+
+                                temp.AddRange(TRS);
+
+                                TRS = null;
+
+                            }
+                        }
+
+                    }
                 }
             }
 

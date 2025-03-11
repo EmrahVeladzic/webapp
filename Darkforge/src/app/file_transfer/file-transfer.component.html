@@ -5,6 +5,9 @@
 </head>
 
 <body>
+
+    <a #download hidden>Download</a>
+
     
     <app-rpf-form [hidden]="!(Menu==='rpf')" [transfer]="transfer"></app-rpf-form>
 
@@ -13,6 +16,7 @@
 
 
     <app-glb-form [hidden]="!(Menu==='ast')" [transfer]="transfer"></app-glb-form>
+
 
     <app-preference-form [hidden]="!(Menu==='pref')" [transfer]="transfer"></app-preference-form>
 

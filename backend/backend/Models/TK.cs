@@ -102,8 +102,7 @@ namespace backend.Models
         }
 
         public override void Deserialize()
-        {
-          
+        {          
             int offset = 0;
 
            
@@ -142,6 +141,9 @@ namespace backend.Models
                 this.Scales.Add(BitConverter.ToInt32(this.Serialized!, offset + 8));
                 offset += 12; 
             }
+
+
+            
         }
 
         public override void Clear()
