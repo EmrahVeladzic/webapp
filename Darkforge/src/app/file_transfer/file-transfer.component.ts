@@ -14,6 +14,8 @@ import { alert_localized } from '../../utils/alerts';
 import { base_url, export_actions } from '../http';
 import { ExportDTO } from '../../models/models';
 import { base64ToUint8Array } from '../../utils/decode_base64';
+import JSZip from 'jszip';
+
 
 @Component({
   selector: 'app-file-transfer',
@@ -29,10 +31,10 @@ export class FileTransferComponent {
 @Input() public Menu! :string;
 @ViewChild('download') download_link?: ElementRef<HTMLAnchorElement>;
 
-public async write_to_local_storage(file: Uint8Array, name: string): Promise<void> {
+public async write_to_local_storage(file: Blob, name: string): Promise<void> {
     return new Promise((resolve) => {
-        const blob = new Blob([file], { type: "application/octet-stream" });
-        const url = window.URL.createObjectURL(blob);
+       
+        const url = window.URL.createObjectURL(file);
         
         if (this.download_link?.nativeElement) {
             const link = this.download_link.nativeElement;
@@ -77,26 +79,53 @@ public async export_all_available(to_export:ExportDTO,name:string):Promise<void>
 
     if(ast_buffer!=null){
 
-      await this.write_to_local_storage(ast_buffer,(name+'.AST'))
+      const blob = new Blob([ast_buffer], { type: "application/octet-stream" });
+      await this.write_to_local_storage(blob,(name+'.AST'))
 
     }
 
     else if(rpf_buffer!=null){
 
-      await this.write_to_local_storage(rpf_buffer,(name+'.RPF'))
+      const blob = new Blob([rpf_buffer], { type: "application/octet-stream" });
+      await this.write_to_local_storage(blob,(name+'.RPF'))
 
     }
 
     else{
 
-      await this.write_to_local_storage(wl_buffer!,(name+'.WL'))
+      const blob = new Blob([wl_buffer!], { type: "application/octet-stream" });
+      await this.write_to_local_storage(blob!,(name+'.WL'))
 
     }
 
   }
 
   else{
-    
+
+    const zip = new JSZip();
+
+    if(ast_buffer!=null){
+
+     zip.file((name+'.AST'),ast_buffer);
+
+    }
+
+    if(rpf_buffer!=null){
+
+      zip.file((name+'.RPF'),rpf_buffer);
+ 
+    }
+
+    if(wl_buffer!=null){
+
+      zip.file((name+'.WL'),wl_buffer);
+ 
+    }
+
+    const blob = await zip.generateAsync({ type: "blob" });
+
+    await this.write_to_local_storage(blob,(name+'.zip'));
+
   }
   
 }
@@ -128,8 +157,6 @@ public async export_files():Promise<void>{
     const export_strings = await this.transfer.export_get(a_id,r_id,w_id,full_url) as ExportDTO;
     
     await this.export_all_available(export_strings,name);
-
-    alert_localized(this.translate,'alerts.export-done');
 
   }
 
