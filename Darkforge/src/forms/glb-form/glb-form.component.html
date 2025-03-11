@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+
+</head>
+
+<body>
+
+    <output>{{transfer.model_name}}</output>
+
+    <form [formGroup]="form">
+
+        <div class="params">
+
+                <div class="select_holder">
+
+                <label for="Precision">{{'label.precision'|translate}}</label>
+                <select id="Precision" formControlName="precision">
+                    <option value='0'>{{'option.prec-truncate'|translate}} - {{'numbers.decimal'|translate}}0</option>
+                    <option value='4'>{{'option.prec-low'|translate}} -  {{'numbers.decimal'|translate}}4</option>
+                    <option value='8'>{{'option.prec-med'|translate}} -  {{'numbers.decimal'|translate}}8</option>
+                    <option value='12'>{{'option.prec-std'|translate}} -  {{'numbers.decimal'|translate}}12</option>
+                    <option value='16'>{{'option.prec-hi'|translate}} -  {{'numbers.decimal'|translate}}16</option>
+                </select>
+
+                <label for="FPS">{{'label.fps'|translate}}</label>
+                <select id="FPS" formControlName="fps">
+                    <option value='60'>{{'option.fps-full'|translate}} - NTSC (60)</option>
+                    <option value='30'>{{'option.fps-half'|translate}} - NTSC (30)</option>
+                    <option value='50'>{{'option.fps-full'|translate}} - PAL (50)</option>
+                    <option value='25'>{{'option.fps-half'|translate}} - PAL (25)</option>
+                </select>
+
+            </div>
+
+            <div class="numeric_holder">
+
+
+                <label >{{'label.target-w'|translate}}</label>
+                <div class="dimensions">
+                    <app-numeric  id="X" [max]="256" [min]="2" [default]="128" [step]="2" formControlName="tex_x"></app-numeric>
+                </div>
+            
+                <label >{{'label.target-h'|translate}}</label>
+                <div class="dimensions">
+                    <app-numeric id="Y" [max]="256" [min]="2" [default]="128" [step]="2"  formControlName="tex_y"></app-numeric>
+                </div>
+                
+
+            </div>   
+
+        </div> 
+
+    </form>
+
+    <div class="btn">
+        <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
+    </div>
+        
+
+</body>

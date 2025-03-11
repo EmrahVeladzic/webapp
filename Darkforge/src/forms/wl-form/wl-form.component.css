@@ -16,18 +16,24 @@ form{
 }
 .params{
     height: 100%;
+    width: 80%;
+    margin-left: 10%;
+    margin-right: 10%;
+    display: flex;
+    flex-direction: column;    
 
 }
 .threshold_holder{
     height: 10%;
-    width: 80%;
-    margin: 10%;
+    margin-top: 10%;
+    margin-bottom: 10%;
     display: flex;
     flex-direction: column;
     
 }
 .threshold_holder label{
     margin-top: auto;
+    width: 100%;
 }
 .threshold{
     
@@ -56,9 +62,9 @@ form{
 }
 .loop_single label{
 
-   width: 60%;
+   width: 80%;
 
-    margin-left: 10%;
+
     margin-right: auto;
 
 
@@ -67,17 +73,16 @@ form{
 .loop_single input[type="checkbox"]{
     width: 2vh;
     height: 2vh;
-    margin-right: 10%;
+   
 }
 
 
-.post{
+.btn{
     height: 15%;
     display: flex;
     flex-direction: column;
-    
 }
-.post button{
+.btn button{
     width: 50%;
     margin-left: 25%;
     margin-right: 25%;  

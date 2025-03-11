@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="uft-8">
+<meta charset="utf-8">
 <head>
 
 </head>
@@ -16,10 +16,10 @@
 
          
          <div class="threshold_holder">
-            <label>Differential Threshold Bits:</label>
+            <label>{{'label.differential'|translate}}</label>
             <div class="threshold">
                <div class="threshold_s">
-                  <app-slider id="t_slider" [vertical]="true" [min]="4" [max]="12" [default]="10" [step]="2" formControlName="t_slider"></app-slider>           
+                  <app-slider id="t_slider" [vertical]="true" [min]="4" [max]="12" [default]="12" [step]="2" formControlName="t_slider"></app-slider>           
                </div>
                <div class="threshold_n">
                   <app-numeric id="t_numeric" [min]="4" [max]="12" [default]="10" [step]="2" formControlName="t_numeric"></app-numeric>
@@ -30,7 +30,7 @@
          </div>
 
          <div class="loop_single">
-            <label for="loop">Loop: </label>
+            <label for="loop">{{'label.loop'|translate}}</label>
             <input type="checkbox" id="loop" #loop formControlName="loop">
          </div>
 
@@ -39,8 +39,8 @@
 
    </form>
 
-   <div class="post">
-      <button type="button" (click)="this.post_audio($event)">Post</button>
+   <div class="btn">
+      <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
   </div>
       
 

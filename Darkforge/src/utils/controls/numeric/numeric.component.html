@@ -1,16 +1,16 @@
 <!DOCTYPE html>
-<meta charset="uft-8">
+<meta charset="utf-8">
 <head>
 
 </head>
 
 <body>
 
-<input type="text" #input (change)="setValue(input!.value)">
+<input type="text" #input [(ngModel)]="raw_value" (change)="setValue(raw_value)" title="{{value}}">
 
 <div class="buttons">
-    <button type="button" (click)="increment_decrement(step)" ></button>
-    <button type="button" (click)="increment_decrement(-step)"></button>
+    <button type="button" (click)="increment_decrement(step)" >+</button>
+    <button type="button" (click)="increment_decrement(-step)">-</button>
 </div>
 
 </body>

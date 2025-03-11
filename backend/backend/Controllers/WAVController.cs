@@ -1,13 +1,19 @@
 ﻿using backend.Converters;
 using backend.Database;
+using backend.Files;
+using backend.Logging;
 using backend.Models;
 using backend.Requests;
+using backend.Users;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Text;
 
 namespace backend.Controllers
 {
+    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WAVController : ControllerBase
@@ -15,44 +21,204 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public AudioJson Post(SoundJson input)
+        public async Task<IActionResult> Post([FromBody]SoundDTO input)
         {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return StatusCode(401);
+            }
 
 
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
-
-            WAV? temp = ctx.WAVs.Where(b => b.Hash == input.SoundHash).FirstOrDefault();
-
-            if (temp == null)
+            using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                StringBuilder stringBuilder = new StringBuilder(input.SoundData!, input.SoundData!.Length);
+                ActiveWL? Optimization = await ctx.ActiveWLs.Where(a => a.FileID == input.SoundHash).Where(a=>a.ChannelCount==input.ChannelCount && a.Looping==input.Looping&&a.ThresholdBits==input.ThresholdBits).FirstOrDefaultAsync();
+                if (Optimization != null)
+                {
+                    return StatusCode(200, Optimization.Id);
+                }
 
-                stringBuilder.Replace("\r\n", String.Empty);
-                stringBuilder.Replace(" ", String.Empty);
-                stringBuilder.Replace("data:audio/wav;base64,", String.Empty);
+                WAV? temp = await ctx.WAVs.Where(b => b.Hash == input.SoundHash).FirstOrDefaultAsync();
+
+                if (temp == null)
+                {
+
+                    if (input.SoundData == null)
+                    {
 
 
-                byte[] Data = System.Convert.FromBase64String(stringBuilder.ToString());
+                        return StatusCode(204);
 
-                temp = new WAV();
+                    }
 
-                temp!.Setup(Data, input!.SoundHash!);
+                    else
+                    {
 
-                ctx.WAVs.Add(temp);
+                        StringBuilder stringBuilder = new StringBuilder(input.SoundData!, input.SoundData!.Length);
 
-                ctx.SaveChanges();
+                        stringBuilder.Replace("\r\n", String.Empty);
+                        stringBuilder.Replace(" ", String.Empty);
+                        stringBuilder.Replace("data:audio/wav;base64,", String.Empty);
+
+
+                        byte[] Data = System.Convert.FromBase64String(stringBuilder.ToString());
+
+                        temp = new WAV();
+
+                        temp!.Setup(Data, input!.SoundHash!);
+
+                        await ctx.WAVs.AddAsync(temp);
+
+                        await ctx.SaveChangesAsync();
+
+                    }
+                }
+
+                else
+                {
+                    temp.Setup(temp.Serialized!, temp.Hash!);
+                }
+
+                SFX_DATA Sfx = new SFX_DATA(input);
+                await Sfx.Convert(ctx);
+
+                ActiveWL Log = new ActiveWL();
+
+                int Id = Sfx.Output!.ID;
+
+                Log.OwnerID = userId;
+                Log.Id = Id;
+                Log.FileID = input.SoundHash;
+                Log.ChannelCount=Sfx.Output!.ChannelCount;
+                Log.ThresholdBits=input.ThresholdBits;
+                Log.Looping=input.Looping;
+
+                await ctx.ActiveWLs.AddAsync(Log);
+
+                await ctx.SaveChangesAsync();
+
+                Sfx.Output.Clear();
+                Sfx.Sound?.Destructor();
+
+                input.SoundData = null;
+                input.SoundHash = null;
+
+                return StatusCode(200, Id);
+
+            }
+        }
+
+
+        [HttpGet]
+        public async Task<IActionResult> Get([FromQuery]int id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return StatusCode(401);
+            }
+
+            using (DarkforgeDBContext ctx = new DarkforgeDBContext())
+            {
+
+
+                WL? wl = await ctx.WLs.FindAsync(id)!;
+                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
+
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;
+
+
+
+                if (wl == null)
+                {
+
+
+                    return StatusCode(204);
+                }
+
+                else
+                {
+
+                    wl.Deserialize();
+
+                    AudioDTO audio = new AudioDTO();
+
+                    audio.AudioData = wl.Serialized!.ToList();
+
+                    wl.Serialized = null;
+
+                    audio.WL_ID = wl.ID;
+
+                    audio.SampleRate = wl.SampleRate;
+
+                    audio.ThresholdBits = wl.ThresholdBits;
+
+                    audio.BlockCountPerChannel = (UInt32)wl.BlockCountPerChannel;
+
+                    audio.ChannelCount = wl.ChannelCount;
+
+                    audio.CanDelete = share || (userId == ownerID);
+
+                    return StatusCode(200, audio);
+                }
 
             }
 
 
-            ctx.Dispose();
-
-            SFX_DATA Sfx = new SFX_DATA(input);
-
-
-
-            return Sfx.Audio!;
         }
+
+
+
+        [HttpDelete]
+        public async Task<IActionResult> Delete([FromQuery]int id)
+        {
+            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
+            {
+                return StatusCode(401);
+            }
+
+            using (DarkforgeDBContext ctx = new DarkforgeDBContext())
+            {
+
+
+                WL? wl = await ctx.WLs.FindAsync(id)!;
+
+                if (wl == null)
+                {
+                    return StatusCode(204);
+                }
+
+                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
+                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
+
+                bool share = owner_p!.ShareAssetOwnership;
+                int ownerID = owner_p!.UserId;                
+
+                if (!(share||ownerID==userId))
+                {
+                    return StatusCode(204);
+                }    
+                
+                else
+                {
+
+                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.WL WHERE EntityID = {0}", wl!.ID);
+
+                    await ctx.SaveChangesAsync();
+                   
+
+                   
+
+                    return StatusCode(200);
+                }
+
+            }
+
+        }
+
     }
 }

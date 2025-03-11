@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<meta charset="uft-8">
+<meta charset="utf-8">
 <head>
 
 </head>
@@ -9,19 +9,18 @@
 
     <canvas #bmp_preview id="bmp_preview" width="256" height="256" ></canvas>
 
-
     <form [formGroup]="form">
 
         <div class="params">
 
-            <label>CLUT size:</label>
+            <label>{{'label.clut'|translate}}</label>
             
-            <app-numeric id="CLUT" [max]="256" [min]="0" formControlName="clut"></app-numeric>
+            <app-numeric id="CLUT" [max]="256" [min]="2" [default]="16" formControlName="clut"></app-numeric>
 
-            <label for="Mode">Compression method:</label>
+            <label for="Mode">{{'label.rpf-method'|translate}}</label>
             <select id="Mode" formControlName="mode">
-                <option value='0'>Popularity method</option>
-                <option value='1'>Proximity method</option>
+                <option value='0'>{{'option.popularity'|translate}}</option>
+                <option value='1'>{{'option.proximity'|translate}}</option>
             </select>
 
         </div>             
@@ -32,7 +31,7 @@
             <div class="rgb">             
 
                     
-                <label for="use_alpha">Use alpha:</label>
+                <label for="use_alpha">{{'label.alpha'|translate}}</label>
                 <input id="use_alpha" type="checkbox" formControlName="use_alpha">
 
                 
@@ -95,8 +94,8 @@
 
         <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
 
-            <label>Protected Buffer size:</label>
-            <app-numeric id="BFR" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
+            <label>{{'label.p-bfr'|translate}}</label>
+            <app-numeric id="BFR" [step]="2" [max]="2" [min]="0" formControlName="bfr"></app-numeric>
 
         </div>
 
@@ -106,8 +105,8 @@
        
 
 
-    <div class="post">
-        <button type="button" (click)="this.post_image($event)">Post</button>
+    <div class="btn">
+        <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
     </div>
         
     

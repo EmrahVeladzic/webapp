@@ -1,6 +1,8 @@
 ﻿using backend.Database;
+using backend.Files;
 using backend.Models;
 using backend.Requests;
+using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using System.Numerics;
 using System.Runtime.CompilerServices;
@@ -22,12 +24,14 @@ namespace backend.Converters
     }
 
 
-    public class IMG_DATA
+    public class IMG_DATA :BaseConverter
     {
-        private Pixel24? Alpha { get; set; }
+
+        public bool AlphaUsed { get; set; }
+        public Pixel24? Alpha { get; set; }
         private Pixel15? Alpha15 { get; set; }
 
-        private ImageJson? Input { get; set; }
+        private ImageDTO? Input { get; set; }
 
         private byte ProtectedBufferIndex {get;set;}
 
@@ -37,16 +41,16 @@ namespace backend.Converters
 
         private List<Swap_Entry>? Swap_Table { get; set;}
 
-        private BMP? Image {  get; set; }
+        public BMP? Image {  get; set; }
 
-        private RPF? Output { get; set; }
+        public RPF? Output { get; set; }
 
         private UInt32 UniqueCount { get; set; }
         private UInt32 MaxUniqueCount { get; set; }
             
-        private byte Shift_Value { get; set; }
+        public byte Shift_Value { get; set; }
 
-        public TextureJson? Texture { get; set; }
+  
 
         Vector3 GetHue(Pixel15 input)
         {
@@ -405,7 +409,7 @@ namespace backend.Converters
 
         }
 
-        byte Get_Index(Pixel15 Value)
+        public byte Get_Index(Pixel15 Value)
         {
             Pixel15? Search = Alpha15;
 
@@ -433,18 +437,22 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
-        public IMG_DATA(ImageJson input)
+        public IMG_DATA(ImageDTO input)
         {
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
+
 
             this.Input = input;
 
+        }
 
-            this.Image = ctx.BMPs.Where(b => b.Hash == this.Input.ImageHash).First();
+        public override async Task Convert(DarkforgeDBContext ctx) { 
 
-            this.Image.Setup(this.Image!.Serialized!, this.Image!.Hash!);
 
-            if (this.Input.Alpha != null)
+            this.Image = await ctx.BMPs.Where(b => b.Hash == this.Input!.ImageHash).FirstAsync();
+
+           
+
+            if (this.Input!.Alpha != null)
             {
                 this.Alpha = new Pixel24((byte)this.Input.Alpha[0], (byte)this.Input.Alpha[1], (byte)this.Input.Alpha[2]);
 
@@ -563,77 +571,41 @@ namespace backend.Converters
 
             this.Shift_Value = Get_Shift();
 
-            byte value = 0;
-         
-
-            Pixel15 compare = new Pixel15();
-
-            for (int i = 0; i < this.Image.Data.Count; i++)
-            {
-                compare.Setup(this.Image.Data[i], !this.Image.Data[i].Equals(Alpha!));
-
-                value <<= this.Shift_Value;                
-
-                value |= Get_Index(compare);
-
-            
-
-                if (this.Shift_Value==0 || (this.Shift_Value!=0 && ((i+1)% (8/this.Shift_Value) == 0)))
-                {
-                    this.Output!.PGA!.Data!.Add(value);
-
-                   
-
-                    value = 0;
-
-      
-                }                
-                               
-            }
-                   
+            this.Output.Serialize(this);
 
             this.Output.Width=(byte)(this.Image.Width-1);
             this.Output.Height = (byte)(this.Image.Height - 1);
 
             this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
 
-            foreach(Pixel15 pxl in this.Output.PLT.Data)
+
+            this.AlphaUsed = false;
+            if (this.Alpha15 != null)
             {
-                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data) & 0xFF));
-                this.Output!.PLT!.ToSerialize!.Add((byte)((pxl.Data>>8)&0xFF));               
+                if (this.Occurence_Table.Where(o => o.Value?.Equals(this.Alpha15) == true).Count() > 0)
+                {
+                    this.AlphaUsed = true;
+                }
             }
-
-            this.Output.PLT.Serialized=this.Output.PLT.ToSerialize!.ToArray();
-            this.Output.PGA.Serialized=this.Output.PGA.Data!.ToArray();
             
 
-            ctx.PLTs.Add(this.Output.PLT);
-            ctx.PGAs.Add(this.Output.PGA);
-            ctx.SaveChanges();
-
-            this.Output.PLT_ID = this.Output.PLT.Id;  
-            this.Output.PGA_ID = this.Output.PGA.Id;
 
 
-            ctx.RPFs.Add(this.Output);
-            ctx.SaveChanges();
+            await ctx.PLTs.AddAsync(this.Output.PLT);
+            await ctx.PGAs.AddAsync(this.Output.PGA);
+            await ctx.SaveChangesAsync();
 
-            
+            this.Output.PLT_ID = this.Output.PLT.ID;  
+            this.Output.PGA_ID = this.Output.PGA.ID;
 
-            ctx.Dispose();
 
-            this.Texture = new TextureJson();
+            await ctx.RPFs.AddAsync(this.Output);
+            await ctx.SaveChangesAsync();
 
-            this.Texture!.Colours = this.Output.CLUT;
-            this.Texture!.Width = this.Output.Width;
-            this.Texture.Height = this.Output.Height;
+            this.Occurence_Table?.Clear();
+            this.Swap_Table?.Clear();
+            this.ProtectedBuffer?.Clear();
 
-            this.Texture.RPF_ID = this.Output.ID;
-            this.Texture.PLT_ID = this.Output.PLT_ID;
-            this.Texture.PGA_ID= this.Output.PGA_ID;
-
-            this.Texture.CLUT = this.Output.PLT.Data.Select(pxl => pxl.Data).ToList();
-            this.Texture.Pixels = this.Output.PGA.Data;
 
            
 

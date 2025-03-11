@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+  
+</head>
+<body>
+
+    <h1>Darkforge</h1>
+    <form [formGroup]="form">
+
+    <div id="user" class="central">
+
+       
+       <div class="data">
+        <div class="data_row">
+            <label for="username">ID:</label>
+            <input formControlName="username" id="username" type="text">
+        </div>
+        <div class="data_row">
+            <label for="password">*****:</label>
+            <input formControlName="password" id="password" type="password">
+        </div>
+       </div>
+
+       <div class="button">
+            <button id="login" (click)="login()" type="button">=></button>
+       </div>
+
+    </div>
+    </form>
+
+
+</body>
+</html>

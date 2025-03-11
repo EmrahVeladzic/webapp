@@ -1,19 +1,20 @@
 ﻿using backend.Database;
+using backend.Files;
 using backend.Models;
 using backend.Requests;
+using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 
 namespace backend.Converters
 {
-    public class SFX_DATA
+    public class SFX_DATA :BaseConverter
     {
-        public AudioJson? Audio {  get; set; }
 
         public WL? Output { get; set; }
 
         public WAV? Sound { get; set; }
 
-        private SoundJson? Input { get; set; }
+        private SoundDTO? Input { get; set; }
 
         public byte GetShift(Int16[] input)
         {
@@ -85,17 +86,21 @@ namespace backend.Converters
         }
 
 
-        public SFX_DATA(SoundJson input)
+        public SFX_DATA(SoundDTO input)
         {
-            DarkforgeDBContext ctx = new DarkforgeDBContext();
+
 
             this.Input = input;
 
-            this.Sound = ctx.WAVs.Where(w => w.Hash == this.Input.SoundHash).First();
+        }
 
-            this.Sound.Setup(this.Sound!.Serialized!,this.Sound!.Hash!);
+        public override async Task Convert(DarkforgeDBContext ctx) { 
 
-            Int16 Threshold = (Int16)(1 << this.Input.ThresholdBits);
+            this.Sound = await ctx.WAVs.Where(w => w.Hash == this.Input!.SoundHash).FirstAsync();
+
+           
+
+            Int16 Threshold = (Int16)(1 << this.Input!.ThresholdBits);
 
 
             for (int i = 0; i < this.Sound!.Data!.Count; i++)
@@ -156,47 +161,17 @@ namespace backend.Converters
             }
 
 
-            this.Audio = new AudioJson();
 
 
-            for (int i = 0; i < this.Output!.Data!.Count; i++)
-            {
-                this.Output!.ToSerialize!.Add(this.Output.Data![i].Shift_Filter);
-                
-                this.Output!.ToSerialize!.Add(this.Output.Data![i].Flags);
+            this.Output.Serialize();
 
-                for (int j = 0; j < 14 ; j++)
-                {
-                    this.Output!.ToSerialize!.Add(this.Output.Data![i].Samples![j]);
-                }
 
-            }
+            await ctx.WLs.AddAsync(this.Output);            
 
-            this.Output.Serialized = this.Output.ToSerialize!.ToArray();
+            await ctx.SaveChangesAsync();
 
-         
 
-            ctx.WLs.Add(this.Output);            
-
-            ctx.SaveChanges();
-
-            ctx.Dispose();
-
-            this.Audio.AudioData = new List<byte>(this.Output!.Serialized!);
           
-
-            this.Audio.SampleRate = this.Output!.SampleRate;
-
-            this.Audio.ThresholdBits = this.Output!.ThresholdBits;
-
-            this.Audio.ChannelCount = this.Output!.ChannelCount;
-
-            this.Audio.BlockCountPerChannel = (UInt32)this.Output.BlockCountPerChannel;
-
-            this.Audio.WL_ID = this.Output!.ID;
-
-            
-
         }
 
     }

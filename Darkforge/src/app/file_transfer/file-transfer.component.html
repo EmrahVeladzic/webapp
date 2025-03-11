@@ -1,15 +1,23 @@
 <!DOCTYPE html>
-<meta charset="uft-8">
+<meta charset="utf-8">
 <head>
 
 </head>
 
 <body>
+
+    <a #download hidden>Download</a>
+
     
     <app-rpf-form [hidden]="!(Menu==='rpf')" [transfer]="transfer"></app-rpf-form>
 
    
-   <app-wl-form [hidden]="!(Menu==='wl')" [transfer]="transfer"></app-wl-form>
-   
+    <app-wl-form [hidden]="!(Menu==='wl')" [transfer]="transfer"></app-wl-form>
+
+
+    <app-glb-form [hidden]="!(Menu==='ast')" [transfer]="transfer"></app-glb-form>
+
+
+    <app-preference-form [hidden]="!(Menu==='pref')" [transfer]="transfer"></app-preference-form>
 
 </body>

@@ -1,19 +1,25 @@
 import { Component ,Input, OnInit, ViewChild, OnDestroy, ElementRef} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
-import { ImageJson,TextureJson } from '../../models/models';
+import { ImageDTO,TextureDTO } from '../../models/models';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
 import { CommonModule } from '@angular/common';
-import { base_url, image_actions } from '../../app/app.routes';
-import { tex } from '../../assets/global_assets';
+import { base_url, image_actions } from '../../app/http';
+import { flip_tex_state, tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
-import { Subscription } from 'rxjs';
+import { Subscription, catchError ,of} from 'rxjs';
+import { alert_localized } from '../../utils/alerts';
+import { force_reload } from '../../app/http';
+import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
+import { HttpParams } from '@angular/common/http';
+import { user_prefs, UserPreferences } from '../../assets/user_prefs';
+import { get_headers } from '../../utils/httpheaders';
 
 @Component({
   selector: 'app-rpf-form',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, SliderComponent,NumericComponent],
+  imports: [ReactiveFormsModule, CommonModule, SliderComponent,NumericComponent, TranslatePipe],
   templateUrl: './rpf-form.component.html',
   styleUrl: './rpf-form.component.css'
 })
@@ -24,15 +30,19 @@ export class RpfFormComponent implements OnInit{
   private ctx? : CanvasRenderingContext2D;
   private preview? : HTMLImageElement;
   private taskCompletedSubscription!: Subscription;
+
+  public btn_enabled:boolean=true;
+  public post_delete:boolean=true;
+  public btn_translation: string = 'button.post';
  
   @ViewChild('r_s',{static:false})r_s!:SliderComponent;
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
   @ViewChild('b_s',{static:false})b_s!:SliderComponent;
 
-  constructor(){
+  constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
-      clut: new FormControl(256,[Validators.min(2),Validators.max(256),Validators.required]),
+      clut: new FormControl(16,[Validators.min(2),Validators.max(256),Validators.required]),
       mode: new FormControl('0'),
       use_alpha: new FormControl(false),
       r_slider : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
@@ -41,7 +51,7 @@ export class RpfFormComponent implements OnInit{
       r_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       g_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       b_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
-      bfr : new FormControl(0,[Validators.min(0),Validators.max(4),Validators.required])
+      bfr : new FormControl(0,[Validators.min(0),Validators.max(2),Validators.required])
 
 
     });
@@ -74,6 +84,8 @@ export class RpfFormComponent implements OnInit{
 
   ngOnInit(){
     this.taskCompletedSubscription = this.transfer.bmpTaskCompleted$.subscribe(() => {
+      this.post_delete=true;
+      this.btn_translation='button.post';   
       this.draw_preview();
     });
 
@@ -101,7 +113,7 @@ export class RpfFormComponent implements OnInit{
       if(value<0){
         this.form.get('r_slider')?.setValue(0,{emitEvent:false});
         this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
-        console.log(value);
+        
       }
       else if(value>255){
         this.form.get('r_slider')?.setValue(255,{emitEvent:false});
@@ -193,8 +205,8 @@ export class RpfFormComponent implements OnInit{
       if(value<0 || value===null){
        this.form.get('bfr')?.setValue(0,{emitEvent:false});
       }
-      else if (value>4){
-        this.form.get('bfr')?.setValue(4,{emitEvent:false});
+      else if (value>2){
+        this.form.get('bfr')?.setValue(2,{emitEvent:false});
       }
     });
 
@@ -208,7 +220,7 @@ export class RpfFormComponent implements OnInit{
   } 
    
    
-  async create_image_json() : Promise<ImageJson>{   
+  async create_image_json() : Promise<ImageDTO>{   
 
     
 
@@ -224,38 +236,66 @@ export class RpfFormComponent implements OnInit{
 
     let CHK = this.form.get('use_alpha')?.value;
 
-    const $instance = await ImageJson.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
+    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
 
     return $instance;
 
   }
 
+  async choice($event :Event):Promise<void>{
 
-
-  post_image($event : Event):void{
-
-   (this.create_image_json()).then($result=>{
-
-
-
-    let post_url = `${base_url}/${image_actions}`;
-
-
-    this.transfer.http.post(post_url,$result).subscribe($response=>{
-
-      let TextureResponse = $response as TextureJson;
+    if(this.post_delete===true){
+      this.btn_enabled = false;
+      await this.post();      
+      this.post_delete=false;
+      this.btn_translation='button.delete';
+      this.btn_enabled = true;
       
-      tex.reset(TextureResponse.clut,TextureResponse.pixels,(TextureResponse.width+1),(TextureResponse.height+1));
-    
-
-    });
+    }
+    else{
+      this.btn_enabled = false;
+      await this.delete();
+      this.post_delete=true;
+      this.btn_translation='button.post';     
+      this.btn_enabled = true;   
+    }
   
+  }
+
+  
+  async delete():Promise<void>{
+
+    const full_url = `${base_url}${image_actions}`;
+
+    await this.transfer.generic_delete(tex.id,full_url);
+    
+    this.transfer.reset_tex();
 
 
+  }
 
-    });
+  async post():Promise<void>{
 
+    const $result :ImageDTO= await this.create_image_json();
 
+    let $optimized = {...$result};
+    $optimized.imageData=null;
+
+    const full_url = `${base_url}${image_actions}`;
+
+    const $id :number |null = await this.transfer.generic_post($optimized,$result,full_url);
+
+    if($id!=null){
+
+      const $response : TextureDTO = await this.transfer.generic_get($id,full_url) as TextureDTO;
+
+      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height);
+
+      flip_tex_state();
+
+    }    
+
+    
 
   }
 

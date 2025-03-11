@@ -5,14 +5,38 @@ body{
 
 .params{
     width: 25%;
+    font-size: 2vh;
+    background-color:rgb(65, 65, 65);
+}
+
+.params label{
+    width: 95%;
+    margin-left: 5%;
+
+}
+
+
+.select{
+    height: 25%;
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 90%;
+    display: flex;
+    flex-direction: column;
+}
+
+.select select{
+    width: 100%;
+    height: 100%;
+  
 }
 
 .audio{
     height: 25%;
-    width: 100%;
+    margin-left: 5%;
+    margin-right: 5%;
+    width: 90%;
 }
 
-.timeline_holder{
-    width: 75%;
-}
+
 

@@ -1,6 +1,6 @@
 ﻿namespace backend.Requests
 {
-    public class ImageJson
+    public class ImageDTO
     {
         //Complete BMP data (incl. Header). Obtain texture dimensions from here.
         
@@ -21,11 +21,9 @@
         //Determines the size of the protected buffer to be used with the Proximity method. 
         public byte ProtectedBufferSize { get; set; }
 
+     
 
-        public override string ToString()
-        {
-            return $"\nData: {ImageData}\nHash: {ImageHash}\nCLUT size: {CLUT_Size}\nAlpha: {Alpha!=null}\nUse proximity: {Mode}\nProtected buffer size: {ProtectedBufferSize}";
-        }
+        
     }    
 
 }

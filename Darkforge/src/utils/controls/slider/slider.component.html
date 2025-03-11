@@ -1,10 +1,10 @@
 <!DOCTYPE html>
-<meta charset="uft-8">
+<meta charset="utf-8">
 <head>
 
 </head>
 
 <body id="body" [ngClass]="vertical? 'bodyV':'bodyH'">   
     <div #coloured id="coloured" [ngClass]="vertical? 'top':'left'"></div>
-    <div #thumb id="thumb" [ngClass]="vertical? 'thumbV':'thumbH'"></div>
+    <div #thumb id="thumb" [ngClass]="vertical? 'thumbV':'thumbH'" title="{{value}}"></div>
 </body>

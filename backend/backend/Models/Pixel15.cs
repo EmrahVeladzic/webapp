@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.Utils;
+using Microsoft.EntityFrameworkCore;
 using System.Runtime.InteropServices;
 
 namespace backend.Models
@@ -87,5 +88,14 @@ namespace backend.Models
             }
         }
 
+        public void Serialize(List<byte> output)
+        {
+           PrimitiveSerialization.SerializePrimitive(Data, output);
+        }
+
+        public void Deserialize(byte[] data,int offset)
+        {
+           this.Data = BitConverter.ToUInt16(data, offset);
+        }
     }
 }

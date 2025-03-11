@@ -1,6 +1,6 @@
 ﻿namespace backend.Requests
 {
-    public class SoundJson
+    public class SoundDTO
     {
         //Complete WAV data (incl. Header). Obtain sample rate from here.
         public string? SoundData { get; set; }

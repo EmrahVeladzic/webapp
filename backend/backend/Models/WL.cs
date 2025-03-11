@@ -1,21 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using backend.Converters;
+using backend.Utils;
 
 namespace backend.Models
 {
     [Table("WL", Schema = "Models")]
-    public class WL
+    public class WL:BaseBufferEntity, ITopLevelModel
     {
 
-        [Key]
-        [Column("EntityID")]
-        public int ID { get; set; }
-
-        [Column("EntityOrder")]
-        public int Order { get; set; }
-
-        [Column("EntityData")]
-        public byte[]? Serialized { get; set; }
+       
 
         [Column("SampleRate")]
         public Int16 SerializedSampleRate { get; set; }
@@ -31,17 +25,66 @@ namespace backend.Models
 
         [Column("ThresholdBits")]
         public byte ThresholdBits { get; set; }
-
-        [NotMapped]
-        public List<byte>? ToSerialize { get; set; }
+       
 
         [NotMapped]
         public List<ADPCMBlock>? Data { get; set; }
 
-        public WL()
+        public WL():base()
         {
             this.Data = new List<ADPCMBlock>();
             this.ToSerialize= new List<byte> { };
+        }
+
+        public override void Serialize()
+        {
+            foreach(ADPCMBlock block in this.Data!)
+            {
+                block.Serialize(this.ToSerialize!);   
+            }
+
+            this.Serialized = this.ToSerialize!.ToArray();
+        }
+
+
+        public override void Deserialize()
+        {
+            this.SampleRate = (UInt16)this.SerializedSampleRate;
+
+            for (int i = 0; i <Serialized!.Length; i+=16)
+            {
+                ADPCMBlock temp = new ADPCMBlock();
+
+                temp.Deserialize(this.Serialized!, i);
+
+                this.Data!.Add(temp);
+            }
+
+            
+        }
+
+
+        public byte[] ToArrayBuffer()
+        {
+            List<byte> temp = new List<byte>();
+
+            temp.Add(87);
+            temp.Add(this.ChannelCount);
+            temp.Add(this.ThresholdBits);
+            PrimitiveSerialization.SerializePrimitive((UInt32)this.BlockCountPerChannel,temp);
+            PrimitiveSerialization.SerializePrimitive(this.SampleRate,temp);
+            temp.AddRange(this.Serialized!);
+
+            byte[] data = temp.ToArray();
+            temp.Clear();
+            return data;
+        }
+
+        public override void Clear()
+        {
+            this.Data?.Clear();
+            this.ToSerialize?.Clear();
+            this.Serialized = null;
         }
 
     }

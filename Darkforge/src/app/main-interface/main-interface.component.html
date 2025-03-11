@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+    
+    <input type="file" id="file_upload" #file_input (change)="file_logic($event)">
+    <label for="file_upload">file_input</label>
+
+    <div class="top_menu">
+        <button #export (click)="begin_export()" type="button"><b>{{'button.export' | translate}}</b></button>
+        <a (click)="upload_click()">{{'link.manage' | translate}}</a>
+        <a (click)="clear()">{{'link.clear' | translate}}</a>
+        <a (click)="rst()">{{'link.reset' | translate}}</a>
+    </div>
+
+    
+
+    <div class="main_segment">
+
+        <div class="canvas_holder">
+
+            <app-renderer></app-renderer>
+
+        </div>
+        
+
+    
+        <div class="side_menu">
+            <app-file-transfer [Menu]="transfer.Menu" [transfer]="transfer"></app-file-transfer>
+        </div>
+
+    </div>
+   
+    <div class="dashboard">
+        
+        <app-dashboard [transfer]="transfer"></app-dashboard>
+        
+    </div>
+    
+    <div class="footer">
+        <a (click)="about()">{{'link.about'|translate}}</a>
+        <a (click)="prefs()">{{'link.prefs'|translate}}</a>
+    </div>
+
+   
+
+</body>
+</html>

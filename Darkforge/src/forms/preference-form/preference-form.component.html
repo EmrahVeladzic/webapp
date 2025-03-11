@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+
+</head>
+
+<body>
+
+   
+
+    <form [formGroup]="form">
+
+        <div class="params">
+
+           <div class="lang">
+
+            <label for="lang">{{'label.language'|translate}}</label>
+            <select id="lang" formControlName="lang">
+                <option [value]="'en'">English</option>
+                <option [value]="'de'">Deutsch</option>
+                <option [value]="'bh'">Bosanski</option>
+            </select>
+
+           </div>
+
+           <div class="share">
+
+            <label for="share">{{'label.share'|translate}}</label>
+            <input id="share" type="checkbox" formControlName="share">
+
+           </div>           
+
+        </div> 
+
+    </form>
+
+    <div class="btn">
+        <button type="button" [disabled]="!btn_enabled" (click)="this.patch($event)">{{'button.patch' |translate}}</button>
+    </div>
+        
+
+</body>

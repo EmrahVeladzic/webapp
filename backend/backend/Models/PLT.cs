@@ -1,36 +1,60 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using backend.Converters;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [Table("PLT", Schema ="Models")]
-    public class PLT
+    [Table("PLT", Schema = "Models")]
+    public class PLT : BaseBufferEntity
     {
         //A Colour lookup table (CLUT). Element size is 2 bytes.
 
-        [Key]
-        [Column("EntityId")]
-        public int Id { get; set; }
-
-        [Column("EntityOrder")]
-        public int Order { get; set; }
-
-        [Column("EntityData")]
-        public byte[]? Serialized { get; set; }
-
-        [NotMapped]
-        public List<byte>? ToSerialize { get; set; }
 
         [NotMapped]
         public List<Pixel15>? Data { get; set; }
 
 
-        public PLT()
+        public PLT() : base()
         {
             Data = new List<Pixel15>();
-            ToSerialize = new List<byte>();
+        }
+
+
+        public override void Serialize()
+        {
+            this.ToSerialize = new List<byte>();
+
+            foreach (Pixel15 pxl in this.Data!)
+            {
+                pxl.Serialize(this.ToSerialize!);
+            }
+
+
+            this.Serialized = this.ToSerialize.ToArray();
+
+        }
+
+        public override void Deserialize()
+        {
+            for(int i =0; i<this.Serialized!.Length; i += 2)
+            {
+                Pixel15 temp = new Pixel15();
+
+                temp.Deserialize(this.Serialized!, i);
+
+                this.Data!.Add(temp);
+
+            }
+
+        }
+
+        public override void Clear()
+        {
+            this.Data!.Clear();
+            this.ToSerialize?.Clear();
+            this.Serialized = null;
         }
 
     }
