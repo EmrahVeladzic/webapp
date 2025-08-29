@@ -18,7 +18,7 @@ body{
 
 
 button{
-   
+    cursor: pointer;
     background-color: rgb(100, 100, 100);
     color: rgb(25,25,25);
     font-size: 2vh;
@@ -39,6 +39,7 @@ button:active{
 }
 
 a{
+    cursor: pointer;
     margin-left: 2.5%;
     margin-right: 2.5%;    
     font-size: 2vh;
@@ -80,13 +81,14 @@ input{
 }
 
 input[type="checkbox"]{
+    cursor: pointer;
     background-color:  rgb(75, 75, 75);
 }
 input[type="checkbox"]:checked{
     background-color: rgb(222, 222, 222);
 }
 select{
-
+    cursor: pointer;
     background-color: rgb(75, 75, 75);
     color: rgb(222, 222, 222);
     overflow: hidden;

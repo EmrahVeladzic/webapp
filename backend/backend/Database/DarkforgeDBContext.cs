@@ -68,6 +68,7 @@ namespace backend.Database
 
         public DbSet<UserAccount> Users { get; set; }
         public DbSet<UserPreferences> UserPreferences { get; set; }
+        public DbSet<UserLanguage> UserLanguages { get; set; }
 
         public DbSet<ActiveRPF> ActiveRPFs { get; set; }
         public DbSet<ActiveWL> ActiveWLs { get; set; }
