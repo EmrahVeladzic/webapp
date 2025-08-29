@@ -393,18 +393,10 @@ namespace backend.Converters
             if (this.Output!.PLT!.Data!.Count > 16)
             {
                 return (byte)0;
-            }
-            else if (this.Output!.PLT!.Data!.Count > 4)
-            {
-                return (byte)4;
-            }
-            else if (this.Output!.PLT!.Data!.Count > 2)
-            {
-                return (byte)2;
-            }
+            }           
             else
             {
-                return (byte)1;
+                return (byte)4;
             }
 
         }

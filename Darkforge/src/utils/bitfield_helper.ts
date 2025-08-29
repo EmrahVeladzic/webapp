@@ -3,14 +3,8 @@ export function get_bits_per_index(clut_count:number):number{
     if(clut_count>16){
         return 8;
     }
-    else if (clut_count>4){
-        return 4;
-    }
-    else if (clut_count>2){
-        return 2;
-    }
     else{
-        return 1;
+        return 4;
     }
 
 }
