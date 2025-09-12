@@ -488,6 +488,7 @@ namespace backend.Converters
             this.MaxUniqueCount = (uint)this.Occurence_Table.Count();
             this.UniqueCount = this.MaxUniqueCount;
 
+
             if(this.Input.ProtectedBufferSize > 0)
             {
                 this.ProtectedBuffer = new List<Pixel15>();
@@ -560,6 +561,22 @@ namespace backend.Converters
             this.Output.PGA = new PGA();
 
             this.Output.PLT.Data = this.Occurence_Table.Where(ot => ot.Occurence > 0).Select(ot => ot.Value!).ToList();
+
+            if (Alpha15 != null)
+            {
+
+                for (int i = 0; i < this.Output.PLT.Data.Count; i++)
+                {
+                    if (this.Output.PLT.Data[i].Equals(Alpha15!))
+                    {
+                        this.Output.PLT.Data[i].Data = 0x0000;
+                        break;
+                    }                  
+
+                }
+
+            }
+
 
             this.Shift_Value = Get_Shift();
 

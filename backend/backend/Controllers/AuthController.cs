@@ -1,15 +1,17 @@
 ﻿using backend.Database;
+using backend.Requests;
+using backend.Users;
+using backend.Utils;
 using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
-using backend.Users;
-using Microsoft.EntityFrameworkCore;
-using backend.Requests;
 
 
 
@@ -65,9 +67,18 @@ namespace backend.Controllers
             }
         }
 
+        
         [HttpPost("Register")]
         public async Task<IActionResult> GenerateUser([FromBody] SignUpRequest request)
         {
+
+            IPAddress? remoteIP = HttpContext.Connection.RemoteIpAddress;
+
+            if (remoteIP == null || !LocalIPCheck.IPIsLocal(remoteIP))
+            {
+                return StatusCode(403); 
+            }
+
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 

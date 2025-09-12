@@ -46,8 +46,7 @@ public async write_to_local_storage(file: Blob, name: string): Promise<void> {
                 window.URL.revokeObjectURL(url);
                 resolve();
             }, 1000); 
-        } else {
-            console.error("Download link is not available", name);
+        } else {            
             resolve();
         }
     });
@@ -75,25 +74,29 @@ public async export_all_available(to_export:ExportDTO,name:string):Promise<void>
     count++;
   }
 
-  if(count===1){
+  if(count===0){
+    alert_localized(this.translate,'alerts.export-null');
+  }
+
+  else if(count===1){
 
     if(ast_buffer!=null){
 
-      const blob = new Blob([ast_buffer], { type: "application/octet-stream" });
+      const blob = new Blob([ast_buffer as BlobPart], { type: "application/octet-stream" });
       await this.write_to_local_storage(blob,(name+'.AST'))
 
     }
 
     else if(rpf_buffer!=null){
 
-      const blob = new Blob([rpf_buffer], { type: "application/octet-stream" });
+      const blob = new Blob([rpf_buffer as BlobPart], { type: "application/octet-stream" });
       await this.write_to_local_storage(blob,(name+'.RPF'))
 
     }
 
     else{
 
-      const blob = new Blob([wl_buffer!], { type: "application/octet-stream" });
+      const blob = new Blob([wl_buffer as BlobPart], { type: "application/octet-stream" });
       await this.write_to_local_storage(blob!,(name+'.WL'))
 
     }

@@ -22,12 +22,17 @@ namespace backend.Models
 
             if (alpha)
             {
-                this.Data = (UInt16)(1 | (B<<11) | (G<<6) | (R<<1));
+                this.Data = (UInt16)(1<<15 | (B<<10) | (G<<5) | R);
+
+                if (this.Data == 0x8000)
+                {
+                    this.Data = 0x8421;
+                }
             }
 
             else
             {
-                this.Data = (UInt16)(0 | (B << 11) | (G << 6) | (R << 1));
+                this.Data = (UInt16)(0<<15 | (B << 10) | (G << 5) | R);
             }
         }
             
@@ -50,22 +55,22 @@ namespace backend.Models
 
         public int Red()
         {
-            return (int)((this.Data>>1)&0x001F);
+            return (int)(this.Data&0x001F);
         }
 
         public int Green()
         {
-            return (int)((this.Data >> 6) & 0x001F);
+            return (int)((this.Data >> 5) & 0x001F);
         }
 
         public int Blue()
         {
-            return (int)((this.Data >> 11) & 0x001F);
+            return (int)((this.Data >> 10) & 0x001F);
         }
 
         public int Alpha()
         {
-            return (int)(this.Data & 0x0001);
+            return (int)((this.Data>>15) & 0x0001);
         }
 
         public void Swap(Pixel15 input)

@@ -23,6 +23,11 @@ export class Texture{
 
         this.id=i;
         this.CLUT=clut;
+
+        for(let i =0; i<this.CLUT.length;i++){
+           this.CLUT[i]=(this.CLUT[i]<<1|((this.CLUT[i]>>15)&1))&0xFFFF;
+        }      
+
         this.Indices=pixels;
         this.Width=width+1;
         this.Height=height+1;
