@@ -74,15 +74,14 @@ export class AudioPlayerComponent {
 
       this.volumeSubscription=this.volume.valueChanges$.subscribe($value=>{      
         
-        this.gain!.gain.value = ($value/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits))))/10;
+        this.gain!.gain.value = $value/100;
     
       });
 
     }
 
-    this.gain!.gain.value = (this.volume.getValue()/((sfx.ThresholdBits/4)*(Math.pow(2,sfx.ThresholdBits))))/10;
+    this.gain!.gain.value = this.volume.getValue()/100;
  
-
     this.buffer = this.audioContext!.createBuffer(sfx.ChannelCount,(sfx.BlocksPerChannel*28),sfx.SampleRate)
 
     let channel_data : number[] [] = [];
@@ -90,15 +89,12 @@ export class AudioPlayerComponent {
     for(let i = 0; i < sfx.ChannelCount; i++){
       channel_data.push([]);
     }
-
     
 
     for (let i = 0; i < sfx.Data.length; i++) {
      
       channel_data[i%sfx.ChannelCount].push(sfx.Data[i]);
-    
-    
-      
+       
     }
    
 
