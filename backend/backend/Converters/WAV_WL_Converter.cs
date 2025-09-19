@@ -176,7 +176,7 @@ namespace backend.Converters
         {
             List<Int16> tSamples = new List<Int16>();
 
-            Int16 Threshold = (Int16)(1<<this.Input!.ThresholdBits);
+            Int16 Threshold = (Int16)(((1<<this.Input!.ThresholdBits)/2)-1);
 
             for (int i = 0; i < 28; i++)
             {
