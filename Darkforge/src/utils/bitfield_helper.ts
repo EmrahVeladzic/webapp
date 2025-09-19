@@ -3,14 +3,8 @@ export function get_bits_per_index(clut_count:number):number{
     if(clut_count>16){
         return 8;
     }
-    else if (clut_count>4){
-        return 4;
-    }
-    else if (clut_count>2){
-        return 2;
-    }
     else{
-        return 1;
+        return 4;
     }
 
 }
@@ -38,9 +32,9 @@ export function get_bit_mask(bpi:number):number{
 
 }
 
-export function get_pcm_value(nibble:number, combined_shift:number):number{
+export function get_pcm_value(nibble:number, shift:number, filter: number, old: number, older:number):number{
 
-    let mult = (1<<combined_shift);
+    let mult = (1<<(12-shift));
 
     let val = nibble;
 
@@ -50,6 +44,20 @@ export function get_pcm_value(nibble:number, combined_shift:number):number{
 
     val*=mult;  
 
-    return (val/32768);
+    switch(filter){        
+        case 1: val+=((60*old)+32)/64; break;
+        case 2: val+=((115*old)-(52*older)+32)/64; break;
+        case 3: val+=((98*old)-(55*older)+32)/64; break;
+        case 4: val+=((122*old)-(60*older)+32)/64; break;
+        default: break;
+    }
+
+    if (val > 32767){ 
+    val = 32767;}
+    else if (val < -32768){
+    val = -32768;}
+
+
+    return val;
 
 }

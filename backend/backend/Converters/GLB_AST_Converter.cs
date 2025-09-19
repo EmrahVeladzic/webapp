@@ -15,7 +15,7 @@ namespace backend.Converters
 {
     public class AST_DATA :BaseConverter
     {
-        private ModelDTO Input { get; set; }
+        private ModelDTO? Input { get; set; }
 
         public AST? Output { get; set; }
 
@@ -35,7 +35,7 @@ namespace backend.Converters
             return (byte)((UInt64)(Math.Round(((float)(FPS - 1) * time))) % (UInt64)FPS);
         }
 
-
+        public AST_DATA() { }
 
         public AST_DATA(ModelDTO input)
         {
@@ -47,7 +47,7 @@ namespace backend.Converters
 
         public override async Task Convert(DarkforgeDBContext ctx) { 
 
-            this.Model = await ctx.GLBs.Where(g => g.Hash == this.Input.ModelHash).FirstAsync();
+            this.Model = await ctx.GLBs.Where(g => g.Hash == this.Input!.ModelHash).FirstAsync();
 
             this.Model.Setup(this.Model!.Serialized!, this.Model!.Hash!);
 
@@ -55,7 +55,7 @@ namespace backend.Converters
 
             await ctx.ASTs.AddAsync(this.Output);
 
-            this.Output.PrecisionBits = this.Input.PrecisionBits;
+            this.Output.PrecisionBits = this.Input!.PrecisionBits;
 
 
 
@@ -69,9 +69,9 @@ namespace backend.Converters
 
                     if (skins[0].TryGetProperty("joints", out JsonElement joints) && joints.ValueKind == JsonValueKind.Array)
                     {
-                        Bones = new List<BN>();
+                        Bones = new();
 
-                        this.Output.FKR = new FKR();
+                        this.Output.FKR = new();
 
                         await ctx.FKRs.AddAsync(this.Output.FKR);
 
@@ -85,7 +85,7 @@ namespace backend.Converters
 
                         for (int i = 0; i < Joint_Index_Array.Length; i++)
                         {
-                            BN temp_bone = new BN();
+                            BN temp_bone = new();
 
                             temp_bone.FKR_ID = this.Output.FKR.ID;
 
@@ -169,7 +169,7 @@ namespace backend.Converters
 
                     if (skins[0].TryGetProperty("inverseBindMatrices", out JsonElement inv) && inv.TryGetInt32(out int matrix_access))
                     {
-                        Matrices = new List<Matrix4x4>();
+                        Matrices = new();
 
                         if (accessors[matrix_access].TryGetProperty("bufferView", out JsonElement m_indices) && m_indices.TryGetInt32(out Int32 mat_view))
                         {
@@ -216,7 +216,7 @@ namespace backend.Converters
                         for (int i = 0; i < anims.GetArrayLength(); i++)
                         {
 
-                            ANM anim = new ANM();
+                            ANM anim = new();
 
                             anim.FKR_ID = (int)this.Output.FKR_ID!;
 
@@ -232,7 +232,7 @@ namespace backend.Converters
 
                                 for (int j = 0; j < channels.GetArrayLength(); j += 3)
                                 {
-                                    TK track = new TK();
+                                    TK track = new();
                                     track.ANM_ID = anim.ID;
 
                                     if (channels[j].TryGetProperty("target", out JsonElement target) && target.ValueKind == JsonValueKind.Object)
@@ -425,9 +425,9 @@ namespace backend.Converters
 
                                     }
 
-                                    track.T_Count = (byte)track.T_Frames.Count();
-                                    track.R_Count = (byte)track.R_Frames.Count();
-                                    track.S_Count = (byte)track.S_Frames.Count();
+                                    track.T_Count = (byte)track.T_Frames.Count;
+                                    track.R_Count = (byte)track.R_Frames.Count;
+                                    track.S_Count = (byte)track.S_Frames.Count;
 
                                     anim.Tracks.Add(track);
 
@@ -451,18 +451,18 @@ namespace backend.Converters
                 if (Model!.Metadata.RootElement.TryGetProperty("meshes", out JsonElement subMeshes) && subMeshes.ValueKind == JsonValueKind.Array)
                 {
 
-                    this.Output.MDL = new MDL();
+                    this.Output.MDL = new();
                     await ctx.MDLs.AddAsync(this.Output.MDL);
 
                     await ctx.SaveChangesAsync();
 
                     this.Output.MDL_ID = this.Output.MDL.ID;
 
-                    Meshes = new List<MSH>();
+                    Meshes = new();
 
                     for (int i = 0; i < subMeshes.GetArrayLength(); i++)
                     {
-                        MSH mesh = new MSH();
+                        MSH mesh = new();
 
                         mesh.MDL_ID = this.Output.MDL.ID;
 
@@ -588,7 +588,7 @@ namespace backend.Converters
                                         if (buffers[jnt_view].TryGetProperty("byteLength", out JsonElement len) && len.TryGetInt32(out Int32 length) && buffers[jnt_view].TryGetProperty("byteOffset", out JsonElement off) && off.TryGetInt32(out Int32 offset))
                                         {
 
-                                            List<byte> mesh_j = new List<byte>();
+                                            List<byte> mesh_j = new();
 
                                             for (int j = offset; j < (offset + (4 * sizeof(byte))); j += sizeof(byte))
                                             {
@@ -597,7 +597,7 @@ namespace backend.Converters
 
                                             }
 
-                                            mesh_j.OrderDescending();
+                                            mesh_j = (List<byte>)mesh_j.OrderDescending();
 
                                             if (Bones != null && Joint_Index_Array != null)
                                             {

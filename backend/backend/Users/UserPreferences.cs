@@ -11,6 +11,7 @@ namespace backend.Users
         public int UserId { get; set; }
 
         [Column("UserLanguage")]
+        [StringLength(3)]
         public string? Language { get; set; }
 
 

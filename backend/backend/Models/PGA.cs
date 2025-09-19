@@ -30,6 +30,13 @@ namespace backend.Models
             {
                 compare.Setup(IMG!.Image!.Data![i], !IMG!.Image!.Data![i].Equals(IMG!.Alpha!));
 
+                if (IMG!.Image!.Data![i].Equals(IMG!.Alpha!))
+                {
+                    compare.Data = 0x0000;
+
+                }
+
+
                 value <<= IMG.Shift_Value;
 
                 value |= IMG.Get_Index(compare);

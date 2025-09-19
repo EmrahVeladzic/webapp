@@ -37,8 +37,8 @@ export class WlFormComponent {
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
 
-      t_numeric : new FormControl(12,[Validators.min(4),Validators.max(12),Validators.required]),
-      t_slider : new FormControl(12,[Validators.min(4),Validators.max(12),Validators.required]),
+      t_numeric : new FormControl(13,[Validators.min(8),Validators.max(16),Validators.required]),
+      t_slider : new FormControl(13,[Validators.min(8),Validators.max(16),Validators.required]),
       loop : new FormControl(false)
 
     });
@@ -55,13 +55,13 @@ export class WlFormComponent {
     
   
     this.form.get('t_numeric')?.valueChanges.subscribe(value=>{
-      if(value<4 || value===null){
-        this.form.get('t_numeric')?.setValue(4,{emitEvent:false});
-        this.form.get('t_slider')?.setValue(4,{emitEvent:false});
+      if(value<8 || value===null){
+        this.form.get('t_numeric')?.setValue(8,{emitEvent:false});
+        this.form.get('t_slider')?.setValue(8,{emitEvent:false});
       }
-      else if(value>12){
-        this.form.get('t_numeric')?.setValue(12,{emitEvent:false});
-        this.form.get('t_slider')?.setValue(12,{emitEvent:false});
+      else if(value>16){
+        this.form.get('t_numeric')?.setValue(16,{emitEvent:false});
+        this.form.get('t_slider')?.setValue(16,{emitEvent:false});
       }
       else{
         this.form.get('t_slider')?.setValue(value,{emitEvent:false});
@@ -71,13 +71,13 @@ export class WlFormComponent {
 
 
     this.form.get('t_slider')?.valueChanges.subscribe(value=>{
-      if(value<4 || value===null){
-        this.form.get('t_slider')?.setValue(4,{emitEvent:false});
-        this.form.get('t_numeric')?.setValue(4,{emitEvent:false});
+      if(value<8 || value===null){
+        this.form.get('t_slider')?.setValue(8,{emitEvent:false});
+        this.form.get('t_numeric')?.setValue(8,{emitEvent:false});
       }
-      else if(value>12){
-        this.form.get('t_slider')?.setValue(12,{emitEvent:false});
-        this.form.get('t_numeric')?.setValue(12,{emitEvent:false});
+      else if(value>16){
+        this.form.get('t_slider')?.setValue(16,{emitEvent:false});
+        this.form.get('t_numeric')?.setValue(16,{emitEvent:false});
       }
       else{
         this.form.get('t_numeric')?.setValue(value,{emitEvent:false});

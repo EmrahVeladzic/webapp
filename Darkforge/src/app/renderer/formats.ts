@@ -23,6 +23,11 @@ export class Texture{
 
         this.id=i;
         this.CLUT=clut;
+
+        for(let i =0; i<this.CLUT.length;i++){
+           this.CLUT[i]=(this.CLUT[i]<<1|((this.CLUT[i]>>15)&1))&0xFFFF;
+        }      
+
         this.Indices=pixels;
         this.Width=width+1;
         this.Height=height+1;
@@ -84,42 +89,69 @@ export class Audio{
         this.Looping= this.BlockData[1]==6;
         this.Samples = [];
 
+        let old = 0;
+        let older =0;
 
         for(let i = 0; i < (this.BlocksPerChannel*this.ChannelCount*16);i+=16){
 
-            let total_shift = ((this.BlockData[i]>>4)&0xF) + this.ThresholdBits;
-          
+            let shift = ((this.BlockData[i])&0xF);
+            let filter = ((this.BlockData[i]>>4)&0x7);
 
             for(let j = 0; j<14;j++){
 
                 let samp = this.BlockData[(i+2+j)];
 
-                this.Samples.push(get_pcm_value(((samp>>4)&0xF),total_shift));
-               
+                this.Samples.push(get_pcm_value(((samp>>4)&0xF),shift,filter,old,older));     
+                
+                older=old;
+                old=this.Samples[this.Samples.length-1];
 
-                this.Samples.push(get_pcm_value((samp&0xF),total_shift));
+                this.Samples.push(get_pcm_value((samp&0xF),shift,filter,old,older));
                
+                older=old;
+                old=this.Samples[this.Samples.length-1];
               
             }
 
+            if(((i/16)+1)%this.BlocksPerChannel===0){
+                older=0;
+                old=0;
+            }
 
         }        
 
+        if(channels>1){
+            let Sorted: number[] = new Array(this.Samples.length);
+            let index =0;
+            for(let c =0; c < this.ChannelCount; c++){
 
-       
+                for(let s =c; s<this.Samples.length; s+=this.ChannelCount){
 
-        for(let i = 0; i < this.Samples.length;i++){
-             
-            if(i>=(this.ChannelCount*3)){
+                    Sorted[s]=this.Samples[index];
+                    index++;
 
-                this.Samples[(i-(2*this.ChannelCount))]+=((this.Samples[i]-this.Samples[(i-(3*this.ChannelCount))])*0.25);
-                this.Samples[(i-this.ChannelCount)]+=((this.Samples[i]-this.Samples[(i-(3*this.ChannelCount))])*0.75);
+                }
 
             }
 
-            
+            this.Samples=Sorted;
         }
 
+        let maximum_absolute = 0;
+
+        for(let i = 0; i < this.Samples.length; i++){
+
+            if(Math.abs(this.Samples[i])>maximum_absolute){
+                maximum_absolute=Math.abs(this.Samples[i]);
+            }
+
+        }
+      
+
+        if(maximum_absolute>0){
+            this.Samples = this.Samples.map(s=>s/=maximum_absolute);
+        }
+       
         this.BlockData=[];
 
         this.Data = new Float32Array(this.Samples);

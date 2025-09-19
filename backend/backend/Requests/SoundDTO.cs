@@ -8,7 +8,6 @@
         //SHA-256 Encoded.
         public string? SoundHash { get; set; }
 
-
         //Left shift 1 by the value below to get the minimum and maximum values a sample is to be limited to.
         public byte ThresholdBits { get; set; }
 
