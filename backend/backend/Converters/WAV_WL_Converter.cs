@@ -174,7 +174,7 @@ namespace backend.Converters
 
         public void EncodeBlock(int blockID)
         {
-            List<Int16> tSamples = new List<Int16>();
+            List<Int16> tSamples = new();
 
             Int16 Threshold = (Int16)(((1<<this.Input!.ThresholdBits)/2)-1);
 
@@ -206,24 +206,19 @@ namespace backend.Converters
 
 
 
-            ADPCMBlock block = new ADPCMBlock();
+            ADPCMBlock block = new();
 
             block.Shift_Filter = (byte)(GetShift(tSamples.ToArray()));
 
-            if (Input!.Looping && (this.Output!.BlockCountPerChannel*this.Output.ChannelCount)>=2)
-            {
-                block.Flags = 2;
-            }
-            else
-            {
-                block.Flags = 0;
-            }
+         
+            block.Flags = 0;
+            
 
-            block.Samples = new List<byte>();
+            block.Samples = new();
 
             int divisor = 1 << (12 - block.Shift_Filter);
 
-            List<Int16> bData = new List<Int16>();
+            List<Int16> bData = new();
 
             for (int i = 0; i < 28; i += 2)
             {
@@ -262,6 +257,7 @@ namespace backend.Converters
             this.Output!.Data!.Add(block);
         }
 
+        public SFX_DATA() { }
 
         public SFX_DATA(SoundDTO input)
         {
@@ -281,6 +277,11 @@ namespace backend.Converters
                 int padding = (this.Input!.ChannelCount * 28) - remainingSamples;
                 this.Sound.Data.AddRange(Enumerable.Repeat((Int16)0, padding));
             }
+            if (!Input!.Looping)
+            {
+                this.Sound.Data.AddRange(Enumerable.Repeat((Int16)0, (this.Input!.ChannelCount * 28)));
+            }
+
 
             if (this.Sound.ChannelCount > 1)
             {
@@ -305,7 +306,7 @@ namespace backend.Converters
 
             }
 
-            this.Output = new WL();
+            this.Output = new();
 
             this.Output.SampleRate = (UInt16)this.Sound.SampleRate;
 
@@ -323,10 +324,24 @@ namespace backend.Converters
                 EncodeBlock(i);
             }
 
-            if (Input!.Looping && (this.Output!.BlockCountPerChannel * this.Output.ChannelCount) >= 2)
+            if (this.Output.BlockCountPerChannel > 0)
             {
-                this.Output!.Data!.First().Flags = 6;
-                this.Output.Data!.Last().Flags = 3;
+                if (Input!.Looping)
+                {
+                    for (byte i = 0; i < this.Input.ChannelCount; i++)
+                    {
+                        this.Output!.Data![((int)i * this.Output.BlockCountPerChannel)].Flags = 6;
+                        this.Output!.Data![((int)i * this.Output.BlockCountPerChannel) + (this.Output.BlockCountPerChannel - 1)].Flags = 3;
+                    }
+
+                }
+                else
+                {
+                    for (byte i = 0; i < this.Input.ChannelCount; i++)
+                    {
+                        this.Output!.Data![((int)i * this.Output.BlockCountPerChannel) + (this.Output.BlockCountPerChannel - 1)].Flags = 5;
+                    }
+                }
             }
 
             this.Output.Serialize();

@@ -23,7 +23,7 @@
 
         public ADPCMBlock()
         {
-            this.Samples = new List<byte>();
+            this.Samples = new();
    
         }
 

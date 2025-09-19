@@ -52,9 +52,9 @@ namespace backend.Converters
 
   
 
-        Vector3 GetHue(Pixel15 input)
+        static Vector3 GetHue(Pixel15 input)
         {
-            Vector3 output = new Vector3();
+            Vector3 output = new();
 
 
             if (input.Red() >= 16)
@@ -144,7 +144,7 @@ namespace backend.Converters
 
         void NewColour(Pixel15 colour)
         {
-            Occurence_Entry oc = new Occurence_Entry();
+            Occurence_Entry oc = new();
 
             oc.Value = colour;
             oc.Occurence = 1;
@@ -155,7 +155,7 @@ namespace backend.Converters
 
         void NewSwap(Pixel15 donor, Pixel15 recipient)
         {
-            Swap_Entry sw = new Swap_Entry();
+            Swap_Entry sw = new();
 
             sw.Donor = donor;
             sw.Recipient = recipient;
@@ -191,11 +191,11 @@ namespace backend.Converters
         void PopularityCompression( int index)
         {
 
-            Vector3 PotentialRecipient = new Vector3();
-            Vector3 PotentialDonor = new Vector3();
+            Vector3 PotentialRecipient = new();
+            Vector3 PotentialDonor = new();
 
             Pixel15 initial = Occurence_Table![index].Value!;
-            Pixel15 compare = Occurence_Table![index].Value!;
+            Pixel15 compare = initial;
 
             double Distance = double.PositiveInfinity;
 
@@ -236,10 +236,10 @@ namespace backend.Converters
             int chosen_b = 0;
 
             Pixel15 initial = Occurence_Table! [0].Value!;
-            Pixel15 compare = Occurence_Table![0].Value!;
+            Pixel15 compare = initial;
 
-            Vector3 PotentialRecipient = new Vector3();
-            Vector3 PotentialDonor = new Vector3();
+            Vector3 PotentialRecipient = new();
+            Vector3 PotentialDonor = new();
 
             double Distance = double.PositiveInfinity;
             double newDistance = Distance;
@@ -465,6 +465,7 @@ namespace backend.Converters
             return (byte)this.Output!.PLT!.Data!.FindIndex(pxl=>pxl.Equals(Search!));
         }
 
+        public IMG_DATA() { }
         public IMG_DATA(ImageDTO input)
         {
 
@@ -490,14 +491,14 @@ namespace backend.Converters
 
            
 
-            this.Occurence_Table = new List<Occurence_Entry>();
-            this.Swap_Table = new List<Swap_Entry>();
+            this.Occurence_Table = new();
+            this.Swap_Table = new();
 
             foreach (Pixel24 p in this.Image.Data!)
             {
                 bool new_clr = true;
 
-                Pixel15 val = new Pixel15(p,!p.Equals(this.Alpha!));
+                Pixel15 val = new(p,!p.Equals(this.Alpha!));
 
                 foreach (Occurence_Entry oe in this.Occurence_Table)
                 {
@@ -521,13 +522,13 @@ namespace backend.Converters
 
             this.Occurence_Table=this.Occurence_Table!.OrderBy(o=>o.Occurence).ToList();
 
-            this.MaxUniqueCount = (uint)this.Occurence_Table.Count();
+            this.MaxUniqueCount = (uint)this.Occurence_Table.Count;
             this.UniqueCount = this.MaxUniqueCount;
 
 
             if(this.Input.ProtectedBufferSize > 0)
             {
-                this.ProtectedBuffer = new List<Pixel15>();
+                this.ProtectedBuffer = new();
                 for (int i = 0; i < Input.ProtectedBufferSize; i++)
                 {
                     this.ProtectedBuffer.Add(new Pixel15());
@@ -561,7 +562,7 @@ namespace backend.Converters
 
                             foreach (Occurence_Entry oe in this.Occurence_Table)
                             {
-                                Swap_Entry new_swap = new Swap_Entry();
+                                Swap_Entry new_swap = new();
                                 new_swap.Recipient = oe.Value;
                                 new_swap.Donor = oe.Value;
 
@@ -583,7 +584,7 @@ namespace backend.Converters
             {
                 foreach (Occurence_Entry oe in this.Occurence_Table)
                 {
-                    Swap_Entry new_swap = new Swap_Entry();
+                    Swap_Entry new_swap = new();
                     new_swap.Recipient = oe.Value;
                     new_swap.Donor = oe.Value;
 
@@ -592,9 +593,9 @@ namespace backend.Converters
 
             }
 
-            this.Output = new RPF();
-            this.Output.PLT = new PLT();
-            this.Output.PGA = new PGA();
+            this.Output = new();
+            this.Output.PLT = new();
+            this.Output.PGA = new();
 
             this.Output.PLT.Data = this.Occurence_Table.Where(ot => ot.Occurence > 0).Select(ot => ot.Value!).ToList();
 
@@ -627,7 +628,7 @@ namespace backend.Converters
             this.AlphaUsed = false;
             if (this.Alpha15 != null)
             {
-                if (this.Output.PLT.Data.Where(o => o.Equals(this.Alpha15) == true).Count() > 0)
+                if (this.Output.PLT.Data.Where(o => o.Equals(this.Alpha15) == true).Any())
                 {
                     this.AlphaUsed = true;
                 }
