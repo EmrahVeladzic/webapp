@@ -23,13 +23,11 @@ namespace backend.Controllers
     public class AuthController : ControllerBase
     {
        
-        private readonly IConfiguration? cfg;
-        private readonly PasswordHasher<UserAccount>? _passwordHasher;
+        private readonly IConfiguration cfg;
+        private readonly PasswordHasher<UserAccount> _passwordHasher;
 
-        public AuthController() { }
         public AuthController(IConfiguration config)
-        {
-            
+        {            
             cfg = config;
             _passwordHasher = new PasswordHasher<UserAccount>();
         }

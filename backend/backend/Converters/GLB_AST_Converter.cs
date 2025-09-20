@@ -597,7 +597,7 @@ namespace backend.Converters
 
                                             }
 
-                                            mesh_j = (List<byte>)mesh_j.OrderDescending();
+                                            mesh_j = mesh_j.OrderDescending().ToList();
 
                                             if (Bones != null && Joint_Index_Array != null)
                                             {
