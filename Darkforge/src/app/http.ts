@@ -1,3 +1,4 @@
+
 export const base_url :string = "https://localhost:7032";
 export const image_actions  :string = "/api/BMP";
 export const sound_actions  :string = "/api/WAV";
@@ -10,14 +11,29 @@ export const log_in ="/LogIn"
 
 export let http_timeout:number =0;
 
-export function set_http_timeout(time:number){
+export function set_http_timeout(exp:number){
  
-    http_timeout=Math.max(0,(Math.round(time/1000)-900000));
+    http_timeout=exp;
+
+}
+
+export function token_valid():boolean{
+
+    const now = Math.floor(Date.now() / 1000);
+
+    if(http_timeout>0 && http_timeout-now<900){
+
+        return false;
+
+    }
+
+    return true;
+
 }
 
 export function force_reload(){
 
-    localStorage.removeItem('authToken');
+    localStorage.removeItem('DarkforgeAuthToken');
     sessionStorage.clear();
     window.location.reload();
 

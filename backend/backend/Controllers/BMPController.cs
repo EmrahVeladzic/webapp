@@ -35,10 +35,21 @@ namespace backend.Controllers
             {
 
 
-                ActiveRPF? Optimization = await ctx.ActiveRPFs.Where(a=>a.FileID==input.ImageHash).Where(a=>a.CLUT==input.CLUT_Size && a.Method==input.Mode && a.ProtectedBufferSize==input.ProtectedBufferSize).Where(a=>(a.AlphaPresent==false && input.Alpha == null) || (input.Alpha!=null && input.Alpha[0]==a.Red && input.Alpha[1]==a.Green && input.Alpha[2]==a.Blue)).FirstOrDefaultAsync();
+                ActiveRPF? Optimization = await ctx.ActiveRPFs.Where(a=>a.FileID==input.ImageHash).Where(a=>a.CLUT==input.CLUT_Size && a.Method==input.Mode).Where(a=>(a.AlphaPresent==false && input.Alpha == null) || (input.Alpha!=null && input.Alpha[0]==a.Red && input.Alpha[1]==a.Green && input.Alpha[2]==a.Blue)).FirstOrDefaultAsync();
 
                 if (Optimization != null)
                 {
+                    RPF? texture = await ctx.RPFs.FindAsync(Optimization.Id);
+
+                    texture!.TexturePage_X=input.TexturePage_X;
+                    texture!.TexturePage_Y=input.TexturePage_Y;
+                    texture!.TextureOffset_X=input.TextureOffset_X;
+                    texture!.TextureOffset_Y=input.TextureOffset_Y;
+
+                    ctx.RPFs.Update(texture);
+                    await ctx.SaveChangesAsync();
+
+
                     return StatusCode(200, Optimization.Id);
                 }
 
@@ -95,7 +106,6 @@ namespace backend.Controllers
                 Log.OwnerID = userId;
 
                 Log.CLUT = input.CLUT_Size;
-                Log.ProtectedBufferSize = input.ProtectedBufferSize;
                 Log.Method=input.Mode;
 
                 
@@ -167,6 +177,12 @@ namespace backend.Controllers
                     rpf.PLT!.Deserialize();
                     texture.CLUT = rpf.PLT?.Data!.Select(d => d.Data).ToList();
                     texture.RPF_ID = rpf.ID;
+
+                    texture.TexturePage_X = rpf.TexturePage_X;
+                    texture.TexturePage_Y = rpf.TexturePage_Y;
+                    texture.TextureOffset_X = rpf.TextureOffset_X;
+                    texture.TextureOffset_Y = rpf.TextureOffset_Y;
+
 
                     texture.CanDelete = (ownerID==userId)||share;
 

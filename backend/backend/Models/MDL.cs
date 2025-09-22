@@ -9,10 +9,25 @@ namespace backend.Models
         public List<MSH> Meshes { get; set; }
 
         [Column("TargetTextureWidth")]
-        public byte? Width { get; set; }
+        public byte Width { get; set; }
 
         [Column("TargetTextureHeight")]
-        public byte? Height { get; set; }
+        public byte Height { get; set; }
+
+        [Column("TargetTexturePageX")]
+        public byte PageX { get; set; }
+
+        [Column("TargetTexturePageY")]
+        public byte PageY { get; set; }
+
+        [Column("TargetTextureOffsetX")]
+        public byte OffsetX { get; set; }
+
+        [Column("TargetTextureOffsetY")]
+        public byte OffsetY { get; set; }
+
+        [Column("TargetTextureClutXReduction")]
+        public byte ClutXShift {  get; set; }
 
 
         public MDL() : base()
@@ -32,7 +47,7 @@ namespace backend.Models
         {
             foreach (MSH m in Meshes)
             {
-                m.Deserialize();
+                m.Deserialize(this.Width,this.Height,this.ClutXShift,this.OffsetX,this.OffsetY);
             }
 
         }

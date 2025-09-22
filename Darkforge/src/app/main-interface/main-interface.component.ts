@@ -14,7 +14,7 @@ import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translat
 import { base_url,pref_actions } from '../http';
 import { alert_localized } from '../../utils/alerts';
 import { emit_prefs_change, set_prefs, user_prefs, UserPreferences} from '../../assets/user_prefs';
-import { force_reload, http_timeout } from '../http';
+import { force_reload, http_timeout, token_valid } from '../http';
 import { HttpParams } from '@angular/common/http';
 import { get_headers } from '../../utils/httpheaders';
 import { ActivatedRoute } from '@angular/router';
@@ -88,12 +88,17 @@ export class MainInterfaceComponent {
 
     });
 
-    setTimeout(() => {
+    const tokenInterval = setInterval(() => {
       
-      alert_localized(this.translate,'alerts.timeout');
-      force_reload();
+      const valid = token_valid();
 
-    }, http_timeout);
+      if(!valid){
+        clearInterval(tokenInterval);
+        alert_localized(this.translate,'alerts.timeout');
+        force_reload();
+      }      
+
+    },5000);
 
   }
  

@@ -37,6 +37,23 @@ namespace backend.Controllers
 
                 if (Optimization != null)
                 {
+                    AST? asset = await ctx.ASTs.FindAsync(Optimization.Id);
+
+                    MDL? model = await ctx.MDLs.FindAsync(asset!.MDL_ID);
+
+
+                    model!.Width = input.TexWidth;
+                    model!.Height = input.TexHeight;
+                    model!.PageX = input.TexPageX; 
+                    model.PageY = input.TexPageY;
+                    model!.OffsetX = input.TexOffsetX;
+                    model!.OffsetY = input.TexOffsetY;
+                    model!.ClutXShift = input.TexClutByteReduction;
+
+                    ctx.MDLs.Update(model);
+
+                    await ctx.SaveChangesAsync();
+
                     return StatusCode(200, Optimization.Id);
                 }
 

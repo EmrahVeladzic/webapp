@@ -68,10 +68,13 @@ export class WebGLService {
 
     if(!temp_track){
 
-      
-      
+      const trs_init = [
+        ...(temp_bone?.initialTranslation ?? []),
+        ...(temp_bone?.initialRotation ?? []),
+        ...(temp_bone?.initialScale ?? []),
+      ];
 
-      temp_bone?.currentTRS!=get_Mat(temp_bone?.initialTransform!);
+      temp_bone?.currentTRS!=get_Mat(trs_init);
       return;
 
     }
@@ -298,7 +301,7 @@ export class WebGLService {
             
             for(let b of ast.fkr.bones){
 
-              b.currentTRS=get_Mat(b.initialTransform);
+              b.currentTRS=get_Mat(b.initialTranslation.concat(b.initialRotation).concat(b.initialScale)  );
   
             }
 

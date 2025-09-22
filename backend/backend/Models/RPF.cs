@@ -43,6 +43,22 @@ namespace backend.Models
         [Column("Height")]
         public byte Height { get; set; }
 
+        //128 byte increments in VRAM on the X axis. Ranges 5-15, with 0-4 being reserved for the framebuffer 
+        [Column("TexturePageX")]
+        public byte TexturePage_X { get; set; }
+
+        //256 pixel increments in VRAM on the Y axis. Ranges 0-1 for commercial consoles
+        [Column("TexturePageY")]
+        public byte TexturePage_Y { get; set; }
+
+        //Offset from the left of the texture page in 8 byte increments. Ranges 0-15
+        [Column("TextureOffsetX")]
+        public byte TextureOffset_X { get; set; }
+
+        //Offset from the left of the texture page in 16 pixel increments. Ranges 0-15
+        [Column("TextureOffsetY")]
+        public byte TextureOffset_Y { get; set; }
+
         public RPF():base()
         {
             PGA = new PGA();

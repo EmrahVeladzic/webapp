@@ -16,12 +16,20 @@ namespace backend.Models
         public int? Parent_ID { get; set; }
      
         [NotMapped]
-        public List<Int32> InitialTransform { get; set; }
+        public List<Int32> InitialTranslation { get; set; }
+
+        [NotMapped]
+        public List<Int16> InitialRotation { get; set; }
+
+        [NotMapped]
+        public List<Int16> InitialScale{ get; set; }
 
         public BN():base()
         {
             
-            InitialTransform = new List<Int32>();
+            InitialTranslation = new();
+            InitialRotation = new();
+            InitialScale = new();
             Parent_ID = null;
 
         }
@@ -30,10 +38,21 @@ namespace backend.Models
         {
             this.ToSerialize = new List<byte>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 3; i++)
             {
-                PrimitiveSerialization.SerializePrimitive(InitialTransform[i], this.ToSerialize);
+                PrimitiveSerialization.SerializePrimitive(InitialTranslation[i], this.ToSerialize);
             }
+
+            for (int i = 0; i < 4; i++)
+            {
+                PrimitiveSerialization.SerializePrimitive(InitialRotation[i], this.ToSerialize);
+            }
+
+            for (int i = 0; i < 3; i++)
+            {
+                PrimitiveSerialization.SerializePrimitive(InitialScale[i], this.ToSerialize);
+            }
+
 
             this.Serialized=this.ToSerialize.ToArray();
 
@@ -42,16 +61,26 @@ namespace backend.Models
 
         public override void Deserialize()
         {
-            for (int i = 0; i < this.Serialized!.Length; i += 4)
+            for (int i = 0; i < 12; i += 4)
             {
-                this.InitialTransform.Add(BitConverter.ToInt32(this.Serialized!, i));
+                this.InitialTranslation.Add(BitConverter.ToInt32(this.Serialized!, i));
+            }
+            for (int i = 12; i < 20; i += 2)
+            {
+                this.InitialRotation.Add(BitConverter.ToInt16(this.Serialized!, i));
+            }
+            for (int i = 20; i < 26; i += 2)
+            {
+                this.InitialScale.Add(BitConverter.ToInt16(this.Serialized!, i));
             }
 
         }
 
         public override void Clear()
         {
-            this.InitialTransform!.Clear();
+            this.InitialTranslation.Clear();
+            this.InitialRotation.Clear();
+            this.InitialScale.Clear();
             this.ToSerialize!.Clear();
             this.Serialized = null;
         }

@@ -33,10 +33,10 @@ namespace backend.Models
         public List<Int32> Translations { get; set; }
 
         [NotMapped]
-        public List<Int32> Rotations { get; set; }
+        public List<Int16> Rotations { get; set; }
 
         [NotMapped]
-        public List<Int32> Scales { get; set; }
+        public List<Int16> Scales { get; set; }
 
         [NotMapped]
         public List<byte> T_Frames { get; set; }
@@ -50,9 +50,9 @@ namespace backend.Models
 
         public TK():base()
         {
-            this.Translations = new List<Int32>();
-            this.Rotations = new List<Int32>();
-            this.Scales = new List<Int32>();
+            this.Translations = new();
+            this.Rotations = new();
+            this.Scales = new();
 
             this.T_Frames = new List<byte>();
             this.R_Frames = new List<byte>();
@@ -123,11 +123,11 @@ namespace backend.Models
                 this.R_Frames.Add(this.Serialized![offset]);
                 offset += 1; 
 
-                this.Rotations.Add(BitConverter.ToInt32(this.Serialized!, offset));
-                this.Rotations.Add(BitConverter.ToInt32(this.Serialized!, offset + 4));
-                this.Rotations.Add(BitConverter.ToInt32(this.Serialized!, offset + 8));
-                this.Rotations.Add(BitConverter.ToInt32(this.Serialized!, offset + 12));
-                offset += 16; 
+                this.Rotations.Add(BitConverter.ToInt16(this.Serialized!, offset));
+                this.Rotations.Add(BitConverter.ToInt16(this.Serialized!, offset + 2));
+                this.Rotations.Add(BitConverter.ToInt16(this.Serialized!, offset + 4));
+                this.Rotations.Add(BitConverter.ToInt16(this.Serialized!, offset + 6));
+                offset += 8; 
             }
 
            
@@ -136,10 +136,10 @@ namespace backend.Models
                 this.S_Frames.Add(this.Serialized![offset]);
                 offset += 1; 
 
-                this.Scales.Add(BitConverter.ToInt32(this.Serialized!, offset));
-                this.Scales.Add(BitConverter.ToInt32(this.Serialized!, offset + 4));
-                this.Scales.Add(BitConverter.ToInt32(this.Serialized!, offset + 8));
-                offset += 12; 
+                this.Scales.Add(BitConverter.ToInt16(this.Serialized!, offset));
+                this.Scales.Add(BitConverter.ToInt16(this.Serialized!, offset + 2));
+                this.Scales.Add(BitConverter.ToInt16(this.Serialized!, offset + 4));
+                offset += 6; 
             }
 
 

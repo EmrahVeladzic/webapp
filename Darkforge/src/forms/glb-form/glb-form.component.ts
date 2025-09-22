@@ -7,7 +7,7 @@ import { AssetDTO, ModelDTO } from '../../models/models';
 import { Asset } from '../../app/renderer/formats';
 import { flip_ast_state,ast, update_anim } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
-import { Subscription,catchError, of } from 'rxjs';
+import { Subject, takeUntil, Subscription,catchError, of } from 'rxjs';
 
 
 @Component({
@@ -20,7 +20,9 @@ import { Subscription,catchError, of } from 'rxjs';
 export class GlbFormComponent {
  @Input() transfer!: FileTransferService;
  form :FormGroup;
-  private taskCompletedSubscription!: Subscription;
+
+ private destroy$ = new Subject<void>();
+
  public btn_enabled:boolean=true;
  public post_delete:boolean=true;
  public btn_translation: string = 'button.post';
@@ -41,12 +43,13 @@ constructor(public translate: TranslateService){
 }
 
 ngOnDestroy() {
-  this.taskCompletedSubscription.unsubscribe();
+  this.destroy$.next();
+  this.destroy$.complete();
 }
 
 ngOnInit(){
 
-  this.taskCompletedSubscription = this.transfer.glbTaskCompleted$.subscribe(() => {
+  this.transfer.glbTaskCompleted$.pipe(takeUntil(this.destroy$)).subscribe(() => {
     this.post_delete=true;
     this.btn_translation='button.post';   
   });

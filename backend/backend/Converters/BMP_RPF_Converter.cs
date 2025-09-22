@@ -33,10 +33,6 @@ namespace backend.Converters
 
         private ImageDTO? Input { get; set; }
 
-        private byte ProtectedBufferIndex {get;set;}
-
-        private List<Pixel15>? ProtectedBuffer { get; set; }
-
         private List<Occurence_Entry>? Occurence_Table { get; set; }
 
         private List<Swap_Entry>? Swap_Table { get; set;}
@@ -122,23 +118,6 @@ namespace backend.Converters
             }
 
             return output;
-
-        }
-
-
-        void Protect(Pixel15 recentDonor)
-        {
-            if (Input!.ProtectedBufferSize > 0)
-            {
-                ProtectedBuffer![(int)ProtectedBufferIndex] = recentDonor;
-
-                ProtectedBufferIndex++;
-
-                if((uint)ProtectedBufferIndex >= (uint)Input!.ProtectedBufferSize)
-                {
-                    ProtectedBufferIndex = 0;
-                }
-            }
 
         }
 
@@ -298,128 +277,49 @@ namespace backend.Converters
                 Distance = Vector3.Distance(Saturation,PotentialRecipient);
                 newDistance = Vector3.Distance(Saturation, PotentialRecipient);
 
-                bool init_protected = false;
-                bool compare_protected = false;
-
-
-                for(byte i = 0; i < Input!.ProtectedBufferSize; i++)
-                {
-                    if (initial.Equals(ProtectedBuffer![i]))
-                    {
-                        init_protected = true;
-                    }
-                    if (compare.Equals(ProtectedBuffer![i]))
-                    {
-                        compare_protected = true;
-                    }
-
-                }
-
-                if (init_protected != compare_protected)
-                {
-
-                    if (init_protected)
-                    {
-                        Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
-                        Occurence_Table[chosen_b].Occurence = 0;
-                        NewSwap(initial, compare);
-                        Protect(initial);
-                    }
-
-                    else
-                    {
-                        Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
-                        Occurence_Table[chosen_a].Occurence = 0;
-                        NewSwap(compare, initial);
-                        Protect(compare);
-                    }
-
-                }
-
-                else
-                {
+             
 
                     if (Distance < newDistance)
                     {
                         Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
                         Occurence_Table[chosen_b].Occurence = 0;
                         NewSwap(initial, compare);
-                        Protect(initial);
+                       
                     }
                     else
                     {
                         Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
                         Occurence_Table[chosen_a].Occurence = 0;
                         NewSwap(compare, initial);
-                        Protect(compare);
+                      
 
                     }
 
-                }
+                
 
             }
 
             else if (EnsureSingle(initial, compare))
             {
 
-                bool init_protected = false;
-                bool compare_protected = false;
-
-
-                for (byte i = 0; i < Input!.ProtectedBufferSize; i++)
-                {
-                    if (initial.Equals(ProtectedBuffer![i]))
-                    {
-                        init_protected = true;
-                    }
-                    if (compare.Equals(ProtectedBuffer![i]))
-                    {
-                        compare_protected = true;
-                    }
-
-                }
-
-                if (init_protected != compare_protected)
-                {
-
-                    if (init_protected)
-                    {
-                        Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
-                        Occurence_Table[chosen_b].Occurence = 0;
-                        NewSwap(initial, compare);
-                        Protect(initial);
-                    }
-
-                    else
-                    {
-                        Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
-                        Occurence_Table[chosen_a].Occurence = 0;
-                        NewSwap(compare, initial);
-                        Protect(compare);
-                    }
-
-                }
-
-                else
-                {
 
                     if (Occurence_Table[chosen_a].Occurence > Occurence_Table[chosen_b].Occurence)
                     {
                         Occurence_Table[chosen_a].Occurence += Occurence_Table[chosen_b].Occurence;
                         Occurence_Table[chosen_b].Occurence = 0;
                         NewSwap(initial, compare);
-                        Protect(initial);
+                  
                     }
                     else
                     {
                         Occurence_Table[chosen_b].Occurence += Occurence_Table[chosen_a].Occurence;
                         Occurence_Table[chosen_a].Occurence = 0;
                         NewSwap(compare, initial);
-                        Protect(compare);
+                
 
                     }
 
-                }
+                
             }
 
         }
@@ -525,17 +425,7 @@ namespace backend.Converters
             this.MaxUniqueCount = (uint)this.Occurence_Table.Count;
             this.UniqueCount = this.MaxUniqueCount;
 
-
-            if(this.Input.ProtectedBufferSize > 0)
-            {
-                this.ProtectedBuffer = new();
-                for (int i = 0; i < Input.ProtectedBufferSize; i++)
-                {
-                    this.ProtectedBuffer.Add(new Pixel15());
-                }
-                this.ProtectedBufferIndex = 0;   
-            }
-
+                       
             
             if (this.UniqueCount > ((uint)this.Input.CLUT_Size + 1))
             {
@@ -624,6 +514,11 @@ namespace backend.Converters
 
             this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
 
+            this.Output.TexturePage_X = this.Input.TexturePage_X;
+            this.Output.TexturePage_Y = this.Input.TexturePage_Y;
+            this.Output.TextureOffset_X = this.Input.TextureOffset_X;
+            this.Output.TextureOffset_Y = this.Input.TextureOffset_Y;
+
 
             this.AlphaUsed = false;
             if (this.Alpha15 != null)
@@ -650,10 +545,7 @@ namespace backend.Converters
 
             this.Occurence_Table?.Clear();
             this.Swap_Table?.Clear();
-            this.ProtectedBuffer?.Clear();
-
-
-           
+                     
 
         }
 

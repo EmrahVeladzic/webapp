@@ -23,7 +23,8 @@
     "clut":"CLUT size:",
     "rpf-method":"Compression method:",
     "alpha":"Use alpha:",
-    "p-bfr":"Protected Buffer size:",
+    "tex_page":"Texture page X/Y:",
+    "tex_offset":"Texture block offset X/Y:",
     "loop":"Loop:",
     "differential":"Differential threshold bits:",
     "language":"Language:",
@@ -46,7 +47,7 @@
     "decimal":"."
 },
 "alerts":{
-    "about":"Copyright - Emrah Veladžić, Tarik Frljak, 2025.",
+    "about":"Copyright - Emrah Veladžić, 2025.",
     "timeout":"Your session has expired. Please log in again.",
     "server_error":"Server is not reachable.",
     "not-bmp":"File appears to not be a BMP-format image.",

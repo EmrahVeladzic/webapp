@@ -23,8 +23,6 @@ namespace backend.Logging
 
         [Column("CompressionMode")]
         public bool Method {  get; set; }
-        [Column("ProtectedBufferSize")]
-        public byte ProtectedBufferSize { get; set; }
 
     }
 }

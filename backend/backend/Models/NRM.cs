@@ -9,18 +9,18 @@ namespace backend.Models
     public class NRM : BaseBufferEntity
     {
         [NotMapped]
-        public List<Int32> Normals { get; set; }
+        public List<Int16> Normals { get; set; }
 
         public NRM():base()
         {
-            this.Normals = new List<Int32>();
+            this.Normals = new List<Int16>();
         }
 
         public override void Serialize()
         {
             this.ToSerialize = new List<byte>();
 
-            foreach (Int32 n in this.Normals)
+            foreach (Int16 n in this.Normals)
             {
                 PrimitiveSerialization.SerializePrimitive(n,this.ToSerialize);
             }
@@ -31,12 +31,11 @@ namespace backend.Models
         public override void Deserialize()
         {
 
-            for (Int32 i = 0; i < this.Serialized!.Length; i += 4)
+            for (int i = 0; i < this.Serialized!.Length; i += 4)
             {
-                Int32 temp = BitConverter.ToInt32(this.Serialized!, i);
+                Int16 temp = BitConverter.ToInt16(this.Serialized!, i);
                 this.Normals.Add(temp);
             }
-
            
         }
 

@@ -55,11 +55,11 @@ namespace backend.Models
             this.NRM?.Serialize();
         }
 
-        public override void Deserialize()
+        public void Deserialize(byte Width, byte Height, byte clut_shift, byte x_off, byte y_off)
         {
             this.VT?.Deserialize();
             this.IND?.Deserialize();
-            this.UV?.Deserialize();
+            this.UV?.Deserialize(Width,Height,clut_shift,x_off,y_off);
             this.NRM?.Deserialize();
 
         }

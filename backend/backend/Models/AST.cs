@@ -110,12 +110,12 @@ namespace backend.Models
             t_byte = 0;            
             if(this.MDL!=null)
             {
-                t_byte=this.MDL.Width??0;
+                t_byte=this.MDL.Width;
             }
             temp.Add(t_byte);       
             if (this.MDL != null)
             {
-                t_byte = this.MDL.Height ?? 0;
+                t_byte = this.MDL.Height;
             }
             temp.Add(t_byte);        
 

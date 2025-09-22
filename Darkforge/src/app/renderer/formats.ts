@@ -12,17 +12,26 @@ export class Texture{
     public Width! : number;
     public Height!: number;
     public Data! : Uint16Array;
+    public textureOffset_X! :number;
+    public textureOffset_Y! :number;
+    public texturePage_X! :number;
+    public texturePage_Y! :number;
 
-    constructor(i:number,clut:number[],pixels:number[],width:number,height:number){
 
-        this.reset(i,clut,pixels,width,height);
+    constructor(i:number,clut:number[],pixels:number[],width:number,height:number,tpx:number,tpy:number,tox:number,toy:number) {
+
+        this.reset(i,clut,pixels,width,height,tpx,tpy,tox,toy);
         
     }
 
-    public reset(i:number,clut:number[],pixels:number[],width:number,height:number):void{
+    public reset(i:number,clut:number[],pixels:number[],width:number,height:number,tpx:number,tpy:number,tox:number,toy:number):void{
 
         this.id=i;
         this.CLUT=clut;
+        this.texturePage_X=tpx;
+        this.texturePage_Y=tpy;
+        this.textureOffset_X=tox;
+        this.textureOffset_Y=toy;
 
         for(let i =0; i<this.CLUT.length;i++){
            this.CLUT[i]=(this.CLUT[i]<<1|((this.CLUT[i]>>15)&1))&0xFFFF;
@@ -301,14 +310,18 @@ export class Animation{
 export class Bone{
     public id :number;
     public parent_ID?:number;
-    public initialTransform:number[];
+    public initialTranslation:number[];
+    public initialRotation:number[];
+    public initialScale:number[];
 
     public currentTRS?:mat4;
 
-    constructor(i:number, t:number[],p?:number) {
+    constructor(i:number, t:number[],r:number[],s:number[],p?:number) {
         this.id=i;
         this.parent_ID=p;
-        this.initialTransform=t;
+        this.initialTranslation=t;
+        this.initialRotation=r;
+        this.initialScale=s;
         this.currentTRS=get_Mat(t);
     }
 
@@ -374,8 +387,10 @@ export class Asset{
 
             for(let b of f.bones){
                 
-                b.initialTransform= b.initialTransform.map(i=>get_float(i,this.precisionBits));
-                b.currentTRS=get_Mat(b.initialTransform);
+                b.initialTranslation= b.initialTranslation.map(i=>get_float(i,this.precisionBits));
+                b.initialRotation= b.initialRotation.map(i=>get_float(i,this.precisionBits));
+                b.initialScale= b.initialScale.map(i=>get_float(i,this.precisionBits));
+                b.currentTRS=get_Mat(b.initialTranslation.concat(b.initialRotation).concat(b.initialScale));
 
             }
 

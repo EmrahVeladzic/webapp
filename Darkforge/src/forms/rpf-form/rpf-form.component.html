@@ -92,13 +92,38 @@
         </div>
 
 
-        <div class="buffer_holder" id="BUFFER_HOLDER" [ngClass]="{'hidden':form.get('mode')?.value==='0'}">
+        <div class="vram_holder" id="VRAM_HOLDER">      
+        
+            <div class="vram_holder_row">
+                <label>{{'label.tex_page'|translate}}</label>
+            </div>
+            <div class="vram_holder_row">
+                <div class="vram_holder_input" id="TEX_PAGE_X">
+                    <app-numeric id="T_P_X" #tpx [max]="15" [min]="5" [default]="5" formControlName="tex_p_x"></app-numeric>
+                </div>
+                <div class="vram_holder_input" id="TEX_PAGE_Y">
+                    <app-numeric id="T_P_Y" #tpy [max]="1" [min]="0" [default]="0" formControlName="tex_p_y"></app-numeric>
+                </div>
+            </div>
 
-            <label>{{'label.p-bfr'|translate}}</label>
-            <app-numeric id="BFR" [default]="0" [step]="1" [max]="4" [min]="0" formControlName="bfr"></app-numeric>
+            <div class="vram_holder_row">
+                <label>{{'label.tex_offset'|translate}}</label>
+            </div>
+            <div class="vram_holder_row">
+                <div class="vram_holder_input" id="TEX_OFF_X">
+                    <app-numeric id="T_O_X" #tox [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_x"></app-numeric>
+                </div>
+                <div class="vram_holder_input" id="TEX_OFF_Y">
+                    <app-numeric id="T_O_Y" #toy [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_y"></app-numeric>
+                </div>
+            </div>
+
+           
+           
+             
+           
 
         </div>
-
 
 
     </form>

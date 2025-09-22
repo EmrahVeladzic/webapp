@@ -5,7 +5,7 @@ import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 import { AudioPlayerComponent } from "../../utils/controls/audio-player/audio-player.component";
 import { wav_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
-import { Subscription, catchError, of } from 'rxjs';
+import { Subject,takeUntil, Subscription, catchError, of } from 'rxjs';
 import { AudioDTO, SoundDTO } from '../../models/models';
 import { base_url,sound_actions } from '../../app/http';
 import { sfx } from '../../assets/global_assets';
@@ -15,7 +15,7 @@ import { alert_localized } from '../../utils/alerts';
 import { force_reload } from '../../app/http';
 import { user_prefs } from '../../assets/user_prefs';
 import { get_headers } from '../../utils/httpheaders';
-
+import { link_slider_numeric } from '../../utils/dynamic_html';
 
 @Component({
   selector: 'app-wl-form',
@@ -27,12 +27,13 @@ import { get_headers } from '../../utils/httpheaders';
 export class WlFormComponent {
   @Input() transfer!: FileTransferService;
   @ViewChild('player',{static:false})audioPlayer!:AudioPlayerComponent;
-  private taskCompletedSubscription!: Subscription;
   form:FormGroup;
 
   public btn_enabled:boolean=true;
   public post_delete:boolean=true;
   public btn_translation: string = 'button.post';
+
+  private destroy$ = new Subject<void>();
 
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
@@ -46,50 +47,22 @@ export class WlFormComponent {
 
 
   ngOnInit(){
-    this.taskCompletedSubscription = this.transfer.wavTaskCompleted$.subscribe(() => {
+    this.transfer.wavTaskCompleted$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.post_delete=true;
       this.btn_translation='button.post';   
      this.audioPlayer.audio.nativeElement.src=wav_preview_url;
      this.audioPlayer.audio.nativeElement.load();
     });
     
+
+    link_slider_numeric(this.form,'t_slider','t_numeric',8,16,this.destroy$);
   
-    this.form.get('t_numeric')?.valueChanges.subscribe(value=>{
-      if(value<8 || value===null){
-        this.form.get('t_numeric')?.setValue(8,{emitEvent:false});
-        this.form.get('t_slider')?.setValue(8,{emitEvent:false});
-      }
-      else if(value>16){
-        this.form.get('t_numeric')?.setValue(16,{emitEvent:false});
-        this.form.get('t_slider')?.setValue(16,{emitEvent:false});
-      }
-      else{
-        this.form.get('t_slider')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
-
-    this.form.get('t_slider')?.valueChanges.subscribe(value=>{
-      if(value<8 || value===null){
-        this.form.get('t_slider')?.setValue(8,{emitEvent:false});
-        this.form.get('t_numeric')?.setValue(8,{emitEvent:false});
-      }
-      else if(value>16){
-        this.form.get('t_slider')?.setValue(16,{emitEvent:false});
-        this.form.get('t_numeric')?.setValue(16,{emitEvent:false});
-      }
-      else{
-        this.form.get('t_numeric')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
    
   }
 
   ngOnDestroy(){
-    this.taskCompletedSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
     

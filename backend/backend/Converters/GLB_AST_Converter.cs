@@ -129,18 +129,18 @@ namespace backend.Converters
                                 scale = new Vector3(s[0], s[1], s[2]);
                             }
 
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.X, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Y, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(translation.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialTranslation.Add(FixedPoint.GetFixed<Int32>(translation.X, this.Input.PrecisionBits));
+                            Bones[i].InitialTranslation.Add(FixedPoint.GetFixed<Int32>(translation.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialTranslation.Add(FixedPoint.GetFixed<Int32>(translation.Z, this.Input.PrecisionBits));
 
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.X, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Y, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.Z, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(rotation.W, this.Input.PrecisionBits));
+                            Bones[i].InitialRotation.Add(FixedPoint.GetFixed<Int16>(rotation.X, this.Input.PrecisionBits));
+                            Bones[i].InitialRotation.Add(FixedPoint.GetFixed<Int16>(rotation.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialRotation.Add(FixedPoint.GetFixed<Int16>(rotation.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialRotation.Add(FixedPoint.GetFixed<Int16>(rotation.W, this.Input.PrecisionBits));
 
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.X, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Y, this.Input.PrecisionBits));
-                            Bones[i].InitialTransform.Add(FixedPoint.GetFixed<Int32>(scale.Z, this.Input.PrecisionBits));
+                            Bones[i].InitialScale.Add(FixedPoint.GetFixed<Int16>(scale.X, this.Input.PrecisionBits));
+                            Bones[i].InitialScale.Add(FixedPoint.GetFixed<Int16>(scale.Y, this.Input.PrecisionBits));
+                            Bones[i].InitialScale.Add(FixedPoint.GetFixed<Int16>(scale.Z, this.Input.PrecisionBits));
 
 
                             if (nodes[i].TryGetProperty("children", out JsonElement child_joints) && child_joints.ValueKind == JsonValueKind.Array)
@@ -342,16 +342,16 @@ namespace backend.Converters
                                                     for (int k = offset; k < (offset + length); k += (sizeof(float) * 4))
                                                     {
 
-                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
 
 
-                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
 
 
-                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
 
 
-                                                        track.Rotations.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 3)), this.Input.PrecisionBits));
+                                                        track.Rotations.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 3)), this.Input.PrecisionBits));
                                                     }
 
 
@@ -403,13 +403,13 @@ namespace backend.Converters
                                                     for (int k = offset; k < (offset + length); k += (sizeof(float) * 3))
                                                     {
 
-                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k), this.Input.PrecisionBits));
 
 
-                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k + sizeof(float)), this.Input.PrecisionBits));
 
 
-                                                        track.Scales.Add(FixedPoint.GetFixed<Int32>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
+                                                        track.Scales.Add(FixedPoint.GetFixed<Int16>(BitConverter.ToSingle(this.Model.BLOB!, k + (sizeof(float) * 2)), this.Input.PrecisionBits));
 
 
                                                     }
@@ -452,6 +452,16 @@ namespace backend.Converters
                 {
 
                     this.Output.MDL = new();
+
+                    this.Output.MDL.Width = this.Input.TexWidth;
+                    this.Output.MDL.Height = this.Input.TexHeight;
+                    this.Output.MDL.PageX = this.Input.TexPageX;
+                    this.Output.MDL.PageY = this.Input.TexPageY;
+                    this.Output.MDL.OffsetX = this.Input.TexOffsetX;
+                    this.Output.MDL.OffsetY = this.Input.TexOffsetY;
+                    this.Output.MDL.ClutXShift = this.Input.TexClutByteReduction;
+
+
                     await ctx.MDLs.AddAsync(this.Output.MDL);
 
                     await ctx.SaveChangesAsync();
@@ -525,9 +535,7 @@ namespace backend.Converters
 
                                 if (attributes.TryGetProperty("TEXCOORD_0", out JsonElement a_uvs) && a_uvs.TryGetInt32(out Int32 uv_access))
                                 {
-                                    this.Output.MDL.Width = this.Input.TexWidth;
-                                    this.Output.MDL.Height = this.Input.TexHeight;
-
+                                   
                                     if (accessors[uv_access].TryGetProperty("bufferView", out JsonElement b_uv) && b_uv.TryGetInt32(out Int32 uv_view))
                                     {
 
@@ -554,10 +562,8 @@ namespace backend.Converters
                                                 float y = BitConverter.ToSingle(this.Model!.BLOB!, (j + sizeof(float)));
 
 
-                                                UInt16 w = (UInt16)((Int32)(this.Input.TexWidth) + 1);
-                                                UInt16 h = (UInt16)((Int32)(this.Input.TexHeight) + 1);
-
-
+                                                UInt16 w = 256;
+                                                UInt16 h = 256;
 
 
                                                 Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((x/((float)w/(float)(w-1))) * (float)w)) % w));
@@ -711,9 +717,9 @@ namespace backend.Converters
 
 
 
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(x, this.Input.PrecisionBits));
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(y, this.Input.PrecisionBits));
-                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int32>(z, this.Input.PrecisionBits));
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int16>(x, this.Input.PrecisionBits));
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int16>(y, this.Input.PrecisionBits));
+                                                Meshes[i].NRM!.Normals.Add(FixedPoint.GetFixed<Int16>(z, this.Input.PrecisionBits));
                                             }
 
 

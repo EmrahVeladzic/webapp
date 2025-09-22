@@ -8,13 +8,14 @@ import { flip_tex_state, tex } from '../../assets/global_assets';
 import { SliderComponent } from "../../utils/controls/slider/slider.component";
 import { NumericComponent } from '../../utils/controls/numeric/numeric.component';
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
-import { Subscription, catchError ,of} from 'rxjs';
+import { Subject,Subscription, catchError ,of, takeUntil} from 'rxjs';
 import { alert_localized } from '../../utils/alerts';
 import { force_reload } from '../../app/http';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
 import { user_prefs, UserPreferences } from '../../assets/user_prefs';
 import { get_headers } from '../../utils/httpheaders';
+import { link_slider_numeric } from '../../utils/dynamic_html';
 
 @Component({
   selector: 'app-rpf-form',
@@ -29,7 +30,9 @@ export class RpfFormComponent implements OnInit{
   @ViewChild('bmp_preview',{static:false})cnv!:ElementRef<HTMLCanvasElement>;
   private ctx? : CanvasRenderingContext2D;
   private preview? : HTMLImageElement;
-  private taskCompletedSubscription!: Subscription;
+
+
+  private destroy$ = new Subject<void>();
 
   public btn_enabled:boolean=true;
   public post_delete:boolean=true;
@@ -38,6 +41,10 @@ export class RpfFormComponent implements OnInit{
   @ViewChild('r_s',{static:false})r_s!:SliderComponent;
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
   @ViewChild('b_s',{static:false})b_s!:SliderComponent;
+
+  @ViewChild('tpx',{static:false})tex_page_x!:SliderComponent;
+  @ViewChild('tox',{static:false})tex_offset_x!:SliderComponent;
+  @ViewChild('toy',{static:false})tex_offset_y!:SliderComponent;
 
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
@@ -51,55 +58,81 @@ export class RpfFormComponent implements OnInit{
       r_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       g_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
       b_numeric : new FormControl(0,[Validators.min(0),Validators.max(255),Validators.required]),
-      bfr : new FormControl(0,[Validators.min(0),Validators.max(4),Validators.required])
-
-
+      tex_p_x : new FormControl(5,[Validators.min(5),Validators.max(15),Validators.required]),
+      tex_p_y : new FormControl(0,[Validators.min(0),Validators.max(1),Validators.required]),
+      tex_o_x : new FormControl(0,[Validators.min(0),Validators.max(15),Validators.required]),
+      tex_o_y : new FormControl(0,[Validators.min(0),Validators.max(15),Validators.required]),
     });
   }
 
   draw_preview(){
-  
- 
+     
     this.ctx = this.cnv.nativeElement.getContext("2d") as CanvasRenderingContext2D;
     this.ctx!.imageSmoothingEnabled=false;
 
     
-    this.preview! = new Image();
+    this.preview = new Image();
 
-    this.preview!.src=bmp_preview_url;
+    this.preview.src=bmp_preview_url;
 
-    this.preview!.onload = () =>{
+    this.preview.onload = () =>{
       
-        
       this.ctx?.drawImage(this.preview!,0,0,this.cnv!.nativeElement.width,this.cnv!.nativeElement.height);
 
+      const value = this.form.get('clut')?.value;
+      
+      const divisor = (value>16)?2:4;
+     
+      let new_page_max = (1024-this.preview!.width/divisor)/64;    
+
+      const new_offset_max = (new_page_max - Math.trunc(new_page_max))*16;
+
+      new_page_max = Math.trunc(new_page_max);
+     
+      this.tex_page_x.max=new_page_max;
+      this.tex_offset_x.max=new_offset_max;
+
+      this.tex_page_x.writeValue(Math.min(this.tex_page_x.value,this.tex_page_x.max));
+      this.tex_offset_x.writeValue(Math.min(this.tex_offset_x.value,this.tex_offset_x.max));
+
+      this.tex_offset_y.max=(256/this.preview!.height)-1;
+      this.tex_offset_y.writeValue(Math.min(this.tex_offset_y.value,this.tex_offset_y.max));
       
     }
   
   }
 
   ngOnDestroy() {
-    this.taskCompletedSubscription.unsubscribe();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 
   ngOnInit(){
-    this.taskCompletedSubscription = this.transfer.bmpTaskCompleted$.subscribe(() => {
+      this.transfer.bmpTaskCompleted$.pipe(takeUntil(this.destroy$)).subscribe(() => {
       this.post_delete=true;
       this.btn_translation='button.post';   
       this.draw_preview();
     });
 
-    this.form.get('clut')?.valueChanges.subscribe(value=>{
-      if(value<2){
-       this.form.get('clut')?.setValue(2,{emitEvent:false});
-      }
-      else if (value>256 || value===null){
-        this.form.get('clut')?.setValue(256,{emitEvent:false});
-      }
+    this.form.get('clut')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value=>{
+      
+      const divisor = (value>16)?2:4;
+     
+      let new_page_max = (1024-this.preview!.width/divisor)/64;    
+
+      const new_offset_max = (new_page_max - Math.trunc(new_page_max))*16;
+
+      new_page_max = Math.trunc(new_page_max);
+     
+      this.tex_page_x.max=new_page_max;
+      this.tex_offset_x.max=new_offset_max;
+
+      this.tex_page_x.writeValue(Math.min(this.tex_page_x.value,this.tex_page_x.max));
+      this.tex_offset_x.writeValue(Math.min(this.tex_offset_x.value,this.tex_offset_x.max));
 
     }); 
 
-    this.form.get('use_alpha')?.valueChanges.subscribe(value=>{
+    this.form.get('use_alpha')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value=>{
       if(value){
         this.r_s.sliderDimensionReset();
         this.g_s.sliderDimensionReset();
@@ -108,107 +141,9 @@ export class RpfFormComponent implements OnInit{
 
     }); 
 
-
-    this.form.get('r_slider')?.valueChanges.subscribe(value=>{
-      if(value<0){
-        this.form.get('r_slider')?.setValue(0,{emitEvent:false});
-        this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
-        
-      }
-      else if(value>255){
-        this.form.get('r_slider')?.setValue(255,{emitEvent:false});
-        this.form.get('r_numeric')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('r_numeric')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
-    this.form.get('g_slider')?.valueChanges.subscribe(value=>{
-      if(value<0){
-        this.form.get('g_slider')?.setValue(0,{emitEvent:false});
-        this.form.get('g_numeric')?.setValue(0,{emitEvent:false});
-      }
-      else if(value>255){
-        this.form.get('g_slider')?.setValue(255,{emitEvent:false});
-        this.form.get('g_numeric')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('g_numeric')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-    
-    this.form.get('b_slider')?.valueChanges.subscribe(value=>{
-      if(value<0){
-        this.form.get('b_slider')?.setValue(0,{emitEvent:false});
-        this.form.get('b_numeric')?.setValue(0,{emitEvent:false});
-      }
-      else if(value>255){
-        this.form.get('b_slider')?.setValue(255,{emitEvent:false});
-        this.form.get('b_numeric')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('b_numeric')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
-
-    this.form.get('r_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0 || value===null){
-        this.form.get('r_numeric')?.setValue(0,{emitEvent:false});
-        this.form.get('r_slider')?.setValue(0,{emitEvent:false});
-      }
-      else if(value>255){
-        this.form.get('r_numeric')?.setValue(255,{emitEvent:false});
-        this.form.get('r_slider')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('r_slider')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
-    this.form.get('g_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0 || value===null){
-        this.form.get('g_numeric')?.setValue(0,{emitEvent:false});
-        this.form.get('g_slider')?.setValue(0,{emitEvent:false});
-      }
-      else if(value>255){
-        this.form.get('g_numeric')?.setValue(255,{emitEvent:false});
-        this.form.get('g_slider')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('g_slider')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-    
-    this.form.get('b_numeric')?.valueChanges.subscribe(value=>{
-      if(value<0 || value===null){
-        this.form.get('b_numeric')?.setValue(0,{emitEvent:false});
-        this.form.get('b_slider')?.setValue(0,{emitEvent:false});
-      }
-      else if(value>255){
-        this.form.get('b_numeric')?.setValue(255,{emitEvent:false});
-        this.form.get('b_slider')?.setValue(255,{emitEvent:false});
-      }
-      else{
-        this.form.get('b_slider')?.setValue(value,{emitEvent:false});
-      }
-
-    });
-
-    this.form.get('bfr')?.valueChanges.subscribe(value=>{
-      if(value<0 || value===null){
-       this.form.get('bfr')?.setValue(0,{emitEvent:false});
-      }
-      else if (value>4){
-        this.form.get('bfr')?.setValue(4,{emitEvent:false});
-      }
-    });
+    link_slider_numeric(this.form,'r_slider','r_numeric',0,255,this.destroy$);
+    link_slider_numeric(this.form,'g_slider','g_numeric',0,255,this.destroy$);
+    link_slider_numeric(this.form,'b_slider','b_numeric',0,255,this.destroy$);
 
   }
 
@@ -232,11 +167,14 @@ export class RpfFormComponent implements OnInit{
    
     let mode_slc = this.form.get('mode')?.value==='1';
 
-    let BFR_size = this.form.get('bfr')?.value;
+    let tpx = this.form.get('tex_p_x')?.value;
+    let tpy = this.form.get('tex_p_y')?.value;
+    let tox = this.form.get('tex_o_x')?.value;
+    let toy = this.form.get('tex_o_y')?.value;
 
     let CHK = this.form.get('use_alpha')?.value;
 
-    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),parseInt(BFR_size));
+    const $instance = await ImageDTO.create(this.transfer.file_text!,parseInt(CLUT_size),(CHK)?[parseInt(r_out),parseInt(g_out),parseInt(b_out)]:null,(mode_slc),tpx,tpy,tox,toy);
 
     return $instance;
 
@@ -289,7 +227,7 @@ export class RpfFormComponent implements OnInit{
 
       const $response : TextureDTO = await this.transfer.generic_get($id,full_url) as TextureDTO;
 
-      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height);
+      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height,$response.texturePage_X,$response.texturePage_Y,$response.textureOffset_X,$response.textureOffset_Y);
 
       flip_tex_state();
 

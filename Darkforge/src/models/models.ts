@@ -7,24 +7,31 @@ export class ImageDTO{
     public cluT_Size : number;
     public alpha :  number[]|null;
     public mode :   boolean;
-    public protectedBufferSize : number;
+    public texturePage_X : number;
+    public texturePage_Y : number;
+    public textureOffset_X : number;
+    public textureOffset_Y  : number;
+
     
     
-    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean, protected_bfr_size : number ,hash:string) {
+    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean ,hash:string,tpx:number,tpy:number,tox:number,toy:number) {
         this.imageData=data;
         this.imageHash=hash;
        
-       this.cluT_Size = clut_size-1;
-       this.alpha = alpha_c;
-       this.mode = c_mode;
-       this.protectedBufferSize = protected_bfr_size;
-      
+        this.cluT_Size = clut_size-1;
+        this.alpha = alpha_c;
+        this.mode = c_mode;      
+
+        this.texturePage_X = tpx;
+        this.texturePage_Y = tpy;
+        this.textureOffset_X = tox;
+        this.textureOffset_Y = toy;
 
     }
     
-    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, protected_bfr_size: number): Promise<ImageDTO> {
+    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, tpx:number,tpy:number,tox:number,toy:number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageDTO(data, clut_size, alpha_c, c_mode, protected_bfr_size, imageHash);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode, imageHash, tpx,tpy,tox,toy);
     }
 
 }
@@ -96,7 +103,12 @@ public pixels:number[];
 
 public canDelete:boolean;
 
-    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean){
+public textureOffset_X :number;
+public textureOffset_Y :number;
+public texturePage_X :number;
+public texturePage_Y :number;
+
+    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean, tpx:number,tpy:number,tox:number,toy:number) {
         this.colours=col;
         this.width=w;
         this.height=h;
@@ -104,6 +116,10 @@ public canDelete:boolean;
         this.clut=clut;
         this.pixels=pxl;
         this.canDelete=del;
+        this.texturePage_X = tpx;
+        this.texturePage_Y = tpy;
+        this.textureOffset_X = tox;
+        this.textureOffset_Y = toy;
     }
 
 

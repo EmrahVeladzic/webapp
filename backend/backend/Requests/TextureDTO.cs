@@ -20,5 +20,11 @@
 
         public bool CanDelete { get; set; }
 
+        public byte TexturePage_X { get; set; }
+        public byte TexturePage_Y { get; set; }
+        public byte TextureOffset_X { get; set; }
+        public byte TextureOffset_Y { get; set; }
+
+
     }
 }

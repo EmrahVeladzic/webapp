@@ -48,15 +48,15 @@ login(){
       
       if(token!=undefined){
 
-        localStorage.setItem('authToken', token as string); 
+        localStorage.setItem('DarkforgeAuthToken', token as string); 
   
         const decoded :any= jwtDecode(token);       
 
         const userId = decoded['http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier'];
 
-        set_http_timeout(decoded['exp'] as number);
-
         set_prefs(new UserPreferences(userId));
+
+        set_http_timeout(decoded['exp']);
         
         this.router.navigate([`/user/${userId}`]);
 

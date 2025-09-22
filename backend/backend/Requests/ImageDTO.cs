@@ -1,4 +1,6 @@
-﻿namespace backend.Requests
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace backend.Requests
 {
     public class ImageDTO
     {
@@ -18,12 +20,12 @@
         //Determines the compression method. 0 = Popularity, 1 = Proximity.
         public bool Mode {  get; set; }
 
-        //Determines the size of the protected buffer to be used with the Proximity method. 
-        public byte ProtectedBufferSize { get; set; }
+        //Location of the texture in VRAM. This parameter can be changed by anyone at any time
+        public byte TexturePage_X { get; set; }
+        public byte TexturePage_Y { get; set; }
+        public byte TextureOffset_X { get; set; }
+        public byte TextureOffset_Y { get; set; }
 
-     
-
-        
     }    
 
 }
