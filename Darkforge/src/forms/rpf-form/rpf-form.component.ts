@@ -95,7 +95,7 @@ export class RpfFormComponent implements OnInit{
       this.tex_page_x.writeValue(Math.min(this.tex_page_x.value,this.tex_page_x.max));
       this.tex_offset_x.writeValue(Math.min(this.tex_offset_x.value,this.tex_offset_x.max));
 
-      this.tex_offset_y.max=(256/this.preview!.height)-1;
+      this.tex_offset_y.max=(256-this.preview!.height)/16;
       this.tex_offset_y.writeValue(Math.min(this.tex_offset_y.value,this.tex_offset_y.max));
       
     }

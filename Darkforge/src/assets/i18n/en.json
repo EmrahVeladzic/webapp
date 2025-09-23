@@ -28,7 +28,8 @@
     "loop":"Loop:",
     "differential":"Differential threshold bits:",
     "language":"Language:",
-    "share":"Share asset ownership:"
+    "share":"Share asset ownership:",
+    "bpp":"Target texture bits per pixel:"
 },
 "option":{
     "anim-none":"-NONE-",
@@ -41,7 +42,9 @@
     "fps-full":"Full",
     "fps-half":"Half",
     "proximity":"Proximity method",
-    "popularity":"Popularity method"
+    "popularity":"Popularity method",
+    "4bpp":"4 bits per pixel",
+    "8bpp":"8 bits per pixel"
 },
 "numbers":{
     "decimal":"."

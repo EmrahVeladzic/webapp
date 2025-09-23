@@ -61,7 +61,6 @@ export class Texture{
 
         }
         
-        this.CLUT=[];
         this.Indices=[];
 
     }

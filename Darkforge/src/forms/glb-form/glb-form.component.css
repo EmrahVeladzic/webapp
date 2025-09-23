@@ -38,9 +38,9 @@ form{
 
 .numeric_holder{
     width: 100%;
-    height: 30%;    
+    height: 40%;    
     margin-top: 5%;
-    margin-bottom: 30%;
+    margin-bottom: 20%;
     display: flex;
     flex-direction: column;
 }
@@ -54,7 +54,20 @@ form{
 
 .dimensions{
     width: 100%;
-    height: 12.5%;
+    height: 12.5%;  
+}
+
+.dimensions_dual{
+    width: 100%;
+    height: 12.5%;  
+    display: flex;
+    flex-direction: row;
+}
+
+.dimensions_xy{  
+    width: 45%;
+    margin-left: 2.5%;
+    margin-right: 2.5%;
 }
 
 .btn{

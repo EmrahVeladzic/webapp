@@ -35,17 +35,50 @@
 
             <div class="numeric_holder">
 
-
+                
                 <label >{{'label.target-w'|translate}}</label>
+                               
                 <div class="dimensions">
-                    <app-numeric  id="X" [max]="256" [min]="16" [default]="128" [step]="16" formControlName="tex_x"></app-numeric>
-                </div>
-            
-                <label >{{'label.target-h'|translate}}</label>
-                <div class="dimensions">
-                    <app-numeric id="Y" [max]="256" [min]="16" [default]="128" [step]="16"  formControlName="tex_y"></app-numeric>
+                    <app-numeric #width id="X" [max]="256" [min]="16" [default]="128" [step]="16" formControlName="tex_x"></app-numeric>
                 </div>
                 
+                
+                <label >{{'label.target-h'|translate}}</label>
+               
+                
+                <div class="dimensions">
+                    <app-numeric #height id="Y" [max]="256" [min]="16" [default]="128" [step]="16"  formControlName="tex_y"></app-numeric>
+                </div>                
+                
+                <label >{{'label.tex_page'|translate}}</label>
+                
+                <div class="dimensions_dual">
+                    <div class="dimensions_xy">
+                        <app-numeric #tpx  [max]="15" [min]="5" [default]="5" [step]="1" formControlName="tex_p_x"></app-numeric>
+                    </div>
+                    <div class="dimensions_xy">
+                        <app-numeric #tpy [max]="1" [min]="0" [default]="0" [step]="1" formControlName="tex_p_y"></app-numeric>
+                    </div>
+
+                </div>
+
+                 
+                <label >{{'label.tex_offset'|translate}}</label>
+                   <div class="dimensions_dual">
+                    <div class="dimensions_xy">
+                        <app-numeric #tox  [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_x"></app-numeric>
+                    </div>
+                    <div class="dimensions_xy">
+                        <app-numeric #toy [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_y"></app-numeric>
+                    </div>
+
+                </div>
+
+                <label for="BPP">{{'label.bpp'|translate}}</label>
+                <select id="BPP" #bpp formControlName="tex_bpp" [value]="8">
+                    <option value='4'>{{'option.4bpp'|translate}}</option>
+                    <option value='8'>{{'option.8bpp'|translate}}</option>
+                </select>
 
             </div>   
 
