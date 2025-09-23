@@ -134,7 +134,17 @@ ngOnInit(){
 
   let tex_height = this.form.get('tex_y')?.value;
 
-  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height);
+  let tpx = this.form.get('tex_p_x')?.value;
+  
+  let tpy = this.form.get('tex_p_y')?.value;
+
+  let tox = this.form.get('tex_o_x')?.value;
+  
+  let toy = this.form.get('tex_o_y')?.value;
+
+  let clt = (this.form.get('tex_bpp')?.value==8)?1:2;
+
+  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height,tpx,tpy,tox,toy,clt);
 
   return $instance;
 

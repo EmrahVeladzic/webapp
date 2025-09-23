@@ -14,7 +14,7 @@ export class ImageDTO{
 
     
     
-    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean ,hash:string,tpx:number,tpy:number,tox:number,toy:number) {
+    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean,tpx:number,tpy:number,tox:number,toy:number ,hash:string) {
         this.imageData=data;
         this.imageHash=hash;
        
@@ -31,7 +31,7 @@ export class ImageDTO{
     
     static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, tpx:number,tpy:number,tox:number,toy:number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageDTO(data, clut_size, alpha_c, c_mode, imageHash, tpx,tpy,tox,toy);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode,tpx,tpy,tox,toy,imageHash);
     }
 
 }
@@ -68,8 +68,13 @@ export class ModelDTO{
     public targetFPS : number;
     public texWidth : number;
     public texHeight : number;
+    public texPageX  :number;
+    public texPageY :number;
+    public texOffsetX : number;
+    public texOffsetY :number;
+    public texClutByteReduction : number;
 
-    constructor(data: string, precision:number,fps:number,width:number,height:number, hash:string) {
+    constructor(data: string, precision:number,fps:number,width:number,height:number,tpx:number,tpy:number,tox:number,toy:number,clt:number, hash:string) {
        
         this.modelData=data;
         this.precisionBits=precision;
@@ -77,13 +82,17 @@ export class ModelDTO{
         this.texWidth=width-1;
         this.texHeight=height-1;
         this.modelHash=hash;
-       
+        this.texPageX = tpx;
+        this.texPageY = tpy;
+        this.texOffsetX = tox;
+        this.texOffsetY = toy;
+        this.texClutByteReduction = clt;
         
     }
 
-    static async create(data:string, precision : number, fps:number,width:number,height:number): Promise<ModelDTO> {
+    static async create(data:string, precision : number, fps:number,width:number,height:number,tpx:number,tpy:number,tox:number,toy:number,clt:number): Promise<ModelDTO> {
         const modelHash = await hash_data(data);
-        return new ModelDTO(data, precision,fps,width,height, modelHash);
+        return new ModelDTO(data, precision,fps,width,height,tpx,tpy,tox,toy,clt, modelHash);
     }
 
 }
@@ -129,7 +138,6 @@ public texturePage_Y :number;
 export class AudioDTO{
 
     public sampleRate : number;
-    public thresholdBits : number;
     public channelCount : number;
     public blockCountPerChannel :number;
     public audioData : number[];
@@ -137,10 +145,9 @@ export class AudioDTO{
     
     public canDelete:boolean;
 
-    constructor(sR:number,threshold:number,channels:number,blocks:number,wl:number,data:number[],del:boolean){
+    constructor(sR:number,channels:number,blocks:number,wl:number,data:number[],del:boolean){
            
         this.sampleRate=sR;
-        this.thresholdBits=threshold;
         this.channelCount=channels;
         this.blockCountPerChannel=blocks;
         this.wL_ID=wl;

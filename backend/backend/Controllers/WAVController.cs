@@ -152,9 +152,7 @@ namespace backend.Controllers
 
                     audio.WL_ID = wl.ID;
 
-                    audio.SampleRate = wl.SampleRate;
-
-                    audio.ThresholdBits = wl.ThresholdBits;
+                    audio.SampleRate = wl.SampleRate;                  
 
                     audio.BlockCountPerChannel = (UInt32)wl.BlockCountPerChannel;
 

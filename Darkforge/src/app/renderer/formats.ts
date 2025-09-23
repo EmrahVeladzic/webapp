@@ -76,24 +76,24 @@ export class Audio{
     public ChannelCount! : number;
     public BlocksPerChannel!:number;
     public Looping! :boolean;
-    public ThresholdBits!:number;
+
     public Samples! : number[];
 
-    constructor(i:number,data:number[],sample_rate:number,channels:number,blocks:number,threshold:number){
+    constructor(i:number,data:number[],sample_rate:number,channels:number,blocks:number){
 
-        this.reset(i,data,sample_rate,channels,blocks,threshold);
+        this.reset(i,data,sample_rate,channels,blocks);
 
     }
 
 
-    public reset(i:number,data:number[],sample_rate:number,channels:number,blocks:number,threshold:number):void{
+    public reset(i:number,data:number[],sample_rate:number,channels:number,blocks:number):void{
         this.id=i;
         this.BlockData=data;
         this.SampleRate=sample_rate;
         this.ChannelCount=channels;
         this.BlocksPerChannel=blocks;
         
-        this.ThresholdBits=threshold;
+
         this.Looping= this.BlockData[1]==6;
         this.Samples = [];
 
@@ -245,13 +245,23 @@ export class Model{
     public meshes:Mesh[];
     public width:number;
     public height:number;
-    
-    constructor(i:number,m:Mesh[],w:number,h:number) {
+    public pageX:number;
+    public pageY:number;
+    public offsetX:number;
+    public offsetY:number;
+    public clutXShift:number;
+
+    constructor(i:number,m:Mesh[],w:number,h:number,px:number,py:number,ox:number,oy:number,cs:number) {
         
         this.id=i;
         this.meshes=m;
         this.width=w;
         this.height=h;
+        this.pageX=px;
+        this.pageY=py;
+        this.offsetX=ox;
+        this.offsetY=oy;
+        this.clutXShift=cs;
     }
 
 
@@ -375,7 +385,7 @@ export class Asset{
                     msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,this.precisionBits));  
                 }                                             
                 if(msh.uv!=null){                  
-                    normalize_uv(msh.uv.textureCoordinates,m.width,m.height);
+                    normalize_uv(msh.uv.textureCoordinates,m.width,m.height,m.offsetX,m.offsetY,m.clutXShift);
                 }        
 
             }

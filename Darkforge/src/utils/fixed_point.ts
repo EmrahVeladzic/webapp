@@ -9,12 +9,20 @@ return(value/(1<<precision));
 }
 
 
-export function normalize_uv(Input: number[], width:number, height:number):void{
+export function normalize_uv(Input: number[], width:number, height:number,offsetX:number,offsetY:number,clt:number):void{
 
     for(let i = 0; i < Input.length; i+=2){
+
+        Input[i]-=(offsetX*4);
+        Input[i+1]-=(offsetY*16);
        
-        Input[i]*=(width/(width-1));
+        Input[i]<<=clt;
+
+        
+        Input[i]*=((width>>clt)/((width>>clt)-1));
         Input[i+1]*=(height/(height-1));
+
+        
 
         Input[i]/=width;
         Input[i+1]/=height;

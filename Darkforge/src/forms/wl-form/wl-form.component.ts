@@ -127,7 +127,7 @@ export class WlFormComponent {
 
       const $response : AudioDTO = await this.transfer.generic_get($id,full_url) as AudioDTO;    
 
-      sfx.reset($response.wL_ID,$response.audioData,$response.sampleRate,$response.channelCount,$response.blockCountPerChannel,$response.thresholdBits);
+      sfx.reset($response.wL_ID,$response.audioData,$response.sampleRate,$response.channelCount,$response.blockCountPerChannel);
     
       this.transfer.wlTaskSource.next();
 

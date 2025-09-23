@@ -7,9 +7,6 @@ namespace backend.Requests
        
         public UInt16 SampleRate { get; set; }
 
-        //Same as before. 
-        public byte ThresholdBits { get; set; }
-
         public byte ChannelCount { get; set; }
 
         //Total block count / ChannelCount.

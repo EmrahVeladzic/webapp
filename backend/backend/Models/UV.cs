@@ -32,6 +32,12 @@ namespace backend.Models
             {
                 this.TextureCoordinates[i] /= (byte)(256 / (int)Width);
                 this.TextureCoordinates[i+1] /= (byte)(256 / (int)Height);
+
+                this.TextureCoordinates[i]>>=clut_shift;
+
+                this.TextureCoordinates[i] += (byte)(4 * x_off);
+                this.TextureCoordinates[i+1] += (byte)(16 * y_off);
+
             }
 
         }

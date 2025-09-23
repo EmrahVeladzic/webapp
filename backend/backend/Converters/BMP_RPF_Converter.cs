@@ -220,40 +220,49 @@ namespace backend.Converters
             Vector3 PotentialRecipient = new();
             Vector3 PotentialDonor = new();
 
+
             double Distance = double.PositiveInfinity;
             double newDistance = Distance;
 
-            for (int j = (int)(MaxUniqueCount - UniqueCount); j < (int)MaxUniqueCount; j++)
+            for (int i = 0; i < 2; i++)
             {
 
-                initial = Occurence_Table[j].Value!;
+                Distance = double.PositiveInfinity;
+             
 
-                PotentialRecipient.X = (float)initial.Red();
-                PotentialRecipient.Y = (float)initial.Green();
-                PotentialRecipient.Z = (float)initial.Blue();
-
-
-                for (int k = (int)(MaxUniqueCount - UniqueCount); k < (int)MaxUniqueCount; k++)
+                for (int j = (int)(MaxUniqueCount - UniqueCount); j < (int)MaxUniqueCount; j++)
                 {
-                    compare = Occurence_Table[k].Value!;
+
+                    initial = Occurence_Table[j].Value!;
+
+                    PotentialRecipient.X = (float)initial.Red();
+                    PotentialRecipient.Y = (float)initial.Green();
+                    PotentialRecipient.Z = (float)initial.Blue();
 
 
-                    PotentialDonor.X = (float)compare.Red();
-                    PotentialDonor.Y = (float)compare.Green();
-                    PotentialDonor.Z = (float)compare.Blue();
-
-                    newDistance = Vector3.Distance(PotentialRecipient, PotentialDonor);
-
-
-
-                    if (newDistance < Distance && EnsureDual(initial, compare))
+                    for (int k = (int)(MaxUniqueCount - UniqueCount); k < (int)MaxUniqueCount; k++)
                     {
-                        Distance = newDistance;
-                        chosen_a = j;
-                        chosen_b = k;
+                        compare = Occurence_Table[k].Value!;
+
+
+                        PotentialDonor.X = (float)compare.Red();
+                        PotentialDonor.Y = (float)compare.Green();
+                        PotentialDonor.Z = (float)compare.Blue();
+
+                        newDistance = Vector3.Distance(PotentialRecipient, PotentialDonor);
+
+
+
+                        if (newDistance < Distance && ((i==0 && EnsureDual(initial, compare))||(i==1&&EnsureSingle(initial,compare))))
+                        {
+                            Distance = newDistance;
+                            chosen_a = j;
+                            chosen_b = k;
+
+                        }
+
 
                     }
-
 
                 }
 
