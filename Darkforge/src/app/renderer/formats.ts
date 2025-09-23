@@ -281,6 +281,10 @@ export class Track{
     public t_Index?:number;
     public r_Index?:number;
     public s_Index?:number;
+
+    public t_Interp?:number;
+    public r_Interp?:number;
+    public s_Interp?:number;
     
     constructor(i:number, b:number, t:number[],r:number[],s:number[],tt:number[],rt:number[],st:number[]) {
         
@@ -442,6 +446,10 @@ export class Asset{
                     t.t_Index=0;
                     t.r_Index=0;
                     t.s_Index=0;
+
+                    t.t_Interp=0;
+                    t.r_Interp=0;
+                    t.s_Interp=0;
 
                 }
 
