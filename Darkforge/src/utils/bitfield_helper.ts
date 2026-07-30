@@ -45,10 +45,10 @@ export function get_pcm_value(nibble:number, shift:number, filter: number, old: 
     val*=mult;  
 
     switch(filter){        
-        case 1: val+=((60*old)+32)/64; break;
-        case 2: val+=((115*old)-(52*older)+32)/64; break;
-        case 3: val+=((98*old)-(55*older)+32)/64; break;
-        case 4: val+=((122*old)-(60*older)+32)/64; break;
+        case 1: val += ((60 * old) + 32) >> 6; break;
+        case 2: val += ((115 * old) - (52 * older) + 32) >> 6; break;
+        case 3: val += ((98 * old) - (55 * older) + 32) >> 6; break;
+        case 4: val += ((122 * old) - (60 * older) + 32) >> 6; break;
         default: break;
     }
 

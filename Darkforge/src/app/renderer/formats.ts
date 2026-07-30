@@ -94,7 +94,7 @@ export class Audio{
         this.BlocksPerChannel=blocks;
         
 
-        this.Looping= this.BlockData[1]==6;
+        this.Looping = (this.BlockData[1] & 0x2) !== 0;
         this.Samples = [];
 
         let old = 0;
@@ -109,12 +109,12 @@ export class Audio{
 
                 let samp = this.BlockData[(i+2+j)];
 
-                this.Samples.push(get_pcm_value(((samp>>4)&0xF),shift,filter,old,older));     
+                this.Samples.push(get_pcm_value((samp&0xF),shift,filter,old,older));     
                 
                 older=old;
                 old=this.Samples[this.Samples.length-1];
 
-                this.Samples.push(get_pcm_value((samp&0xF),shift,filter,old,older));
+                this.Samples.push(get_pcm_value(((samp>>4)&0xF),shift,filter,old,older));
                
                 older=old;
                 old=this.Samples[this.Samples.length-1];

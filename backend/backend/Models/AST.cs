@@ -249,36 +249,22 @@ namespace backend.Models
                             foreach (TK t in a.Tracks.Where(t => t.BN_ID == bn.ID))
                             {
                                 temp.Add(t.T_Count);
-
-
                                 TRS = new byte[((int)t.T_Count * 13)];
-
                                 Array.Copy(t.Serialized!, 0, TRS, 0, ((int)t.T_Count * 13));
-
                                 temp.AddRange(TRS);
-
                                 TRS = null;
 
                                 temp.Add(t.R_Count);
-
-                                TRS = new byte[((int)t.R_Count * 17)];
-
-                                Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 17));
-
+                                TRS = new byte[((int)t.R_Count * 9)];
+                                Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 9));
                                 temp.AddRange(TRS);
-
                                 TRS = null;
 
                                 temp.Add(t.S_Count);
-
-                                TRS = new byte[((int)t.S_Count * 13)];
-
-                                Array.Copy(t.Serialized!, (((int)t.T_Count * 13) + ((int)t.R_Count * 17)), TRS, 0, ((int)t.S_Count * 13));
-
+                                TRS = new byte[((int)t.S_Count * 7)];
+                                Array.Copy(t.Serialized!, (((int)t.T_Count * 13) + ((int)t.R_Count * 9)), TRS, 0, ((int)t.S_Count * 7));
                                 temp.AddRange(TRS);
-
                                 TRS = null;
-
                             }
                         }
 
