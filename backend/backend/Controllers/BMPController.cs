@@ -41,12 +41,17 @@ namespace backend.Controllers
                 {
                     RPF? texture = await ctx.RPFs.FindAsync(Optimization.Id);
 
-                    texture!.TexturePage_X=input.TexturePage_X;
-                    texture!.TexturePage_Y=input.TexturePage_Y;
-                    texture!.TextureOffset_X=input.TextureOffset_X;
-                    texture!.TextureOffset_Y=input.TextureOffset_Y;
+                    texture!.TexRow= input.TexRow;
+                    texture!.TexX = (Int16)input.Tex_X;
+                    texture!.TexY = input.Tex_Y;
 
-                    ctx.RPFs.Update(texture);
+                    texture!.CLUTRow = input.CLUTRow;
+                    texture!.CLUTX = (Int16)input.CLUT_X;
+                    texture!.CLUTY = input.CLUT_Y;
+
+
+
+                    ctx.RPFs.Update(texture!);
                     await ctx.SaveChangesAsync();
 
 
@@ -178,10 +183,14 @@ namespace backend.Controllers
                     texture.CLUT = rpf.PLT?.Data!.Select(d => d.Data).ToList();
                     texture.RPF_ID = rpf.ID;
 
-                    texture.TexturePage_X = rpf.TexturePage_X;
-                    texture.TexturePage_Y = rpf.TexturePage_Y;
-                    texture.TextureOffset_X = rpf.TextureOffset_X;
-                    texture.TextureOffset_Y = rpf.TextureOffset_Y;
+                   
+                    texture.TexRow = rpf.TexRow;
+                    texture.Tex_X = (UInt16)rpf.TexX;
+                    texture.Tex_Y = rpf.TexY;
+
+                    texture.CLUTRow = rpf.CLUTRow;
+                    texture.CLUT_X = (UInt16)rpf.CLUTX;
+                    texture.CLUT_Y = rpf.CLUTY;
 
 
                     texture.CanDelete = (ownerID==userId)||share;

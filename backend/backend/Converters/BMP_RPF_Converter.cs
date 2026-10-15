@@ -523,11 +523,15 @@ namespace backend.Converters
 
             this.Output.CLUT = (byte)(this.Output.PLT.Data.Count-1);
 
-            this.Output.TexturePage_X = this.Input.TexturePage_X;
-            this.Output.TexturePage_Y = this.Input.TexturePage_Y;
-            this.Output.TextureOffset_X = this.Input.TextureOffset_X;
-            this.Output.TextureOffset_Y = this.Input.TextureOffset_Y;
+            
+            
+            this.Output.TexRow = this.Input.TexRow;
+            this.Output.TexX = (Int16)this.Input.Tex_X;
+            this.Output.TexY = this.Input.Tex_Y;
 
+            this.Output.CLUTRow = this.Input.CLUTRow;
+            this.Output.CLUTX = (Int16)this.Input.CLUT_X;
+            this.Output.CLUTY = this.Input.CLUT_Y;
 
             this.AlphaUsed = false;
             if (this.Alpha15 != null)

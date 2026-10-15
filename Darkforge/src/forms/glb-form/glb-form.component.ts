@@ -95,10 +95,7 @@ ngOnInit(){
       this.t_width!.writeValue(tex.Width);
       this.t_height!.writeValue(tex.Height);
       this.form.get('tex_bpp')?.setValue((tex.CLUT.length>16)?8:4);
-      this.t_page_x!.writeValue(tex.texturePage_X);
-      this.t_page_y!.writeValue(tex.texturePage_Y);
-      this.t_offset_x!.writeValue(tex.textureOffset_X);
-      this.t_offset_y!.writeValue(tex.textureOffset_Y);
+
       this.recalculate_texture_params();
     }
 

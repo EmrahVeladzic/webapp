@@ -1,37 +1,42 @@
 import { Asset } from "../app/renderer/formats";
 import { hash_data } from "../utils/hash_maker";
 export class ImageDTO{
-   
+
     public imageData : string |null;
     public imageHash : string;
     public cluT_Size : number;
     public alpha :  number[]|null;
     public mode :   boolean;
-    public texturePage_X : number;
-    public texturePage_Y : number;
-    public textureOffset_X : number;
-    public textureOffset_Y  : number;
+    public texRow : boolean;
+    public texX : number;
+    public texY : number;
+    public cluT_Row : boolean;
+    public cluT_X : number;
+    public cluT_Y : number;
 
-    
-    
-    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean,tpx:number,tpy:number,tox:number,toy:number ,hash:string) {
+
+
+    constructor(data:string, clut_size : number, alpha_c : number[]|null, c_mode : boolean,trow:number,tx:number,ty:number,crow:number,cx:number,cy:number ,hash:string) {
         this.imageData=data;
         this.imageHash=hash;
-       
+
         this.cluT_Size = clut_size-1;
         this.alpha = alpha_c;
-        this.mode = c_mode;      
+        this.mode = c_mode;
 
-        this.texturePage_X = tpx;
-        this.texturePage_Y = tpy;
-        this.textureOffset_X = tox;
-        this.textureOffset_Y = toy;
+        this.texRow = trow == 1;
+        this.texX = tx;
+        this.texY = ty;
+
+        this.cluT_Row = crow == 1;
+        this.cluT_X = cx;
+        this.cluT_Y = cy;
 
     }
-    
-    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, tpx:number,tpy:number,tox:number,toy:number): Promise<ImageDTO> {
+
+    static async create(data: string, clut_size: number, alpha_c: number[] | null, c_mode: boolean, trow:number,tx:number,ty:number,crow:number,cx:number,cy:number): Promise<ImageDTO> {
         const imageHash = await hash_data(data);
-        return new ImageDTO(data, clut_size, alpha_c, c_mode,tpx,tpy,tox,toy,imageHash);
+        return new ImageDTO(data, clut_size, alpha_c, c_mode,trow,tx,ty,crow,cx,cy,imageHash);
     }
 
 }
@@ -101,23 +106,25 @@ export class ModelDTO{
 export class TextureDTO{
 
 
-public colours:number;
-public width:number;
-public height:number;
+    public colours:number;
+    public width:number;
+    public height:number;
 
-public rpF_ID:number;
+    public rpF_ID:number;
 
-public clut:number[];
-public pixels:number[];
+    public clut:number[];
+    public pixels:number[];
 
-public canDelete:boolean;
+    public canDelete:boolean;
 
-public textureOffset_X :number;
-public textureOffset_Y :number;
-public texturePage_X :number;
-public texturePage_Y :number;
+    public texRow : boolean;
+    public texX : number;
+    public texY : number;
+    public cluT_Row : boolean;
+    public cluT_X : number;
+    public cluT_Y : number;
 
-    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean, tpx:number,tpy:number,tox:number,toy:number) {
+    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean, trow:boolean,tx:number,ty:number,crow:boolean,cx:number,cy:number) {
         this.colours=col;
         this.width=w;
         this.height=h;
@@ -125,10 +132,12 @@ public texturePage_Y :number;
         this.clut=clut;
         this.pixels=pxl;
         this.canDelete=del;
-        this.texturePage_X = tpx;
-        this.texturePage_Y = tpy;
-        this.textureOffset_X = tox;
-        this.textureOffset_Y = toy;
+        this.texRow = trow;
+        this.texX = tx;
+        this.texY = ty;
+        this.cluT_Row = crow;
+        this.cluT_X = cx;
+        this.cluT_Y = cy;
     }
 
 

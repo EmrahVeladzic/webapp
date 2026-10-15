@@ -20,10 +20,13 @@
 
         public bool CanDelete { get; set; }
 
-        public byte TexturePage_X { get; set; }
-        public byte TexturePage_Y { get; set; }
-        public byte TextureOffset_X { get; set; }
-        public byte TextureOffset_Y { get; set; }
+        public bool TexRow { get; set; }
+        public UInt16 Tex_X { get; set; }
+        public byte Tex_Y { get; set; }
+
+        public bool CLUTRow { get; set; }
+        public UInt16 CLUT_X { get; set; }
+        public byte CLUT_Y { get; set; }
 
 
     }

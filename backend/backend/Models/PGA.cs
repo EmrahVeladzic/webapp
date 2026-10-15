@@ -37,18 +37,25 @@ namespace backend.Models
                 }
 
 
-                value <<= IMG.Shift_Value;
-
-                value |= IMG.Get_Index(compare);
-
-
-
-                if (IMG!.Shift_Value == 0 || (IMG!.Shift_Value != 0 && ((i + 1) % (8 / IMG!.Shift_Value) == 0)))
+                if (IMG!.Shift_Value == 0)
                 {
-                    this.ToSerialize.Add(value);
+                    this.ToSerialize.Add(IMG.Get_Index(compare));
 
-                    value = 0;
+                }
 
+                else
+                {
+                    int per = 8 / IMG!.Shift_Value;
+
+                    value |= (byte)(IMG.Get_Index(compare) << (IMG!.Shift_Value * (i % per)));
+
+                    if ((i + 1) % per == 0)
+                    {
+                        this.ToSerialize.Add(value);
+
+                        value = 0;
+
+                    }
 
                 }
 

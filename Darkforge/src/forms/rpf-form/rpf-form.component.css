@@ -8,18 +8,18 @@ canvas{
 form{
     height: 45%;
     display: flex;
-    flex-direction: column;  
+    flex-direction: column;
 }
 .params{
-    height: 33%;    
+    height: 33%;
     width: 80%;
     margin-left: 10%;
     margin-right: 10%;
     display: flex;
-    flex-direction: column;    
-}  
+    flex-direction: column;
+}
 .params select{
-    
+
     width: 100%;
     font-size: 2vh;
 }
@@ -29,7 +29,7 @@ form{
     display: flex;
     height: 33%;
     flex-direction: column;
- 
+
 
 
 }
@@ -37,7 +37,7 @@ form{
 .rgb{
     height: 20%;
     display: flex;
-       
+
 }
 .rgb label{
 
@@ -53,12 +53,12 @@ form{
     margin-right: 10%;
 }
 
-.rgb_out{   
-    
+.rgb_out{
+
     height: 80%;
     display: flex;
     box-sizing: content-box;
- 
+
 }
 
 .backdrop{
@@ -67,12 +67,12 @@ form{
     height: 100%;
     display: flex;
     flex-direction: column;
-    
+
 }
 
 
 .rgb_s{
-    height: 31.3%;   
+    height: 31.3%;
     width: 50%;
     margin-left: 25%;
     margin-right: 25%;
@@ -83,10 +83,10 @@ form{
     width: 33.3%;
     display: flex;
     flex-direction: column;
-   
+
 }
 .rgb_n{
-    height: 31%;   
+    height: 31%;
     width: 100%;
     margin-top: 1%;
     margin-bottom: 1%;
@@ -95,7 +95,7 @@ form{
 .colour{
     width: 33.3%;
 }
-.vram_holder{ 
+.vram_holder{
     height: 40%;
     width: 80%;
     margin-left: 10%;
@@ -112,10 +112,15 @@ form{
     display: flex;
     flex-direction: row;
 }
-.vram_holder_input{  
+.vram_holder_input{
     width: 45%;
     margin-left: 2.5%;
     margin-right: 2.5%;
+}
+.vram_holder_third{
+    width: 29.3%;
+    margin-left: 2%;
+    margin-right: 2%;
 }
 .btn{
     height: 15%;
@@ -125,11 +130,8 @@ form{
 .btn button{
     width: 50%;
     margin-left: 25%;
-    margin-right: 25%;  
+    margin-right: 25%;
 }
 .backdrop label,.numeric label{
     visibility: hidden;
 }
-
-
-

@@ -5,7 +5,7 @@
 </head>
 
 <body>
-    
+
 
     <canvas #bmp_preview id="bmp_preview" width="256" height="256" ></canvas>
 
@@ -14,7 +14,7 @@
         <div class="params">
 
             <label>{{'label.clut'|translate}}</label>
-            
+
             <app-numeric id="CLUT" [max]="256" [min]="2" [default]="16" formControlName="clut"></app-numeric>
 
             <label for="Mode">{{'label.rpf-method'|translate}}</label>
@@ -23,20 +23,20 @@
                 <option value='1'>{{'option.proximity'|translate}}</option>
             </select>
 
-        </div>             
-        
+        </div>
+
 
         <div class="rgb_holder">
 
-            <div class="rgb">             
+            <div class="rgb">
 
-                    
+
                 <label for="use_alpha">{{'label.alpha'|translate}}</label>
                 <input id="use_alpha" type="checkbox" formControlName="use_alpha">
 
-                
-                    
-            </div>           
+
+
+            </div>
 
 
 
@@ -45,23 +45,23 @@
             <div class="rgb_out" id="RGB_OUT" [ngClass]="{'hidden':form.get('use_alpha')?.value===false}">
 
 
-                <div class="backdrop">                    
-                    
+                <div class="backdrop">
+
                     <div class="rgb_s">
-                        <app-slider id="r" #r_s [max]="255" formControlName="r_slider"></app-slider> 
+                        <app-slider id="r" #r_s [max]="255" formControlName="r_slider"></app-slider>
                     </div>
                     <div class="rgb_s">
-                        <app-slider id="g" #g_s [max]="255" formControlName="g_slider"></app-slider> 
+                        <app-slider id="g" #g_s [max]="255" formControlName="g_slider"></app-slider>
                     </div>
                     <div  class="rgb_s">
-                        <app-slider id="b" #b_s [max]="255" formControlName="b_slider"></app-slider> 
+                        <app-slider id="b" #b_s [max]="255" formControlName="b_slider"></app-slider>
                     </div>
-                    
+
 
                 </div>
 
 
-                <div class="numeric">                
+                <div class="numeric">
 
                     <div class="rgb_n">
                         <app-numeric id="r_out" [max]="255" [min]="0" formControlName="r_numeric"></app-numeric>
@@ -79,7 +79,7 @@
 
 
                 <div  class="colour">
-                  
+
                     <svg width="100%" height="100%" viewBox="0 0 200 200">
                         <polygon id ="colour" points="50,150 100,50 150,150 100,100" [attr.fill]="this.getRGBColor()"/>
                     </svg>
@@ -92,50 +92,54 @@
         </div>
 
 
-        <div class="vram_holder" id="VRAM_HOLDER">      
-        
+        <div class="vram_holder" id="VRAM_HOLDER">
+
             <div class="vram_holder_row">
-                <label>{{'label.tex_page'|translate}}</label>
+                <label>{{'label.tex_placement'|translate}}</label>
             </div>
             <div class="vram_holder_row">
-                <div class="vram_holder_input" id="TEX_PAGE_X">
-                    <app-numeric id="T_P_X" #tpx [max]="15" [min]="5" [default]="5" formControlName="tex_p_x"></app-numeric>
+                <div class="vram_holder_third" id="TEX_ROW">
+                    <app-numeric id="T_ROW" [max]="1" [min]="0" [default]="0" [step]="1" formControlName="tex_row"></app-numeric>
                 </div>
-                <div class="vram_holder_input" id="TEX_PAGE_Y">
-                    <app-numeric id="T_P_Y" #tpy [max]="1" [min]="0" [default]="0" formControlName="tex_p_y"></app-numeric>
+                <div class="vram_holder_third" id="TEX_X">
+                    <app-numeric id="T_X" #tx [max]="1008" [min]="0" [default]="0" [step]="16" formControlName="tex_x"></app-numeric>
+                </div>
+                <div class="vram_holder_third" id="TEX_Y">
+                    <app-numeric id="T_Y" #ty [max]="255" [min]="0" [default]="0" [step]="1" formControlName="tex_y"></app-numeric>
                 </div>
             </div>
 
             <div class="vram_holder_row">
-                <label>{{'label.tex_offset'|translate}}</label>
+                <label>{{'label.clut_placement'|translate}}</label>
             </div>
             <div class="vram_holder_row">
-                <div class="vram_holder_input" id="TEX_OFF_X">
-                    <app-numeric id="T_O_X" #tox [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_x"></app-numeric>
+                <div class="vram_holder_third" id="CLUT_ROW">
+                    <app-numeric id="C_ROW" [max]="1" [min]="0" [default]="0" [step]="1" formControlName="clut_row"></app-numeric>
                 </div>
-                <div class="vram_holder_input" id="TEX_OFF_Y">
-                    <app-numeric id="T_O_Y" #toy [max]="15" [min]="0" [default]="0" [step]="1" formControlName="tex_o_y"></app-numeric>
+                <div class="vram_holder_third" id="CLUT_X">
+                    <app-numeric id="C_X" #cx [max]="1008" [min]="0" [default]="0" [step]="16" formControlName="clut_x"></app-numeric>
+                </div>
+                <div class="vram_holder_third" id="CLUT_Y">
+                    <app-numeric id="C_Y" [max]="255" [min]="0" [default]="0" [step]="1" formControlName="clut_y"></app-numeric>
                 </div>
             </div>
 
-           
-           
-             
-           
+
+
+
 
         </div>
 
 
     </form>
-       
+
 
 
     <div class="btn">
         <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
     </div>
-        
-    
 
-  
+
+
 
 </body>

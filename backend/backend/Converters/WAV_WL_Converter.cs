@@ -72,7 +72,7 @@ namespace backend.Converters
                      
                         for (int i = 0; i < 28; i++)
                         {
-                            Int32 acc = (Int32)Output[i]+ (((((Int32)OldSample*60) + 32)) >> 6);
+                            Int32 acc = (Int32)Output[i]+ (((((Int32)OldSample*60) + 32)) /64 );
                             Output[i] = (Int16)Math.Clamp(acc, -32768, 32767);
 
                             OlderSample = OldSample;
@@ -88,7 +88,7 @@ namespace backend.Converters
                         for(int i = 0; i<28; i++)
                         {
 
-                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 115) - ((Int32)OlderSample * 52)) + 32) >> 6);
+                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 115) - ((Int32)OlderSample * 52)) + 32) / 64);
                             Output[i] = (Int16)Math.Clamp(acc, -32768, 32767);
 
 
@@ -106,7 +106,7 @@ namespace backend.Converters
                         for (int i = 0; i < 28; i++)
                         {
 
-                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 98) - ((Int32)OlderSample * 55)) + 32) >> 6);
+                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 98) - ((Int32)OlderSample * 55)) + 32) / 64);
                             Output[i] = (Int16)Math.Clamp(acc, -32768, 32767);
 
                             OlderSample = OldSample;
@@ -124,7 +124,7 @@ namespace backend.Converters
                         for (int i = 0; i < 28; i++)
                         {
 
-                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 122) - ((Int32)OlderSample * 60)) + 32) >> 6);
+                            Int32 acc = (Int32)Output[i] + (((((Int32)OldSample * 122) - ((Int32)OlderSample * 60)) + 32) / 64);
                             Output[i] = (Int16)Math.Clamp(acc, -32768, 32767);
 
                             OlderSample = OldSample;

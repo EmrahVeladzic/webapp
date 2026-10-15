@@ -12,26 +12,19 @@ export class Texture{
     public Width! : number;
     public Height!: number;
     public Data! : Uint16Array;
-    public textureOffset_X! :number;
-    public textureOffset_Y! :number;
-    public texturePage_X! :number;
-    public texturePage_Y! :number;
 
 
-    constructor(i:number,clut:number[],pixels:number[],width:number,height:number,tpx:number,tpy:number,tox:number,toy:number) {
 
-        this.reset(i,clut,pixels,width,height,tpx,tpy,tox,toy);
+    constructor(i:number,clut:number[],pixels:number[],width:number,height:number) {
+
+        this.reset(i,clut,pixels,width,height);
         
     }
 
-    public reset(i:number,clut:number[],pixels:number[],width:number,height:number,tpx:number,tpy:number,tox:number,toy:number):void{
+    public reset(i:number,clut:number[],pixels:number[],width:number,height:number):void{
 
         this.id=i;
         this.CLUT=clut;
-        this.texturePage_X=tpx;
-        this.texturePage_Y=tpy;
-        this.textureOffset_X=tox;
-        this.textureOffset_Y=toy;
 
         for(let i =0; i<this.CLUT.length;i++){
            this.CLUT[i]=(this.CLUT[i]<<1|((this.CLUT[i]>>15)&1))&0xFFFF;
@@ -52,10 +45,10 @@ export class Texture{
 
             let base_byte = this.Indices[i];
 
-            for(let j = data_length_mult-1; j>=0; j--){
-                
-                this.Data[((i*data_length_mult)+(data_length_mult-1-j))%(this.Width*this.Height)]=this.CLUT[((base_byte>>(j*bpi))&mask)];
-                              
+            for(let j = 0; j<data_length_mult; j++){
+
+                this.Data[((i*data_length_mult)+j)%(this.Width*this.Height)]=this.CLUT[((base_byte>>(j*bpi))&mask)];
+
             }
 
 
