@@ -8,14 +8,14 @@ using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [Table("PGA", Schema ="Models")]
-    public class PGA:BaseBufferEntity
+    [Table("PGA", Schema = "Models")]
+    public class PGA : BaseBufferEntity
     {
         //Indexed image data. Points to slots in the CLUT. Element size is 1 byte by default but can represent multiple pixels. 
 
-        public PGA():base()
+        public PGA() : base()
         {
-            
+
         }
 
         public void Serialize(IMG_DATA IMG)
@@ -61,12 +61,17 @@ namespace backend.Models
 
             }
 
+            if (IMG!.Shift_Value != 0 && IMG!.Image!.Data!.Count % (8 / IMG!.Shift_Value) != 0)
+            {
+                this.ToSerialize.Add(value);
+            }
+
             this.Serialized = this.ToSerialize.ToArray();
         }
 
-        public  override void Deserialize()
+        public override void Deserialize()
         {
-            this.ToSerialize=this.Serialized!.ToList();
+            this.ToSerialize = this.Serialized!.ToList();
 
         }
 
@@ -79,5 +84,5 @@ namespace backend.Models
     }
 
 
-  
+
 }

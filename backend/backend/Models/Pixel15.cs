@@ -4,15 +4,15 @@ using System.Runtime.InteropServices;
 
 namespace backend.Models
 {
-    [StructLayout(LayoutKind.Sequential,Pack =4)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     [Keyless]
     public class Pixel15
     {
-        
+
         //A "15-bit" RGBA format. Little endian.  
         public UInt16 Data { get; set; }
 
-        public void Setup(Pixel24 input , bool alpha)
+        public void Setup(Pixel24 input, bool alpha)
         {
             byte R = (byte)((int)input.Red / 8);
             byte G = (byte)((int)input.Green / 8);
@@ -22,22 +22,17 @@ namespace backend.Models
 
             if (alpha)
             {
-                this.Data = (UInt16)(1<<15 | (B<<10) | (G<<5) | R);
-
-                if (this.Data == 0x8000)
-                {
-                    this.Data = 0x8421;
-                }
+                this.Data = (UInt16)(1 << 15 | (B << 10) | (G << 5) | R);
             }
 
             else
             {
-                this.Data = (UInt16)(0<<15 | (B << 10) | (G << 5) | R);
+                this.Data = (UInt16)(0 << 15 | (B << 10) | (G << 5) | R);
             }
         }
-            
-            
-        
+
+
+
         public Pixel15(Pixel24 input, bool alpha)
         {
             Setup(input, alpha);
@@ -55,7 +50,7 @@ namespace backend.Models
 
         public int Red()
         {
-            return (int)(this.Data&0x001F);
+            return (int)(this.Data & 0x001F);
         }
 
         public int Green()
@@ -70,7 +65,7 @@ namespace backend.Models
 
         public int Alpha()
         {
-            return (int)((this.Data>>15) & 0x0001);
+            return (int)((this.Data >> 15) & 0x0001);
         }
 
         public void Swap(Pixel15 input)
@@ -88,19 +83,19 @@ namespace backend.Models
             if (other == null) { return false; }
             else
             {
-               return this.Data == other.Data;
+                return this.Data == other.Data;
 
             }
         }
 
         public void Serialize(List<byte> output)
         {
-           PrimitiveSerialization.SerializePrimitive(Data, output);
+            PrimitiveSerialization.SerializePrimitive(Data, output);
         }
 
-        public void Deserialize(byte[] data,int offset)
+        public void Deserialize(byte[] data, int offset)
         {
-           this.Data = BitConverter.ToUInt16(data, offset);
+            this.Data = BitConverter.ToUInt16(data, offset);
         }
     }
 }

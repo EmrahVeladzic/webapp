@@ -27,7 +27,8 @@ export class Texture{
         this.CLUT=clut;
 
         for(let i =0; i<this.CLUT.length;i++){
-           this.CLUT[i]=(this.CLUT[i]<<1|((this.CLUT[i]>>15)&1))&0xFFFF;
+           const c = this.CLUT[i];
+           this.CLUT[i]=(((c&0x1F)<<11)|(((c>>5)&0x1F)<<6)|(((c>>10)&0x1F)<<1)|((c>>15)&1))&0xFFFF;
         }      
 
         this.Indices=pixels;

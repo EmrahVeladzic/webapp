@@ -10,9 +10,9 @@ using System.Security.Cryptography;
 namespace backend.Files
 {
     [Table("BMP", Schema = "Files")]
-    public class BMP:BaseFileEntity
+    public class BMP : BaseFileEntity
     {
-       
+
 
         [NotMapped]
         public ushort Magic { get; set; }
@@ -124,7 +124,7 @@ namespace backend.Files
                 {
                     int Index = Row_Start + j * 3;
 
-                    Data.Add(new Pixel24(Input[Index], Input[Index + 1], Input[Index + 2]));
+                    Data.Add(new Pixel24(Input[Index + 2], Input[Index + 1], Input[Index]));
 
                 }
             }
