@@ -106,7 +106,9 @@ namespace backend.Models
             int padded_width = ((width + per_half - 1) / per_half) * per_half;
 
             List<Pixel15> palette = PLT?.Data ?? new List<Pixel15>();
-            int clut_span = eight_bit ? 256 : 16;
+            int clut_span = this.CLUT + 1;
+            
+            clut_span = ((clut_span + 15) &~0xF);
 
             UInt32 tex_line = (UInt32)((this.TexRow ? 256 : 0) + this.TexY);
             UInt32 tex_span = (UInt32)(padded_width / per_half);
@@ -129,7 +131,7 @@ namespace backend.Models
             temp.Add(82);
             temp.Add(this.Width);
             temp.Add(this.Height);
-            temp.Add(0);
+            temp.Add(this.CLUT);
 
             PrimitiveSerialization.SerializePrimitive(dest_tex, temp);
             PrimitiveSerialization.SerializePrimitive(size_tex, temp);
