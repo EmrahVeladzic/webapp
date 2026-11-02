@@ -44,9 +44,9 @@ export class RpfFormComponent implements OnInit{
   @ViewChild('g_s',{static:false})g_s!:SliderComponent;
   @ViewChild('b_s',{static:false})b_s!:SliderComponent;
 
-  @ViewChild('tx',{static:false})tex_x!:SliderComponent;
-  @ViewChild('ty',{static:false})tex_y!:SliderComponent;
-  @ViewChild('cx',{static:false})clut_x!:SliderComponent;
+  @ViewChild('tx',{static:false})tex_x!:NumericComponent;
+  @ViewChild('ty',{static:false})tex_y!:NumericComponent;
+  @ViewChild('cx',{static:false})clut_x!:NumericComponent;
 
   constructor(public translate: TranslateService){
     this.form = new FormGroup({
@@ -69,13 +69,21 @@ export class RpfFormComponent implements OnInit{
     });
   }
 
+  private field_value(name:string):number{
+    return Number(this.form.get(name)?.value) || 0;
+  }
+
+  private set_field(name:string, v:number){
+    this.form.get(name)?.setValue(v,{emitEvent:false});
+  }
+
   update_limits(){
 
     if(this.preview==null){
       return;
     }
 
-    const value = this.form.get('clut')?.value;
+    const value = this.field_value('clut');
 
     if(value>16 && this.preview!.width>128){
       this.form.get('clut')?.setValue(16);
@@ -86,27 +94,33 @@ export class RpfFormComponent implements OnInit{
 
     const hw_width = Math.ceil(this.preview!.width/divisor);
 
-    this.tex_x.max=Math.floor((1024-hw_width)/16)*16;
-    this.tex_x.writeValue(Math.min(this.tex_x.value,this.tex_x.max));
+    const tx_max = Math.floor((1024-hw_width)/16)*16;
+    this.tex_x.max = tx_max;
+
+    let tx = Math.min(this.field_value('tex_x'),tx_max);
 
     const u_limit = Math.floor((64-hw_width)/16)*16;
 
-    if((this.tex_x.value&63)>u_limit){
+    if((tx&63)>u_limit){
 
-      const up = (this.tex_x.value&~63)+64;
-      const down = (this.tex_x.value&~63)|u_limit;
+      const up = (tx&~63)+64;
+      const down = (tx&~63)|u_limit;
 
-      this.tex_x.writeValue((this.tex_x.value>this.tex_x_last&&up<=this.tex_x.max)?up:down);
+      tx = (tx>this.tex_x_last&&up<=tx_max)?up:down;
 
     }
 
-    this.tex_x_last=this.tex_x.value;
+    this.set_field('tex_x',tx);
 
-    this.tex_y.max=256-this.preview!.height;
-    this.tex_y.writeValue(Math.min(this.tex_y.value,this.tex_y.max));
+    this.tex_x_last=tx;
 
-    this.clut_x.max=1024-((value>16)?256:16);
-    this.clut_x.writeValue(Math.min(this.clut_x.value,this.clut_x.max));
+    const ty_max = 256-this.preview!.height;
+    this.tex_y.max = ty_max;
+    this.set_field('tex_y',Math.min(this.field_value('tex_y'),ty_max));
+
+    const cx_max = 1024-((value>16)?256:16);
+    this.clut_x.max = cx_max;
+    this.set_field('clut_x',Math.min(this.field_value('clut_x'),cx_max));
 
   }
 

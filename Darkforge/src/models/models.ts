@@ -1,5 +1,6 @@
 import { Asset } from "../app/renderer/formats";
 import { hash_data } from "../utils/hash_maker";
+
 export class ImageDTO{
 
     public imageData : string |null;
@@ -8,8 +9,8 @@ export class ImageDTO{
     public alpha :  number[]|null;
     public mode :   boolean;
     public texRow : boolean;
-    public texX : number;
-    public texY : number;
+    public tex_X : number;
+    public tex_Y : number;
     public cluT_Row : boolean;
     public cluT_X : number;
     public cluT_Y : number;
@@ -25,8 +26,8 @@ export class ImageDTO{
         this.mode = c_mode;
 
         this.texRow = trow == 1;
-        this.texX = tx;
-        this.texY = ty;
+        this.tex_X = tx;
+        this.tex_Y = ty;
 
         this.cluT_Row = crow == 1;
         this.cluT_X = cx;
@@ -118,8 +119,8 @@ export class TextureDTO{
     public canDelete:boolean;
 
     public texRow : boolean;
-    public texX : number;
-    public texY : number;
+    public tex_X : number;
+    public tex_Y : number;
     public cluT_Row : boolean;
     public cluT_X : number;
     public cluT_Y : number;
@@ -133,8 +134,8 @@ export class TextureDTO{
         this.pixels=pxl;
         this.canDelete=del;
         this.texRow = trow;
-        this.texX = tx;
-        this.texY = ty;
+        this.tex_X = tx;
+        this.tex_Y = ty;
         this.cluT_Row = crow;
         this.cluT_X = cx;
         this.cluT_Y = cy;
@@ -166,11 +167,11 @@ export class AudioDTO{
     }
     
     
- }
+}
 
 
 
- export class AssetDTO{
+export class AssetDTO{
 
     public asset:Asset;
     public asT_ID:number;
@@ -183,12 +184,12 @@ export class AudioDTO{
         this.canDelete=del;
     }
 
- }
+}
 
- export class ExportDTO{
+export class ExportDTO{
 
     public ast!:string|null;
     public rpf!:string|null;
     public wl!:string|null;
 
- }
+}
