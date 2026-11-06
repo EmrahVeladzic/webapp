@@ -1,7 +1,6 @@
 ﻿using backend.Database;
 using backend.Models;
 using backend.Requests;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -9,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 namespace backend.Controllers
 {
 
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class ExportController : ControllerBase
@@ -23,14 +21,9 @@ namespace backend.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult>Get(int ast_id, int rpf_id, int wl_id)
+        public async Task<IActionResult> Get(int ast_id, int rpf_id, int wl_id)
         {
 
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
@@ -104,13 +97,13 @@ namespace backend.Controllers
                     export.WL = Convert.ToBase64String(wl.ToArrayBuffer());
 
                     wl.Clear();
-                }                
+                }
 
-               
 
-                return StatusCode(200,export);
 
-            }       
+                return StatusCode(200, export);
+
+            }
 
 
         }

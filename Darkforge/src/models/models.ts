@@ -116,7 +116,6 @@ export class TextureDTO{
     public clut:number[];
     public pixels:number[];
 
-    public canDelete:boolean;
 
     public texRow : boolean;
     public tex_X : number;
@@ -125,14 +124,13 @@ export class TextureDTO{
     public cluT_X : number;
     public cluT_Y : number;
 
-    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], del:boolean, trow:boolean,tx:number,ty:number,crow:boolean,cx:number,cy:number) {
+    constructor(col:number,w:number,h:number,rpf:number,clut:number[],pxl:number[], trow:boolean,tx:number,ty:number,crow:boolean,cx:number,cy:number) {
         this.colours=col;
         this.width=w;
         this.height=h;
         this.rpF_ID=rpf;
         this.clut=clut;
         this.pixels=pxl;
-        this.canDelete=del;
         this.texRow = trow;
         this.tex_X = tx;
         this.tex_Y = ty;
@@ -153,16 +151,14 @@ export class AudioDTO{
     public audioData : number[];
     public wL_ID : number;
     
-    public canDelete:boolean;
 
-    constructor(sR:number,channels:number,blocks:number,wl:number,data:number[],del:boolean){
+    constructor(sR:number,channels:number,blocks:number,wl:number,data:number[]){
            
         this.sampleRate=sR;
         this.channelCount=channels;
         this.blockCountPerChannel=blocks;
         this.wL_ID=wl;
         this.audioData=data;
-        this.canDelete=del;
 
     }
     
@@ -175,13 +171,11 @@ export class AssetDTO{
 
     public asset:Asset;
     public asT_ID:number;
-    public canDelete:boolean;
 
-    constructor(a:Asset,a_id:number,del:boolean) {
+    constructor(a:Asset,a_id:number) {
         
         this.asset=a;
         this.asT_ID=a_id;
-        this.canDelete=del;
     }
 
 }

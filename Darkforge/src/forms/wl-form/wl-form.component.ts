@@ -12,9 +12,6 @@ import { sfx } from '../../assets/global_assets';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
 import { alert_localized } from '../../utils/alerts';
-import { force_reload } from '../../app/http';
-import { user_prefs } from '../../assets/user_prefs';
-import { get_headers } from '../../utils/httpheaders';
 import { link_slider_numeric } from '../../utils/dynamic_html';
 
 @Component({

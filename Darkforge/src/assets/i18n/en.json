@@ -1,7 +1,6 @@
 {
 "button":{
     "post":"Post",
-    "patch":"Save changes",
     "delete":"Delete",
     "export":"Export",
     "play":"Play/Stop"
@@ -9,7 +8,6 @@
 "link":{
     "manage":"Manage files",
     "about":"About",
-    "prefs":"Preferences",
     "clear":"Clear asset selection",
     "reset":"Reset preview assets"
 },
@@ -27,8 +25,6 @@
     "clut_placement":"CLUT VRAM half / X / Y:",
     "loop":"Loop:",
     "differential":"Differential threshold bits:",
-    "language":"Language:",
-    "share":"Share asset ownership:",
     "bpp":"Target texture bits per pixel:"
 },
 "option":{
@@ -51,7 +47,6 @@
 },
 "alerts":{
     "about":"Copyright - Emrah Veladžić, 2025.",
-    "timeout":"Your session has expired. Please log in again.",
     "server_error":"Server is not reachable.",
     "not-bmp":"File appears to not be a BMP-format image.",
     "not-wav":"File appears to not be a WAV-format audio.",

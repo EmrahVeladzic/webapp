@@ -4,7 +4,7 @@ namespace backend.Requests
 {
     public class AudioDTO
     {
-       
+
         public UInt16 SampleRate { get; set; }
 
         public byte ChannelCount { get; set; }
@@ -16,7 +16,6 @@ namespace backend.Requests
         public List<byte>? AudioData { get; set; }
 
         public int WL_ID { get; set; }
-        public bool CanDelete { get; set; }
 
     }
 }

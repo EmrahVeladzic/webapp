@@ -9,6 +9,5 @@ namespace backend.Requests
 
         public int AST_ID { get; set; }
 
-        public bool CanDelete { get; set; }
     }
 }

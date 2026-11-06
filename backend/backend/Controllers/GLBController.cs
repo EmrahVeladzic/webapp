@@ -4,9 +4,7 @@ using backend.Files;
 using backend.Logging;
 using backend.Models;
 using backend.Requests;
-using backend.Users;
 using backend.Utils;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -14,26 +12,20 @@ using System.Text;
 
 namespace backend.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class GLBController : ControllerBase
     {
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]ModelDTO input)
+        public async Task<IActionResult> Post([FromBody] ModelDTO input)
         {
 
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                ActiveAST? Optimization = await ctx.ActiveASTs.Where(a => a.FileID == input.ModelHash).Where(a=>a.PrecisionBits==input.PrecisionBits).Where(a=>(a.FPS==input.TargetFPS)||a.FPS==null).Where(a=>(a.Tex_Width==input.TexWidth||a.Tex_Width==null)&&(a.Tex_Height==input.TexHeight||a.Tex_Height==null)).FirstOrDefaultAsync();
+                ActiveAST? Optimization = await ctx.ActiveASTs.Where(a => a.FileID == input.ModelHash).Where(a => a.PrecisionBits == input.PrecisionBits).Where(a => (a.FPS == input.TargetFPS) || a.FPS == null).Where(a => (a.Tex_Width == input.TexWidth || a.Tex_Width == null) && (a.Tex_Height == input.TexHeight || a.Tex_Height == null)).FirstOrDefaultAsync();
 
                 if (Optimization != null)
                 {
@@ -44,7 +36,7 @@ namespace backend.Controllers
 
                     model!.Width = input.TexWidth;
                     model!.Height = input.TexHeight;
-                    model!.PageX = input.TexPageX; 
+                    model!.PageX = input.TexPageX;
                     model.PageY = input.TexPageY;
                     model!.OffsetX = input.TexOffsetX;
                     model!.OffsetY = input.TexOffsetY;
@@ -66,7 +58,7 @@ namespace backend.Controllers
                     if (input.ModelData == null)
                     {
 
-                        
+
                         return StatusCode(204);
 
                     }
@@ -102,21 +94,20 @@ namespace backend.Controllers
 
                 AST_DATA Ast = new AST_DATA(input);
                 await Ast.Convert(ctx);
-               
+
                 ActiveAST Log = new ActiveAST();
 
                 int Id = Ast.Output!.ID;
 
                 Log.Id = Id;
                 Log.FileID = input.ModelHash;
-                Log.OwnerID = userId;
 
                 Log.FPS = Ast.Output.FKR?.FPS;
                 Log.Tex_Width = Ast.Output.MDL?.Width;
                 Log.Tex_Height = Ast.Output.MDL?.Height;
-                Log.PrecisionBits=input.PrecisionBits;
-                
-                await ctx.ActiveASTs.AddAsync(Log); 
+                Log.PrecisionBits = input.PrecisionBits;
+
+                await ctx.ActiveASTs.AddAsync(Log);
                 await ctx.SaveChangesAsync();
 
 
@@ -128,7 +119,7 @@ namespace backend.Controllers
                 input.ModelData = null;
                 input.ModelHash = null;
 
-              
+
 
                 return StatusCode(200, Id);
 
@@ -136,23 +127,14 @@ namespace backend.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]int id)
+        public async Task<IActionResult> Get([FromQuery] int id)
         {
 
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                AST? ast = await ctx.ASTs.Include(a=>a.MDL).Include(a=>a.FKR).FirstOrDefaultAsync(a=>a.ID==id)!;
-                ActiveAST? metadata = await ctx.ActiveASTs.FindAsync(ast?.ID);
-                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
-                bool share = owner_p!.ShareAssetOwnership;
-                int ownerID = owner_p!.UserId;
+                AST? ast = await ctx.ASTs.Include(a => a.MDL).Include(a => a.FKR).FirstOrDefaultAsync(a => a.ID == id)!;
 
 
 
@@ -169,25 +151,25 @@ namespace backend.Controllers
                     {
                         ast.MDL.Meshes = await ctx.MSHs.Where(m => m.MDL_ID == ast.MDL_ID).ToListAsync();
 
-                        foreach(MSH m in ast.MDL.Meshes)
+                        foreach (MSH m in ast.MDL.Meshes)
                         {
                             m.VT = await ctx.VTs.FindAsync(m.VT_ID);
-                            m.IND= await ctx.INDs.FindAsync(m.IND_ID);
+                            m.IND = await ctx.INDs.FindAsync(m.IND_ID);
                             m.UV = await ctx.UVs.FindAsync(m.UV_ID);
                             m.NRM = await ctx.NRMs.FindAsync(m.NRM_ID);
                         }
 
                     }
-                    if(ast.FKR != null)
+                    if (ast.FKR != null)
                     {
 
-                        ast.FKR.Bones=await ctx.BNs.Where(b=>b.FKR_ID== ast.FKR_ID).ToListAsync();
+                        ast.FKR.Bones = await ctx.BNs.Where(b => b.FKR_ID == ast.FKR_ID).ToListAsync();
 
-                        ast.FKR.Animations =await ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).ToListAsync();
+                        ast.FKR.Animations = await ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).ToListAsync();
 
-                        foreach(ANM a in ast.FKR.Animations)
+                        foreach (ANM a in ast.FKR.Animations)
                         {
-                            a.Tracks =await ctx.TKs.Where(t=>t.ANM_ID==a.ID).ToListAsync();
+                            a.Tracks = await ctx.TKs.Where(t => t.ANM_ID == a.ID).ToListAsync();
                         }
                     }
 
@@ -195,7 +177,7 @@ namespace backend.Controllers
 
                     ast.Deserialize();
 
-                    
+
 
                     AssetDTO asset = new AssetDTO();
 
@@ -203,7 +185,6 @@ namespace backend.Controllers
 
                     asset.AST_ID = ast.ID;
 
-                    asset.CanDelete = (userId == ownerID)||share;
 
                     return StatusCode(200, asset);
                 }
@@ -213,16 +194,12 @@ namespace backend.Controllers
 
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery]int id)
+        public async Task<IActionResult> Delete([FromQuery] int id)
         {
 
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
-            using (DarkforgeDBContext ctx = new DarkforgeDBContext()) { 
+            using (DarkforgeDBContext ctx = new DarkforgeDBContext())
+            {
 
                 AST? ast = await ctx.ASTs.FindAsync(id)!;
 
@@ -232,28 +209,16 @@ namespace backend.Controllers
                 }
 
 
-                ActiveAST? metadata = await ctx.ActiveASTs.FindAsync(ast?.ID);
-                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
-
-                bool share = owner_p!.ShareAssetOwnership;
-                int ownerID = owner_p!.UserId;
 
 
-                if (!(share || ownerID == userId))
-                {
+                await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.AST WHERE EntityID = {0}", ast!.ID);
 
-                    return StatusCode(204);
-                }
+                await ctx.SaveChangesAsync();
 
-                else
-                {
-                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.AST WHERE EntityID = {0}", ast!.ID);
+                return StatusCode(200);
 
-                    await ctx.SaveChangesAsync();                  
 
-                    return StatusCode(200);
 
-                }
             }
 
         }

@@ -10,11 +10,8 @@ import { NumericComponent } from '../../utils/controls/numeric/numeric.component
 import { bmp_preview_url } from '../../app/file_transfer/file_service/file-transfer.service';
 import { Subject,Subscription, catchError ,of, takeUntil} from 'rxjs';
 import { alert_localized } from '../../utils/alerts';
-import { force_reload } from '../../app/http';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { HttpParams } from '@angular/common/http';
-import { user_prefs, UserPreferences } from '../../assets/user_prefs';
-import { get_headers } from '../../utils/httpheaders';
 import { link_slider_numeric } from '../../utils/dynamic_html';
 
 @Component({

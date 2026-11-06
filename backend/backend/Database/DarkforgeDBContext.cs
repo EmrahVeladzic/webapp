@@ -1,7 +1,6 @@
 ﻿using backend.Files;
 using backend.Logging;
 using backend.Models;
-using backend.Users;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
@@ -10,7 +9,7 @@ namespace backend.Database
 {
     public class DarkforgeDBContext : DbContext
     {
-               
+
         private readonly IConfiguration Configuration;
 
         public DarkforgeDBContext(DbContextOptions<DarkforgeDBContext> options, IConfiguration configuration) : base(options)
@@ -35,11 +34,11 @@ namespace backend.Database
         public DbSet<WAV> WAVs { get; set; }
         public DbSet<GLB> GLBs { get; set; }
 
-        public DbSet<PGA> PGAs {  get; set; }        
+        public DbSet<PGA> PGAs { get; set; }
 
         public DbSet<PLT> PLTs { get; set; }
 
-        public DbSet<RPF> RPFs { get; set; }       
+        public DbSet<RPF> RPFs { get; set; }
 
         public DbSet<WL> WLs { get; set; }
 
@@ -66,9 +65,6 @@ namespace backend.Database
         public DbSet<NRM> NRMs { get; set; }
 
 
-        public DbSet<UserAccount> Users { get; set; }
-        public DbSet<UserPreferences> UserPreferences { get; set; }
-        public DbSet<UserLanguage> UserLanguages { get; set; }
 
         public DbSet<ActiveRPF> ActiveRPFs { get; set; }
         public DbSet<ActiveWL> ActiveWLs { get; set; }

@@ -4,8 +4,6 @@ using backend.Files;
 using backend.Logging;
 using backend.Models;
 using backend.Requests;
-using backend.Users;
-using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -13,7 +11,6 @@ using System.Text;
 
 namespace backend.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     [ApiController]
     public class WAVController : ControllerBase
@@ -21,19 +18,14 @@ namespace backend.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]SoundDTO input)
+        public async Task<IActionResult> Post([FromBody] SoundDTO input)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                ActiveWL? Optimization = await ctx.ActiveWLs.Where(a => a.FileID == input.SoundHash).Where(a=>a.ChannelCount==input.ChannelCount && a.Looping==input.Looping&&a.ThresholdBits==input.ThresholdBits).FirstOrDefaultAsync();
+                ActiveWL? Optimization = await ctx.ActiveWLs.Where(a => a.FileID == input.SoundHash).Where(a => a.ChannelCount == input.ChannelCount && a.Looping == input.Looping && a.ThresholdBits == input.ThresholdBits).FirstOrDefaultAsync();
                 if (Optimization != null)
                 {
                     return StatusCode(200, Optimization.Id);
@@ -87,12 +79,11 @@ namespace backend.Controllers
 
                 int Id = Sfx.Output!.ID;
 
-                Log.OwnerID = userId;
                 Log.Id = Id;
                 Log.FileID = input.SoundHash;
-                Log.ChannelCount=Sfx.Output!.ChannelCount;
-                Log.ThresholdBits=input.ThresholdBits;
-                Log.Looping=input.Looping;
+                Log.ChannelCount = Sfx.Output!.ChannelCount;
+                Log.ThresholdBits = input.ThresholdBits;
+                Log.Looping = input.Looping;
 
                 await ctx.ActiveWLs.AddAsync(Log);
 
@@ -111,24 +102,14 @@ namespace backend.Controllers
 
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery]int id)
+        public async Task<IActionResult> Get([FromQuery] int id)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
 
                 WL? wl = await ctx.WLs.FindAsync(id)!;
-                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
-                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
-
-                bool share = owner_p!.ShareAssetOwnership;
-                int ownerID = owner_p!.UserId;
 
 
 
@@ -152,13 +133,12 @@ namespace backend.Controllers
 
                     audio.WL_ID = wl.ID;
 
-                    audio.SampleRate = wl.SampleRate;                  
+                    audio.SampleRate = wl.SampleRate;
 
                     audio.BlockCountPerChannel = (UInt32)wl.BlockCountPerChannel;
 
                     audio.ChannelCount = wl.ChannelCount;
 
-                    audio.CanDelete = share || (userId == ownerID);
 
                     return StatusCode(200, audio);
                 }
@@ -171,13 +151,8 @@ namespace backend.Controllers
 
 
         [HttpDelete]
-        public async Task<IActionResult> Delete([FromQuery]int id)
+        public async Task<IActionResult> Delete([FromQuery] int id)
         {
-            var userIdClaim = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
-            if (userIdClaim == null || !int.TryParse(userIdClaim, out int userId))
-            {
-                return StatusCode(401);
-            }
 
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
@@ -190,29 +165,17 @@ namespace backend.Controllers
                     return StatusCode(204);
                 }
 
-                ActiveWL? metadata = await ctx.ActiveWLs.FindAsync(wl?.ID);
-                UserPreferences? owner_p = await ctx.UserPreferences.FindAsync(metadata?.OwnerID);
 
-                bool share = owner_p!.ShareAssetOwnership;
-                int ownerID = owner_p!.UserId;                
+                await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.WL WHERE EntityID = {0}", wl!.ID);
 
-                if (!(share||ownerID==userId))
-                {
-                    return StatusCode(204);
-                }    
-                
-                else
-                {
+                await ctx.SaveChangesAsync();
 
-                    await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.WL WHERE EntityID = {0}", wl!.ID);
 
-                    await ctx.SaveChangesAsync();
-                   
 
-                   
 
-                    return StatusCode(200);
-                }
+                return StatusCode(200);
+
+
 
             }
 

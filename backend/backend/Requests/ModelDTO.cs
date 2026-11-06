@@ -17,11 +17,11 @@ namespace backend.Requests
         //Framerate of the target platform
         public byte TargetFPS { get; set; }
 
-        //Target texture dimensions. +1, as 0 is not valid. This does not need authorization to edit
+        //Target texture dimensions. +1, as 0 is not valid.
         public byte TexWidth { get; set; }
-        public byte TexHeight { get; set; }        
+        public byte TexHeight { get; set; }
 
-        //Data below is the same as in the RPF, and should not need authorization to edit
+        //Data below is the same as in the RPF
         public byte TexPageX { get; set; }
         public byte TexPageY { get; set; }
         public byte TexOffsetX { get; set; }

@@ -6,7 +6,6 @@ import { alert_localized } from '../../../utils/alerts';
 import { force_reload } from '../../http';
 import { TranslateService } from '@ngx-translate/core';
 import { ast, default_asset, default_audio, default_texture, flip_ast_state, flip_tex_state, sfx, tex, update_anim } from '../../../assets/global_assets';
-import { get_headers } from '../../../utils/httpheaders';
 
 @Injectable({
   providedIn: 'root'
@@ -372,7 +371,7 @@ export class FileTransferService {
 
     try {
       let $response = await lastValueFrom(
-        this.http.post(url, optimized, { headers: get_headers(), observe: 'response' })
+        this.http.post(url, optimized, { observe: 'response' })
       );
   
       if ($response.status === 200) {
@@ -382,7 +381,7 @@ export class FileTransferService {
       else{
      
       $response = await lastValueFrom(
-        this.http.post(url, normal, { headers: get_headers(), observe: 'response' })
+        this.http.post(url, normal, { observe: 'response' })
       );
   
       return $response.body as number;
@@ -390,44 +389,18 @@ export class FileTransferService {
     }
   
     } catch (error: any) {
-      if (error.status === 401) {
-        alert_localized(this.translate, 'alerts.timeout');
-      } else {
-        alert_localized(this.translate, 'alerts.server_error');
-      }
+      alert_localized(this.translate, 'alerts.server_error');
       force_reload();
       return null;
     }
 
   }
 
-  public async generic_put(data:any,url:string):Promise<void>{
-
-    try {
-      let $response = await lastValueFrom(
-        this.http.put(url, data, { headers: get_headers(), observe: 'response' })
-      );
-  
-      return;
-  
-    } catch (error: any) {
-      if (error.status === 401) {
-        alert_localized(this.translate, 'alerts.timeout');
-      } else {
-        alert_localized(this.translate, 'alerts.server_error');
-      }
-      force_reload();
-      return;
-    }
-
-  }
-
-  
   public async generic_get(id:number,url:string):Promise<any>{
 
     try {
       let $response = await lastValueFrom(
-        this.http.get(url,{ headers: get_headers(),params:new HttpParams().set('id',id), observe: 'response' })
+        this.http.get(url,{ params:new HttpParams().set('id',id), observe: 'response' })
       );
   
       if ($response.status === 200) {
@@ -444,11 +417,7 @@ export class FileTransferService {
     } 
   
     catch (error: any) {
-      if (error.status === 401) {
-        alert_localized(this.translate, 'alerts.timeout');
-      } else {
-        alert_localized(this.translate, 'alerts.server_error');
-      }
+      alert_localized(this.translate, 'alerts.server_error');
       force_reload();
       return null;
     }
@@ -460,7 +429,7 @@ export class FileTransferService {
 
     try {
       let $response = await lastValueFrom(
-        this.http.delete(url,{ headers: get_headers(),params:new HttpParams().set('id',id), observe: 'response' })
+        this.http.delete(url,{ params:new HttpParams().set('id',id), observe: 'response' })
       );
   
       return; 
@@ -469,11 +438,7 @@ export class FileTransferService {
     } 
   
     catch (error: any) {
-      if (error.status === 401) {
-        alert_localized(this.translate, 'alerts.timeout');
-      } else {
-        alert_localized(this.translate, 'alerts.server_error');
-      }
+      alert_localized(this.translate, 'alerts.server_error');
       force_reload();
       return;
     }
@@ -486,7 +451,7 @@ export class FileTransferService {
 
     try {
       let $response = await lastValueFrom(
-        this.http.get(url,{ headers: get_headers(),params:new HttpParams().set('ast_id',ast_id).set('rpf_id',rpf_id).set('wl_id',wl_id), observe: 'response' })
+        this.http.get(url,{ params:new HttpParams().set('ast_id',ast_id).set('rpf_id',rpf_id).set('wl_id',wl_id), observe: 'response' })
       );
   
       if ($response.status === 200) {
@@ -503,11 +468,7 @@ export class FileTransferService {
     } 
   
     catch (error: any) {
-      if (error.status === 401) {
-        alert_localized(this.translate, 'alerts.timeout');
-      } else {
-        alert_localized(this.translate, 'alerts.server_error');
-      }
+      alert_localized(this.translate, 'alerts.server_error');
       force_reload();
       return null;
     }
