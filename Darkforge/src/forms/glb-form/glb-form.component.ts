@@ -38,7 +38,7 @@ export class GlbFormComponent {
 constructor(public translate: TranslateService){
  
   this.form=new FormGroup({
-    precision:new FormControl('12'),
+    precision:new FormControl('8'),
     fps:new FormControl('60'),
     tex_x : new FormControl(128,[Validators.min(16),Validators.max(256),Validators.required]),
     tex_y : new FormControl(128,[Validators.min(16),Validators.max(256),Validators.required]),
@@ -210,6 +210,3 @@ ngOnInit(){
 
 
 }
- 
-
-

@@ -1,4 +1,4 @@
-import { Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
 import { FileTransferService } from './file_service/file-transfer.service';
 import { Injectable } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
@@ -25,10 +25,17 @@ import JSZip from 'jszip';
 
   
 })
-export class FileTransferComponent {
+export class FileTransferComponent implements OnChanges {
 @Input() transfer!: FileTransferService;
 @Input() public Menu! :string;
 @ViewChild('download') download_link?: ElementRef<HTMLAnchorElement>;
+@ViewChild(WlFormComponent) wl_form?: WlFormComponent;
+
+ngOnChanges(changes: SimpleChanges):void{
+  if(changes['Menu'] && this.Menu!=='wl'){
+    this.wl_form?.audioPlayer?.audio?.nativeElement.pause();
+  }
+}
 
 public async write_to_local_storage(file: Blob, name: string): Promise<void> {
     return new Promise((resolve) => {

@@ -10,6 +10,7 @@ import { ReactiveFormsModule} from '@angular/forms';
 import { DashboardComponent } from '../../forms/dashboard/dashboard.component';
 import { TranslateService,TranslatePipe, TranslateDirective} from '@ngx-translate/core';
 import { alert_localized } from '../../utils/alerts';
+import { tex,sfx,ast } from '../../assets/global_assets';
 
 @Component({
   selector: 'app-main-interface',
@@ -20,6 +21,10 @@ import { alert_localized } from '../../utils/alerts';
   providers:[WebGLService,FileTransferService]
 })
 export class MainInterfaceComponent {
+
+  public tex_ref = tex;
+  public sfx_ref = sfx;
+  public ast_ref = ast;
 
   public transfer:FileTransferService;
   @ViewChild('export') export_button!: ElementRef<HTMLButtonElement>;

@@ -66,3 +66,10 @@ app-dashboard{
     margin-right: 2.5%;    
     height: 5%;
 }
+
+.top_menu .selected_ids{
+    margin-left: auto;
+    margin-right: 0.75%;
+    font-size: 2vh;
+    color: rgb(222, 222, 222);
+}

@@ -12,15 +12,15 @@
 
         <div class="params">
 
-                <div class="select_holder">
+            <div class="select_holder">
 
-                <label for="Precision">{{'label.precision'|translate}}</label>
-                <select id="Precision" formControlName="precision">
-                    <option value='0'>{{'option.prec-truncate'|translate}} - {{'numbers.decimal'|translate}}0</option>
-                    <option value='4'>{{'option.prec-low'|translate}} -  {{'numbers.decimal'|translate}}4</option>
-                    <option value='8'>{{'option.prec-med'|translate}} -  {{'numbers.decimal'|translate}}8</option>
-                    <option value='12'>{{'option.prec-std'|translate}} -  {{'numbers.decimal'|translate}}12</option>
-                    <option value='16'>{{'option.prec-hi'|translate}} -  {{'numbers.decimal'|translate}}16</option>
+                <label for="Unit">{{'label.unit'|translate}}</label>
+                <select id="Unit" formControlName="precision">
+                    <option value='0'>{{'option.unit-max'|translate}} - 1</option>
+                    <option value='4'>{{'option.unit-hi'|translate}} - 1/16</option>
+                    <option value='8'>{{'option.unit-med'|translate}} - 1/256</option>
+                    <option value='12'>{{'option.unit-low'|translate}} - 1/4096</option>
+                    <option value='16'>{{'option.unit-min'|translate}} - 1/65536</option>
                 </select>
 
                 <label for="FPS">{{'label.fps'|translate}}</label>
@@ -35,23 +35,23 @@
 
             <div class="numeric_holder">
 
-                
+
                 <label >{{'label.target-w'|translate}}</label>
-                               
+
                 <div class="dimensions">
                     <app-numeric #width id="X" [max]="256" [min]="16" [default]="128" [step]="16" formControlName="tex_x"></app-numeric>
                 </div>
-                
-                
+
+
                 <label >{{'label.target-h'|translate}}</label>
-               
-                
+
+
                 <div class="dimensions">
                     <app-numeric #height id="Y" [max]="256" [min]="16" [default]="128" [step]="16"  formControlName="tex_y"></app-numeric>
-                </div>                
-                
+                </div>
+
                 <label >{{'label.tex_page'|translate}}</label>
-                
+
                 <div class="dimensions_dual">
                     <div class="dimensions_xy">
                         <app-numeric #tpx  [max]="15" [min]="5" [default]="5" [step]="1" formControlName="tex_p_x"></app-numeric>
@@ -62,7 +62,7 @@
 
                 </div>
 
-                 
+
                 <label >{{'label.tex_offset'|translate}}</label>
                    <div class="dimensions_dual">
                     <div class="dimensions_xy">
@@ -80,15 +80,15 @@
                     <option value='8'>{{'option.8bpp'|translate}}</option>
                 </select>
 
-            </div>   
+            </div>
 
-        </div> 
+        </div>
 
     </form>
 
     <div class="btn">
         <button type="button" [disabled]="!btn_enabled" (click)="this.choice($event)">{{btn_translation |translate}}</button>
     </div>
-        
+
 
 </body>
