@@ -12,20 +12,25 @@ export class Texture{
     public Width! : number;
     public Height!: number;
     public Data! : Uint16Array;
+    public offsetX : number = 0;
+    public offsetY : number = 0;
 
 
 
-    constructor(i:number,clut:number[],pixels:number[],width:number,height:number) {
+    constructor(i:number,clut:number[],pixels:number[],width:number,height:number,x:number=0,y:number=0) {
 
-        this.reset(i,clut,pixels,width,height);
+        this.reset(i,clut,pixels,width,height,x,y);
         
     }
 
-    public reset(i:number,clut:number[],pixels:number[],width:number,height:number):void{
-
+    public reset(i:number,clut:number[],pixels:number[],width:number,height:number,x:number=0,y:number=0):void{
         this.id=i;
         this.CLUT=clut;
 
+        this.offsetX=(x&63)<<((clut.length>16)?1:2);
+        this.offsetY=y;
+
+       
         for(let i =0; i<this.CLUT.length;i++){
            const c = this.CLUT[i];
            this.CLUT[i]=(((c&0x1F)<<11)|(((c>>5)&0x1F)<<6)|(((c>>10)&0x1F)<<1)|((c>>15)&1))&0xFFFF;
@@ -54,6 +59,21 @@ export class Texture{
 
 
         }
+
+        let atlas = new Uint16Array(256*256);
+        atlas.fill(1);
+
+        for (let v = 0; v < this.Height; v++) {
+
+            for (let u = 0; u < this.Width; u++) {
+                atlas[((v + this.offsetY) * 256) + (u + this.offsetX)] = this.Data[(v * this.Width) + u];
+            }
+
+        }
+
+        
+
+        this.Data=atlas;
         
         this.Indices=[];
 
@@ -239,23 +259,17 @@ export class Model{
     public meshes:Mesh[];
     public width:number;
     public height:number;
-    public pageX:number;
-    public pageY:number;
     public offsetX:number;
     public offsetY:number;
-    public clutXShift:number;
 
-    constructor(i:number,m:Mesh[],w:number,h:number,px:number,py:number,ox:number,oy:number,cs:number) {
+    constructor(i:number,m:Mesh[],w:number,h:number,ox:number,oy:number) {
         
         this.id=i;
         this.meshes=m;
         this.width=w;
         this.height=h;
-        this.pageX=px;
-        this.pageY=py;
         this.offsetX=ox;
         this.offsetY=oy;
-        this.clutXShift=cs;
     }
 
 
@@ -383,7 +397,9 @@ export class Asset{
                     msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,this.precisionBits));  
                 }                                             
                 if(msh.uv!=null){                  
-                    normalize_uv(msh.uv.textureCoordinates,m.width,m.height,m.offsetX,m.offsetY,m.clutXShift);
+                  
+                   
+                    normalize_uv(msh.uv.textureCoordinates);
                 }        
 
             }

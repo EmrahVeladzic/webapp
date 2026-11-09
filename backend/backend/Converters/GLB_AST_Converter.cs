@@ -13,7 +13,7 @@ using System.Text.Json;
 
 namespace backend.Converters
 {
-    public class AST_DATA :BaseConverter
+    public class AST_DATA : BaseConverter
     {
         private ModelDTO? Input { get; set; }
 
@@ -28,7 +28,7 @@ namespace backend.Converters
         public List<Matrix4x4>? Matrices { get; set; }
         public Int32[]? Joint_Index_Array { get; set; }
 
-        
+
 
         public byte GetFrame(byte FPS, float time)
         {
@@ -45,7 +45,8 @@ namespace backend.Converters
 
         }
 
-        public override async Task Convert(DarkforgeDBContext ctx) { 
+        public override async Task Convert(DarkforgeDBContext ctx)
+        {
 
             this.Model = await ctx.GLBs.Where(g => g.Hash == this.Input!.ModelHash).FirstAsync();
 
@@ -159,7 +160,7 @@ namespace backend.Converters
 
 
 
-                           await ctx.SaveChangesAsync();
+                            await ctx.SaveChangesAsync();
 
 
 
@@ -184,7 +185,7 @@ namespace backend.Converters
 
                                     float[] floatArray = MemoryMarshal.Cast<byte, float>(Model.BLOB.AsSpan(k, 16 * sizeof(float))).ToArray();
 
-                                    
+
                                     Matrices.Add(new Matrix4x4(
                                         floatArray[0], floatArray[1], floatArray[2], floatArray[3],
                                         floatArray[4], floatArray[5], floatArray[6], floatArray[7],
@@ -203,7 +204,7 @@ namespace backend.Converters
                     }
 
 
-                   
+
 
 
                     if (Model!.Metadata.RootElement.TryGetProperty("animations", out JsonElement anims) && anims.ValueKind == JsonValueKind.Array)
@@ -262,7 +263,7 @@ namespace backend.Converters
                                                         track.T_Frames.Add(GetFrame(this.Input.TargetFPS, BitConverter.ToSingle(this.Model.BLOB!, k)));
 
 
-                                                 
+
                                                     }
 
 
@@ -455,11 +456,8 @@ namespace backend.Converters
 
                     this.Output.MDL.Width = this.Input.TexWidth;
                     this.Output.MDL.Height = this.Input.TexHeight;
-                    this.Output.MDL.PageX = this.Input.TexPageX;
-                    this.Output.MDL.PageY = this.Input.TexPageY;
                     this.Output.MDL.OffsetX = this.Input.TexOffsetX;
                     this.Output.MDL.OffsetY = this.Input.TexOffsetY;
-                    this.Output.MDL.ClutXShift = this.Input.TexClutByteReduction;
 
 
                     await ctx.MDLs.AddAsync(this.Output.MDL);
@@ -535,7 +533,7 @@ namespace backend.Converters
 
                                 if (attributes.TryGetProperty("TEXCOORD_0", out JsonElement a_uvs) && a_uvs.TryGetInt32(out Int32 uv_access))
                                 {
-                                   
+
                                     if (accessors[uv_access].TryGetProperty("bufferView", out JsonElement b_uv) && b_uv.TryGetInt32(out Int32 uv_view))
                                     {
 
@@ -546,7 +544,7 @@ namespace backend.Converters
                                             Meshes[i].UV = new UV();
 
 
-                                           await ctx.UVs.AddAsync(Meshes[i].UV!);
+                                            await ctx.UVs.AddAsync(Meshes[i].UV!);
 
 
 
@@ -566,8 +564,8 @@ namespace backend.Converters
                                                 UInt16 h = 256;
 
 
-                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((x/((float)w/(float)(w-1))) * (float)w)) % w));
-                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((y/((float)h/(float)(h-1))) * (float)h)) % h));
+                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((x / ((float)w / (float)(w - 1))) * (float)w)) % w));
+                                                Meshes[i].UV!.TextureCoordinates!.Add((byte)((UInt16)(Math.Round((y / ((float)h / (float)(h - 1))) * (float)h)) % h));
 
 
                                             }
@@ -609,7 +607,7 @@ namespace backend.Converters
                                             {
                                                 Meshes[i].BN_ID = Bones![Joint_Index_Array[mesh_j[0]]].ID;
 
-                                                tmpbn=(int)mesh_j[0];
+                                                tmpbn = (int)mesh_j[0];
                                             }
 
                                         }
@@ -651,11 +649,11 @@ namespace backend.Converters
 
                                                 if (Matrices != null)
                                                 {
-                                                    Vector4 temp = Vector4.Transform(new Vector4(x,y,z,1.0f),Matrices[tmpbn]);
+                                                    Vector4 temp = Vector4.Transform(new Vector4(x, y, z, 1.0f), Matrices[tmpbn]);
 
                                                     x = temp.X;
-                                                    y=temp.Y;
-                                                    z=temp.Z;
+                                                    y = temp.Y;
+                                                    z = temp.Z;
                                                 }
 
 
@@ -762,8 +760,8 @@ namespace backend.Converters
                 this.Bones?.Clear();
 
                 this.Joint_Index_Array = null;
-               
-            
+
+
 
 
             }

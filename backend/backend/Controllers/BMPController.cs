@@ -198,7 +198,7 @@ namespace backend.Controllers
 
 
 
-                await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.RPF WHERE EntityID = {0}", rpf!.ID);
+                await ctx.RPFs.Where(r => r.ID == rpf!.ID).ExecuteDeleteAsync();
 
                 await ctx.SaveChangesAsync();
 

@@ -1,6 +1,7 @@
 import { Component ,Input, OnInit, OnDestroy, ViewChild} from '@angular/core';
 import { FileTransferService } from '../../app/file_transfer/file_service/file-transfer.service';
 import { ReactiveFormsModule, FormControl, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
 import { NumericComponent } from "../../utils/controls/numeric/numeric.component";
 import { base_url, model_actions } from '../../app/http';
 import { AssetDTO, ModelDTO } from '../../models/models';
@@ -13,7 +14,7 @@ import { Subject, takeUntil, Subscription,catchError, of } from 'rxjs';
 @Component({
   selector: 'app-glb-form',
   standalone: true,
-  imports: [ReactiveFormsModule, NumericComponent, TranslatePipe],
+  imports: [ReactiveFormsModule, CommonModule, NumericComponent, TranslatePipe],
   templateUrl: './glb-form.component.html',
   styleUrl: './glb-form.component.css'
 })
@@ -23,8 +24,6 @@ export class GlbFormComponent {
 
   @ViewChild('width')t_width!:NumericComponent;
   @ViewChild('height')t_height!:NumericComponent;
-  @ViewChild('tpx')t_page_x!:NumericComponent;
-  @ViewChild('tpy')t_page_y!:NumericComponent;
   @ViewChild('tox')t_offset_x!:NumericComponent;
   @ViewChild('toy')t_offset_y!:NumericComponent;
 
@@ -42,43 +41,61 @@ constructor(public translate: TranslateService){
     fps:new FormControl('60'),
     tex_x : new FormControl(128,[Validators.min(16),Validators.max(256),Validators.required]),
     tex_y : new FormControl(128,[Validators.min(16),Validators.max(256),Validators.required]),
-    tex_bpp : new FormControl(8,[Validators.min(4),Validators.max(8),Validators.required]),
-    tex_p_x : new FormControl(5,[Validators.min(5),Validators.max(15),Validators.required]),
-    tex_p_y : new FormControl(0,[Validators.min(0),Validators.max(1),Validators.required]),
-    tex_o_x : new FormControl(0,[Validators.min(0),Validators.max(15),Validators.required]),
-    tex_o_y : new FormControl(0,[Validators.min(0),Validators.max(15),Validators.required]),
-    
+    tex_o_x : new FormControl(0,[Validators.min(0),Validators.max(240),Validators.required]),
+    tex_o_y : new FormControl(0,[Validators.min(0),Validators.max(240),Validators.required]),
+    use_rpf : new FormControl(false),
+    rpf_id : new FormControl(0,[Validators.min(0),Validators.required]),
+
   });
 
 
 
 }
 
+private field_value(name:string):number{
+  return Number(this.form.get(name)?.value) || 0;
+}
+
+private set_field(name:string, v:number){
+  this.form.get(name)?.setValue(v,{emitEvent:false});
+}
+
 recalculate_texture_params():void{
 
-  let divisor = 16/this.form.get('tex_bpp')?.value;
-  let width = this.t_width!.getValue();
-  let height = this.t_height!.getValue();
+  let width = this.field_value('tex_x');
+  let height = this.field_value('tex_y');
 
-  let max_tp_x = (1024-(width/divisor))/64;
-  let max_to_x = (max_tp_x-Math.trunc(max_tp_x))*16;
+  let max_to_x = Math.trunc((256-width)/32)*32;
+  let max_to_y = 256-height;
 
-  max_tp_x = Math.trunc(max_tp_x);
-
-  let max_to_y = (256-height)/16;
-
-  this.t_page_x.max = max_tp_x;
   this.t_offset_x.max = max_to_x;
   this.t_offset_y.max = max_to_y;
 
-  this.t_page_x.writeValue(Math.min(this.t_page_x.getValue(),max_tp_x));
-  this.t_offset_x.writeValue(Math.min(this.t_offset_x.getValue(),max_to_x));
-  this.t_offset_y.writeValue(Math.min(this.t_offset_y.getValue(),max_to_y));
+  this.set_field('tex_o_x',Math.min(Math.trunc(this.field_value('tex_o_x')/32)*32,max_to_x));
+  this.set_field('tex_o_y',Math.min(this.field_value('tex_o_y'),max_to_y));
 
 }
 
 
 
+
+apply_texture_placement():void{
+
+  this.form.get('rpf_id')?.setValue(tex.id);
+
+  if(this.form.get('use_rpf')?.value){
+    return;
+  }
+
+  this.set_field('tex_x',tex.Width);
+  this.set_field('tex_y',tex.Height);
+
+  this.recalculate_texture_params();
+
+  this.set_field('tex_o_x',tex.offsetX);
+  this.set_field('tex_o_y',tex.offsetY);
+
+}
 
 ngOnDestroy() {
   this.destroy$.next();
@@ -91,23 +108,19 @@ ngOnInit(){
     this.post_delete=true;
     this.btn_translation='button.post';   
 
-    if(tex!=null){
-      this.t_width!.writeValue(tex.Width);
-      this.t_height!.writeValue(tex.Height);
-      this.form.get('tex_bpp')?.setValue((tex.CLUT.length>16)?8:4);
-
-      this.recalculate_texture_params();
-    }
-
-
+    this.apply_texture_placement();
 
   });
 
-
-  this.form.get('tex_bpp')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value=>{
-    this.recalculate_texture_params();
+  this.transfer.rpfTaskCompleted$.pipe(takeUntil(this.destroy$)).subscribe(() => {
+    this.apply_texture_placement();
   });
-  
+
+  this.form.get('use_rpf')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value=>{
+    this.apply_texture_placement();
+  });
+
+
   this.form.get('tex_x')?.valueChanges.pipe(takeUntil(this.destroy$)).subscribe(value=>{
     this.recalculate_texture_params();
   });
@@ -131,17 +144,13 @@ ngOnInit(){
 
   let tex_height = this.form.get('tex_y')?.value;
 
-  let tpx = this.form.get('tex_p_x')?.value;
-  
-  let tpy = this.form.get('tex_p_y')?.value;
-
   let tox = this.form.get('tex_o_x')?.value;
   
   let toy = this.form.get('tex_o_y')?.value;
 
-  let clt = (this.form.get('tex_bpp')?.value==8)?1:2;
+  let rpf = (this.form.get('use_rpf')?.value)?(Number(this.form.get('rpf_id')?.value)||0):0;
 
-  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height,tpx,tpy,tox,toy,clt);
+  const $instance = await ModelDTO.create(this.transfer.file_text!,precision_bits,framerate,tex_width,tex_height,tox,toy,rpf);
 
   return $instance;
 

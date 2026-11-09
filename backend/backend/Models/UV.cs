@@ -12,32 +12,27 @@ namespace backend.Models
         public List<byte>? TextureCoordinates { get; set; }
 
 
-        public UV():base()
+        public UV() : base()
         {
             this.TextureCoordinates = new List<byte>();
             this.ToSerialize = new List<byte>();
         }
 
 
-        public override void Serialize(){
+        public override void Serialize()
+        {
 
             this.ToSerialize = this.TextureCoordinates;
             this.Serialized = this.ToSerialize!.ToArray();
         }
 
-        public void Deserialize(byte Width, byte Height, byte clut_shift, byte x_off, byte y_off)
+        public void Deserialize(byte Width, byte Height, byte x_off, byte y_off)
         {
-            this.TextureCoordinates=this.Serialized!.ToList();           
-            for(int i = 0; i < TextureCoordinates.Count; i += 2)
+            this.TextureCoordinates = this.Serialized!.ToList();
+            for (int i = 0; i < TextureCoordinates.Count; i += 2)
             {
-                this.TextureCoordinates[i] /= (byte)(256 / (int)Width);
-                this.TextureCoordinates[i+1] /= (byte)(256 / (int)Height);
-
-                this.TextureCoordinates[i]>>=clut_shift;
-
-                this.TextureCoordinates[i] += (byte)(4 * x_off);
-                this.TextureCoordinates[i+1] += (byte)(16 * y_off);
-
+                this.TextureCoordinates[i] = (byte)Math.Min(x_off + ((this.TextureCoordinates[i] * (Width + 1)) + 127) / 255, 255);
+                this.TextureCoordinates[i + 1] = (byte)Math.Min(y_off + ((this.TextureCoordinates[i + 1] * (Height + 1)) + 127) / 255, 255);
             }
 
         }

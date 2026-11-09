@@ -74,13 +74,11 @@ export class ModelDTO{
     public targetFPS : number;
     public texWidth : number;
     public texHeight : number;
-    public texPageX  :number;
-    public texPageY :number;
     public texOffsetX : number;
     public texOffsetY :number;
-    public texClutByteReduction : number;
+    public rpF_ID : number;
 
-    constructor(data: string, precision:number,fps:number,width:number,height:number,tpx:number,tpy:number,tox:number,toy:number,clt:number, hash:string) {
+    constructor(data: string, precision:number,fps:number,width:number,height:number,tox:number,toy:number,rpf:number, hash:string) {
        
         this.modelData=data;
         this.precisionBits=precision;
@@ -88,17 +86,15 @@ export class ModelDTO{
         this.texWidth=width-1;
         this.texHeight=height-1;
         this.modelHash=hash;
-        this.texPageX = tpx;
-        this.texPageY = tpy;
         this.texOffsetX = tox;
         this.texOffsetY = toy;
-        this.texClutByteReduction = clt;
+        this.rpF_ID = rpf;
         
     }
 
-    static async create(data:string, precision : number, fps:number,width:number,height:number,tpx:number,tpy:number,tox:number,toy:number,clt:number): Promise<ModelDTO> {
+    static async create(data:string, precision : number, fps:number,width:number,height:number,tox:number,toy:number,rpf:number): Promise<ModelDTO> {
         const modelHash = await hash_data(data);
-        return new ModelDTO(data, precision,fps,width,height,tpx,tpy,tox,toy,clt, modelHash);
+        return new ModelDTO(data, precision,fps,width,height,tox,toy,rpf, modelHash);
     }
 
 }

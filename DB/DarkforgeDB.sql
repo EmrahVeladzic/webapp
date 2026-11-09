@@ -91,11 +91,8 @@ CREATE TABLE Models.MDL(
 EntityID INT IDENTITY(1,1) PRIMARY KEY,
 TargetTextureWidth TINYINT,
 TargetTextureHeight TINYINT,
-TargetTexturePageX TINYINT NOT NULL,
-TargetTexturePageY TINYINT NOT NULL,
 TargetTextureOffsetX TINYINT NOT NULL,
-TargetTextureOffsetY TINYINT NOT NULL,
-TargetTextureClutXReduction TINYINT NOT NULL
+TargetTextureOffsetY TINYINT NOT NULL
 )
 GO
 
@@ -198,9 +195,7 @@ Create TABLE Active.ActiveAST(
 ID INT FOREIGN KEY REFERENCES Models.AST(EntityID) PRIMARY KEY,
 FileID VARCHAR(44) FOREIGN KEY REFERENCES Files.GLB(EntityID) NOT NULL,
 PrecisionBits TINYINT NOT NULL,
-FPS TINYINT,
-TWidth TINYINT,
-THeight TINYINT
+FPS TINYINT
 )
 GO
 

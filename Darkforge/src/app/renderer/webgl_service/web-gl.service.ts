@@ -237,7 +237,7 @@ export class WebGLService {
     
 
       if(tex_update==true){
-        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,tex.Width,tex.Height,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);
+        this.gl.texImage2D(this.gl.TEXTURE_2D,0,this.gl.RGBA,256,256,0,this.gl.RGBA,this.gl.UNSIGNED_SHORT_5_5_5_1,tex.Data);
         flip_tex_state();
       }
 

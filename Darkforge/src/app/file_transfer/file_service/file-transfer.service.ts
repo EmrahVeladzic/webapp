@@ -30,6 +30,9 @@ export class FileTransferService {
     public wavTaskCompleted$ = this.wavTaskSource.asObservable();
 
 
+    public rpfTaskSource = new Subject<void>();
+    public rpfTaskCompleted$ = this.rpfTaskSource.asObservable();
+
     public wlTaskSource = new Subject<void>();
     public wlTaskCompleted$ = this.wlTaskSource.asObservable();
 
@@ -337,6 +340,8 @@ export class FileTransferService {
     
 
     flip_tex_state();
+
+    this.rpfTaskSource.next();
   }
 
   public reset_ast():void{

@@ -166,7 +166,7 @@ namespace backend.Controllers
                 }
 
 
-                await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.WL WHERE EntityID = {0}", wl!.ID);
+                await ctx.WLs.Where(w => w.ID == wl!.ID).ExecuteDeleteAsync();
 
                 await ctx.SaveChangesAsync();
 

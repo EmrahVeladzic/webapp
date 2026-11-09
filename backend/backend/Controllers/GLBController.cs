@@ -1,4 +1,5 @@
-﻿using backend.Converters;
+﻿
+using backend.Converters;
 using backend.Database;
 using backend.Files;
 using backend.Logging;
@@ -25,7 +26,20 @@ namespace backend.Controllers
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
-                ActiveAST? Optimization = await ctx.ActiveASTs.Where(a => a.FileID == input.ModelHash).Where(a => a.PrecisionBits == input.PrecisionBits).Where(a => (a.FPS == input.TargetFPS) || a.FPS == null).Where(a => (a.Tex_Width == input.TexWidth || a.Tex_Width == null) && (a.Tex_Height == input.TexHeight || a.Tex_Height == null)).FirstOrDefaultAsync();
+                if (input.RPF_ID != 0)
+                {
+                    RPF? texture = await ctx.RPFs.AsNoTracking().FirstOrDefaultAsync(r => r.ID == input.RPF_ID);
+
+                    if (texture != null)
+                    {
+                        input.TexWidth = texture.Width;
+                        input.TexHeight = texture.Height;
+                        input.TexOffsetX = (byte)((texture.TexX & 63) << ((texture.CLUT > 15) ? 1 : 2));
+                        input.TexOffsetY = texture.TexY;
+                    }
+                }
+
+                ActiveAST? Optimization = await ctx.ActiveASTs.Where(a => a.FileID == input.ModelHash).Where(a => a.PrecisionBits == input.PrecisionBits).Where(a => (a.FPS == input.TargetFPS) || a.FPS == null).FirstOrDefaultAsync();
 
                 if (Optimization != null)
                 {
@@ -36,11 +50,8 @@ namespace backend.Controllers
 
                     model!.Width = input.TexWidth;
                     model!.Height = input.TexHeight;
-                    model!.PageX = input.TexPageX;
-                    model.PageY = input.TexPageY;
                     model!.OffsetX = input.TexOffsetX;
                     model!.OffsetY = input.TexOffsetY;
-                    model!.ClutXShift = input.TexClutByteReduction;
 
                     ctx.MDLs.Update(model);
 
@@ -103,8 +114,6 @@ namespace backend.Controllers
                 Log.FileID = input.ModelHash;
 
                 Log.FPS = Ast.Output.FKR?.FPS;
-                Log.Tex_Width = Ast.Output.MDL?.Width;
-                Log.Tex_Height = Ast.Output.MDL?.Height;
                 Log.PrecisionBits = input.PrecisionBits;
 
                 await ctx.ActiveASTs.AddAsync(Log);
@@ -211,7 +220,7 @@ namespace backend.Controllers
 
 
 
-                await ctx.Database.ExecuteSqlRawAsync("DELETE FROM Models.AST WHERE EntityID = {0}", ast!.ID);
+                await ctx.ASTs.Where(a => a.ID == ast!.ID).ExecuteDeleteAsync();
 
                 await ctx.SaveChangesAsync();
 
@@ -227,3 +236,5 @@ namespace backend.Controllers
 
     }
 }
+
+

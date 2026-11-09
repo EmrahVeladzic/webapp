@@ -3,8 +3,8 @@ using System.Text.Json.Serialization;
 
 namespace backend.Models
 {
-    [Table("MSH",Schema ="Models")]
-    public class MSH:BaseEntity
+    [Table("MSH", Schema = "Models")]
+    public class MSH : BaseEntity
     {
         [JsonIgnore]
         [Column("MDLID")]
@@ -26,7 +26,7 @@ namespace backend.Models
         [Column("NRMID")]
         public int? NRM_ID { get; set; }
 
-     
+
         [Column("BNID")]
         public int? BN_ID { get; set; }
 
@@ -42,9 +42,9 @@ namespace backend.Models
         [ForeignKey(nameof(UV_ID))]
         public virtual UV? UV { get; set; }
 
-        public MSH():base()
+        public MSH() : base()
         {
-          
+
         }
 
         public override void Serialize()
@@ -55,11 +55,11 @@ namespace backend.Models
             this.NRM?.Serialize();
         }
 
-        public void Deserialize(byte Width, byte Height, byte clut_shift, byte x_off, byte y_off)
+        public void Deserialize(byte Width, byte Height, byte x_off, byte y_off)
         {
             this.VT?.Deserialize();
             this.IND?.Deserialize();
-            this.UV?.Deserialize(Width,Height,clut_shift,x_off,y_off);
+            this.UV?.Deserialize(Width, Height, x_off, y_off);
             this.NRM?.Deserialize();
 
         }

@@ -72,8 +72,11 @@ export class InputComponent implements ControlValueAccessor, AfterViewInit {
 
   writeValue(v: number): void {
     if (!Number.isNaN(v)) {
+      const was_active = this.active;
+      this.active = false;
       this.value = v;      
       this.validateInput();
+      this.active = was_active;
     }
   }
 

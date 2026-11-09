@@ -144,8 +144,6 @@ public async export_files():Promise<void>{
   const w_id:number|null = sfx.id;
   const a_id:number|null = ast.id;
 
-  console.log(`Exporting files with IDs - AST: ${a_id}, RPF: ${r_id}, WL: ${w_id}`);
-
   let name: string = "";
 
   if(this.transfer.model_name!="" && a_id!=0){

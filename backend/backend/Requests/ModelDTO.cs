@@ -21,14 +21,10 @@ namespace backend.Requests
         public byte TexWidth { get; set; }
         public byte TexHeight { get; set; }
 
-        //Data below is the same as in the RPF
-        public byte TexPageX { get; set; }
-        public byte TexPageY { get; set; }
         public byte TexOffsetX { get; set; }
         public byte TexOffsetY { get; set; }
 
-        //In VRAM indexed textures appear smaller in the X dimension by a factor of 16/tex_bpp
-        public byte TexClutByteReduction { get; set; }
+        public int RPF_ID { get; set; }
 
     }
 }

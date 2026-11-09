@@ -269,9 +269,11 @@ export class RpfFormComponent implements OnInit{
 
       const $response : TextureDTO = await this.transfer.generic_get($id,full_url) as TextureDTO;
 
-      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height);
+      tex.reset($response.rpF_ID,$response.clut,$response.pixels,$response.width,$response.height,$response.tex_X,$response.tex_Y);
 
       flip_tex_state();
+
+      this.transfer.rpfTaskSource.next();
 
     }
 

@@ -14,20 +14,20 @@
 "label":{
     "anim-sel":"Animation select:",
     "audio-prev":"WL audio preview:",
-    "unit":"Vertex translation unit bits:",
+    "unit":"Vertex translation unit:",
     "fps":"Target FPS:",
     "target-w":"Target texture width:",
     "target-h":"Target texture height:",
-    "tex_page":"Texture page X / Y:",
-    "tex_offset":"Texture offset X / Y:",
+    "tex_offset":"Texture UV offset X / Y:",
+    "use_rpf":"Use RPF placement:",
+    "rpf_id":"RPF ID:",
     "clut":"CLUT size:",
     "rpf-method":"Compression method:",
     "alpha":"Use alpha:",
     "tex_placement":"Texture VRAM half / X / Y:",
     "clut_placement":"CLUT VRAM half / X / Y:",
     "loop":"Loop:",
-    "differential":"Differential threshold bits:",
-    "bpp":"Target texture bits per pixel:"
+    "differential":"Differential threshold bits:"
 },
 "option":{
     "anim-none":"-NONE-",
@@ -40,9 +40,7 @@
     "fps-full":"Full",
     "fps-half":"Half",
     "proximity":"Proximity method",
-    "popularity":"Popularity method",
-    "4bpp":"4 bits per pixel",
-    "8bpp":"8 bits per pixel"
+    "popularity":"Popularity method"
 },
 "numbers":{
     "decimal":"."
