@@ -30,7 +30,6 @@ export class Texture{
         this.offsetX=(x&63)<<((clut.length>16)?1:2);
         this.offsetY=y;
 
-       
         for(let i =0; i<this.CLUT.length;i++){
            const c = this.CLUT[i];
            this.CLUT[i]=(((c&0x1F)<<11)|(((c>>5)&0x1F)<<6)|(((c>>10)&0x1F)<<1)|((c>>15)&1))&0xFFFF;
@@ -394,11 +393,9 @@ export class Asset{
                     msh.vt.vertices = msh.vt?.vertices.map(v=>get_float(v,this.precisionBits));     
                 }
                 if(msh.nrm!=null){
-                    msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,this.precisionBits));  
+                    msh.nrm.normals = msh.nrm?.normals.map(n=>get_float(n,12));  
                 }                                             
                 if(msh.uv!=null){                  
-                  
-                   
                     normalize_uv(msh.uv.textureCoordinates);
                 }        
 
@@ -411,8 +408,8 @@ export class Asset{
             for(let b of f.bones){
                 
                 b.initialTranslation= b.initialTranslation.map(i=>get_float(i,this.precisionBits));
-                b.initialRotation= b.initialRotation.map(i=>get_float(i,this.precisionBits));
-                b.initialScale= b.initialScale.map(i=>get_float(i,this.precisionBits));
+                b.initialRotation= b.initialRotation.map(i=>get_float(i,12));
+                b.initialScale= b.initialScale.map(i=>get_float(i,12));
                 b.currentTRS=get_Mat(b.initialTranslation.concat(b.initialRotation).concat(b.initialScale));
 
             }
@@ -423,8 +420,8 @@ export class Asset{
                 for(let t of a.tracks){
 
                     t.translations= t.translations.map(tr=>get_float(tr,this.precisionBits));
-                    t.rotations= t.rotations.map(ro=>get_float(ro,this.precisionBits));
-                    t.scales= t.scales.map(sc=>get_float(sc,this.precisionBits));                   
+                    t.rotations= t.rotations.map(ro=>get_float(ro,12));
+                    t.scales= t.scales.map(sc=>get_float(sc,12));                   
 
                     time_float(t.t_Frames,f.fps!);
                     time_float(t.r_Frames,f.fps!);

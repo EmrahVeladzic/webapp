@@ -89,8 +89,8 @@ GO
 
 CREATE TABLE Models.MDL(
 EntityID INT IDENTITY(1,1) PRIMARY KEY,
-TargetTextureWidth TINYINT,
-TargetTextureHeight TINYINT,
+TargetTextureWidth TINYINT NOT NULL,
+TargetTextureHeight TINYINT NOT NULL,
 TargetTextureOffsetX TINYINT NOT NULL,
 TargetTextureOffsetY TINYINT NOT NULL
 )

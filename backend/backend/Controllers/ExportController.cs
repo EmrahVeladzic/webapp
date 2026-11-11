@@ -39,7 +39,7 @@ namespace backend.Controllers
                     {
                         if (ast.MDL != null)
                         {
-                            ast.MDL.Meshes = await ctx.MSHs.Where(m => m.MDL_ID == ast.MDL_ID).ToListAsync();
+                            ast.MDL.Meshes = await ctx.MSHs.Where(m => m.MDL_ID == ast.MDL_ID).OrderBy(m => m.ID).ToListAsync();
 
                             foreach (MSH m in ast.MDL.Meshes)
                             {
@@ -53,13 +53,13 @@ namespace backend.Controllers
                         if (ast.FKR != null)
                         {
 
-                            ast.FKR.Bones = await ctx.BNs.Where(b => b.FKR_ID == ast.FKR_ID).ToListAsync();
+                            ast.FKR.Bones = await ctx.BNs.Where(b => b.FKR_ID == ast.FKR_ID).OrderBy(b => b.ID).ToListAsync();
 
-                            ast.FKR.Animations = await ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).ToListAsync();
+                            ast.FKR.Animations = await ctx.ANMs.Where(a => a.FKR_ID == ast.FKR_ID).OrderBy(a => a.ID).ToListAsync();
 
                             foreach (ANM a in ast.FKR.Animations)
                             {
-                                a.Tracks = await ctx.TKs.Where(t => t.ANM_ID == a.ID).ToListAsync();
+                                a.Tracks = await ctx.TKs.Where(t => t.ANM_ID == a.ID).OrderBy(t => t.ID).ToListAsync();
                             }
                         }
 

@@ -76,19 +76,19 @@ namespace backend.Models
             {
                 t_byte |= 1 << 7;
 
-                if (this.MDL!.Meshes[0].VT != null)
+                if (this.MDL.Meshes.All(m => m.VT != null))
                 {
                     t_byte |= 1 << 6;
                 }
-                if (this.MDL!.Meshes[0].IND != null)
+                if (this.MDL.Meshes.All(m => m.IND != null))
                 {
                     t_byte |= 1 << 5;
                 }
-                if (this.MDL!.Meshes[0].UV != null)
+                if (this.MDL.Meshes.All(m => m.UV != null))
                 {
                     t_byte |= 1 << 4;
                 }
-                if (this.MDL!.Meshes[0].NRM != null)
+                if (this.MDL.Meshes.All(m => m.NRM != null))
                 {
                     t_byte |= 1 << 3;
                 }
@@ -97,38 +97,41 @@ namespace backend.Models
             {
                 t_byte |= 1 << 2;
 
-                if (this.FKR.Animations != null)
+                if (this.FKR.Animations != null && this.FKR.Animations.Count > 0)
                 {
-                    t_byte += 1 << 1;
+                    t_byte |= 1 << 1;
                 }
             }
             temp.Add(t_byte);
 
             temp.Add(this.PrecisionBits);
-            temp.Add(0);
-            temp.Add(0);      
-            t_byte = 0;            
-            if(this.MDL!=null)
-            {
-                t_byte=this.MDL.Width;
-            }
-            temp.Add(t_byte);       
+
             if (this.MDL != null)
             {
-                t_byte = this.MDL.Height;
+                temp.Add(this.MDL.OffsetX);
+                temp.Add(this.MDL.OffsetY);
+                temp.Add(this.MDL.Width);
+                temp.Add(this.MDL.Height);
             }
-            temp.Add(t_byte);        
+
+            else
+            {
+                temp.Add(0);
+                temp.Add(0);
+                temp.Add(0);
+                temp.Add(0);
+            }                
 
             t_byte = 0;
-            if (this.MDL != null)
+            if (this.MDL != null && this.MDL.Meshes!=null)
             {
-                t_byte = (byte)this.MDL.Meshes!.Count();
+                t_byte = (byte)this.MDL.Meshes.Count();
             }
-            temp.Add(t_byte);          
+            temp.Add(t_byte);
 
-            if (this.MDL != null)
+            if (this.MDL != null && this.MDL.Meshes != null)
             {
-                foreach (MSH m in this.MDL!.Meshes!)
+                foreach (MSH m in this.MDL.Meshes)
                 {
                     t_byte = 255;
 
@@ -141,46 +144,78 @@ namespace backend.Models
 
                     if (m.VT != null)
                     {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)m.VT.Vertices.Count, temp);
+                        int vertex_count = m.VT.Serialized!.Length / 6;
 
-                        temp.AddRange(m.VT.Serialized!);
+                       
+
+                        bool has_uv = m.UV != null && m.UV.Serialized != null && m.UV.Serialized.Length == vertex_count * 2;
+
+                        temp.Add(has_uv? (byte)1 : (byte)0);
+
+                        PrimitiveSerialization.SerializePrimitive((UInt16)vertex_count, temp);
+
+                        for (int i = 0; i < vertex_count; i++)
+                        {
+                            temp.AddRange(new ArraySegment<byte>(m.VT.Serialized!, i * 6, 6));
+
+                            UInt16 uv = 0;
+
+                            if (has_uv)
+                            {
+                                int u = Math.Min(this.MDL.OffsetX + ((m.UV!.Serialized![i * 2] * (this.MDL.Width + 1)) + 127) / 255, 255);
+                                int v = Math.Min(this.MDL.OffsetY + ((m.UV!.Serialized![(i * 2) + 1] * (this.MDL.Height + 1)) + 127) / 255, 255);
+
+                                uv = (UInt16)(u | (v << 8));
+                            }
+
+                            PrimitiveSerialization.SerializePrimitive(uv, temp);
+                        }
                     }
                     else
                     {
+                        temp.Add(0);
+                        temp.Add(0);
+                        temp.Add(0);
+                    }                  
+
+                    if (m.NRM != null)
+                    {
+                        int normal_count = m.NRM.Serialized!.Length / 6;
+
+                        PrimitiveSerialization.SerializePrimitive((UInt16)normal_count, temp);
+
                         PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+
+                        for (int i = 0; i < normal_count; i++)
+                        {
+                            temp.AddRange(new ArraySegment<byte>(m.NRM.Serialized!, i * 6, 6));
+
+                            PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+                        }
+                    }
+                    else
+                    {
+                        PrimitiveSerialization.SerializePrimitive((UInt32)0, temp);
                     }
 
                     if (m.IND != null)
                     {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)m.IND.Indices.Count, temp);
+                        int index_count = m.IND.Serialized!.Length / 2;
+
+                        PrimitiveSerialization.SerializePrimitive((UInt16)index_count, temp);
+
+                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
 
                         temp.AddRange(m.IND.Serialized!);
+
+                        if (index_count % 2 != 0)
+                        {
+                            PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+                        }
                     }
                     else
                     {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
-                    }
-
-                    if (m.UV != null)
-                    {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)m.UV.TextureCoordinates!.Count, temp);
-
-                        temp.AddRange(m.UV.Serialized!);
-                    }
-                    else
-                    {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
-                    }
-
-                    if (m.NRM != null)
-                    {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)m.NRM.Normals.Count, temp);
-
-                        temp.AddRange(m.NRM.Serialized!);
-                    }
-                    else
-                    {
-                        PrimitiveSerialization.SerializePrimitive((UInt16)0, temp);
+                        PrimitiveSerialization.SerializePrimitive((UInt32)0, temp);
                     }
 
                 }
@@ -217,7 +252,7 @@ namespace backend.Models
             t_byte = 0;
             if (this.FKR != null)
             {
-                t_byte = (byte)(this.FKR.FPS!);
+                t_byte = (byte)(this.FKR.FPS??0);
             }
             temp.Add(t_byte);
 

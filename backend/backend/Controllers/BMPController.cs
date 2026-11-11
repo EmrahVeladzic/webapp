@@ -26,8 +26,12 @@ namespace backend.Controllers
             using (DarkforgeDBContext ctx = new DarkforgeDBContext())
             {
 
+                byte? alpha_r = (input.Alpha != null && input.Alpha.Count >= 3) ? input.Alpha[0] : null;
+                byte? alpha_g = (input.Alpha != null && input.Alpha.Count >= 3) ? input.Alpha[1] : null;
+                byte? alpha_b = (input.Alpha != null && input.Alpha.Count >= 3) ? input.Alpha[2] : null;
 
-                ActiveRPF? Optimization = await ctx.ActiveRPFs.Where(a => a.FileID == input.ImageHash).Where(a => a.CLUT == input.CLUT_Size && a.Method == input.Mode).Where(a => (a.AlphaPresent == false && input.Alpha == null) || (input.Alpha != null && input.Alpha[0] == a.Red && input.Alpha[1] == a.Green && input.Alpha[2] == a.Blue)).FirstOrDefaultAsync();
+                ActiveRPF? Optimization = await ctx.ActiveRPFs.Where(a => a.FileID == input.ImageHash).Where(a => a.CLUT == input.CLUT_Size && a.Method == input.Mode).Where(a => a.Red == alpha_r && a.Green == alpha_g && a.Blue == alpha_b).FirstOrDefaultAsync();
+
 
                 if (Optimization != null)
                 {
