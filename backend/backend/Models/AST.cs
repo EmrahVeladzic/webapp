@@ -69,8 +69,7 @@ namespace backend.Models
         {
             List<byte> temp = new List<byte>();
 
-            temp.Add(65);
-            byte[]? TRS = null;
+            temp.Add(65);            
             byte t_byte = 0;
             if (this.MDL != null && this.MDL.Meshes!=null)
             {
@@ -258,9 +257,12 @@ namespace backend.Models
 
             if (this.FKR != null)
             {
+                sbyte bn_index = -1;
 
                 foreach (BN bn in this.FKR!.Bones)
                 {
+                    bn_index++; 
+
                     temp.AddRange(bn.Serialized!);
 
                     t_byte = (byte)(this.FKR.Bones.Where(b => b.Parent_ID == bn.ID).Count());
@@ -276,33 +278,67 @@ namespace backend.Models
 
                     }
 
+                    while ((temp.Count & 3) != 0)
+                    {
+                        temp.Add(0);
+                    }
+
                     if (this.FKR!.Animations != null)
                     {
-
                         foreach (ANM a in this.FKR.Animations)
                         {
-                            foreach (TK t in a.Tracks.Where(t => t.BN_ID == bn.ID))
+                            TK? tk = a.Tracks.FirstOrDefault(x => x.BN_ID == bn.ID);
+
+                            int t_count = 0;
+                            int r_count = 0;
+                            int s_count = 0;
+
+                            if (tk != null && tk.Serialized != null && tk.Serialized.Length >= (tk.T_Count * 13) + (tk.R_Count * 9) + (tk.S_Count * 7))
                             {
-                                temp.Add(t.T_Count);
-                                TRS = new byte[((int)t.T_Count * 13)];
-                                Array.Copy(t.Serialized!, 0, TRS, 0, ((int)t.T_Count * 13));
-                                temp.AddRange(TRS);
-                                TRS = null;
+                                t_count = tk.T_Count;
+                                r_count = tk.R_Count;
+                                s_count = tk.S_Count;
+                            }
 
-                                temp.Add(t.R_Count);
-                                TRS = new byte[((int)t.R_Count * 9)];
-                                Array.Copy(t.Serialized!, ((int)t.T_Count * 13), TRS, 0, ((int)t.R_Count * 9));
-                                temp.AddRange(TRS);
-                                TRS = null;
+                            temp.Add((byte)bn_index);
+                            temp.Add((byte)t_count);
+                            temp.Add((byte)r_count);
+                            temp.Add((byte)s_count);
 
-                                temp.Add(t.S_Count);
-                                TRS = new byte[((int)t.S_Count * 7)];
-                                Array.Copy(t.Serialized!, (((int)t.T_Count * 13) + ((int)t.R_Count * 9)), TRS, 0, ((int)t.S_Count * 7));
-                                temp.AddRange(TRS);
-                                TRS = null;
+                            int r_base = t_count * 13;
+                            int s_base = r_base + (r_count * 9);
+
+                            for (int k = 0; k < t_count; k++)
+                            {
+                                temp.AddRange(new ArraySegment<byte>(tk!.Serialized!, (k * 13) + 1, 12));
+                            }
+                            for (int k = 0; k < r_count; k++)
+                            {
+                                temp.AddRange(new ArraySegment<byte>(tk!.Serialized!, r_base + (k * 9) + 1, 8));
+                            }
+                            for (int k = 0; k < s_count; k++)
+                            {
+                                temp.AddRange(new ArraySegment<byte>(tk!.Serialized!, s_base + (k * 7) + 1, 6));
+                            }
+
+                            for (int k = 0; k < t_count; k++)
+                            {
+                                temp.Add(tk!.Serialized![k * 13]);
+                            }
+                            for (int k = 0; k < r_count; k++)
+                            {
+                                temp.Add(tk!.Serialized![r_base + (k * 9)]);
+                            }
+                            for (int k = 0; k < s_count; k++)
+                            {
+                                temp.Add(tk!.Serialized![s_base + (k * 7)]);
+                            }
+
+                            while ((temp.Count & 3) != 0)
+                            {
+                                temp.Add(0);
                             }
                         }
-
                     }
                 }
             }
